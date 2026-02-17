@@ -2,3 +2,11 @@
 *.swp
 *.swo
 .DS_Store
+
+# Machine-specific config (generated/local)
+.machine
+tmux/machine.conf
+tmux/local.conf
+sesh/sessions/local.toml
+nvim/lua/custom/plugins/machine_theme.lua
+nvim/lua/custom/plugins/local_theme.lua

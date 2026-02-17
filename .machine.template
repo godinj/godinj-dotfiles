@@ -1,0 +1,5 @@
+# Machine profile name — one line, matching a directory under machines/
+# Available profiles can be listed with: ls machines/
+# Copy this file to .machine and set your profile:
+#   cp .machine.template .machine
+default

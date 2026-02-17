@@ -31,7 +31,43 @@ info "Running backup..."
 bash "$DOTFILES_DIR/backup.sh"
 echo ""
 
-# ── Step 2: Symlinks ──────────────────────────────────────────────────────
+# ── Step 2: Machine profile ──────────────────────────────────────────────
+
+source "$DOTFILES_DIR/machine.sh"
+
+if [ -f "$MACHINE_FILE" ]; then
+  info "Current machine profile: $MACHINE_NAME"
+  read -rp "Keep this profile? [Y/n] " keep_yn
+  if [[ "$keep_yn" =~ ^[Nn]$ ]]; then
+    rm -f "$MACHINE_FILE"
+  fi
+fi
+
+if [ ! -f "$MACHINE_FILE" ]; then
+  info "Available machine profiles:"
+  profiles=()
+  for d in "$MACHINES_DIR"/*/; do
+    [ -d "$d" ] || continue
+    profiles+=("$(basename "$d")")
+  done
+  for i in "${!profiles[@]}"; do
+    echo "  $((i+1))) ${profiles[$i]}"
+  done
+  while true; do
+    read -rp "Select profile [1-${#profiles[@]}]: " choice
+    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#profiles[@]}" ]; then
+      MACHINE_NAME="${profiles[$((choice-1))]}"
+      break
+    fi
+    echo "  Invalid choice, try again."
+  done
+  echo "$MACHINE_NAME" > "$MACHINE_FILE"
+  MACHINE_DIR="$MACHINES_DIR/$MACHINE_NAME"
+  ok "Machine profile set to: $MACHINE_NAME"
+fi
+echo ""
+
+# ── Step 3: Symlinks ──────────────────────────────────────────────────────
 
 create_link() {
   local src="$1"
@@ -58,13 +94,20 @@ create_link "$DOTFILES_DIR/git/.gitconfig"     "$HOME/.gitconfig"
 create_link "$DOTFILES_DIR/nvim"               "$HOME/.config/nvim"
 create_link "$DOTFILES_DIR/tmux"               "$HOME/tmux-config"
 create_link "$DOTFILES_DIR/tmux/.tmux.conf"    "$HOME/.tmux.conf"
+create_link "$DOTFILES_DIR/.env.template"      "$HOME/.env.template"
+
+# Deploy machine-specific files
+info "Deploying machine profile: $MACHINE_NAME"
+cp "$MACHINE_DIR/tmux/machine.conf" "$DOTFILES_DIR/tmux/machine.conf"
+ok "Copied tmux/machine.conf"
+cp "$MACHINE_DIR/nvim/theme.lua" "$DOTFILES_DIR/nvim/lua/custom/plugins/machine_theme.lua"
+ok "Copied nvim machine_theme.lua"
 bash "$DOTFILES_DIR/sesh/build_sesh_config.sh"
 ok "Built sesh.toml from modular configs"
-create_link "$DOTFILES_DIR/.env.template"      "$HOME/.env.template"
 
 echo ""
 
-# ── Step 3: Install core dependencies ───────────────────────────────────────
+# ── Step 4: Install core dependencies ───────────────────────────────────────
 
 install_pkg() {
   local name="$1"
@@ -297,7 +340,7 @@ fi
 
 echo ""
 
-# ── Step 4: Oh-My-Zsh ───────────────────────────────────────────────────────
+# ── Step 5: Oh-My-Zsh ───────────────────────────────────────────────────────
 
 if [ -d "$HOME/.oh-my-zsh" ]; then
   ok "Oh-My-Zsh already installed"
@@ -306,7 +349,7 @@ else
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 fi
 
-# ── Step 5: TPM (Tmux Plugin Manager) ───────────────────────────────────────
+# ── Step 6: TPM (Tmux Plugin Manager) ───────────────────────────────────────
 
 if [ -d "$HOME/.tmux/plugins/tpm" ]; then
   ok "TPM already installed"
@@ -315,7 +358,7 @@ else
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
 
-# ── Step 6: Create .env from template ───────────────────────────────────────
+# ── Step 7: Create .env from template ───────────────────────────────────────
 
 if [ -f "$HOME/.env" ]; then
   ok ".env already exists"
@@ -325,7 +368,7 @@ else
   warn "Edit ~/.env to add your API keys"
 fi
 
-# ── Step 7: Optional — audio dev dependencies ───────────────────────────────
+# ── Step 8: Optional — audio dev dependencies ───────────────────────────────
 
 if [ "$PKG" = "brew" ]; then
   read -rp "Install audio dev dependencies (Ardour build libs)? [y/N] " audio_yn
@@ -337,7 +380,7 @@ if [ "$PKG" = "brew" ]; then
   fi
 fi
 
-# ── Step 8: Optional — npm globals ──────────────────────────────────────────
+# ── Step 9: Optional — npm globals ──────────────────────────────────────────
 
 read -rp "Install npm globals (mcp-hub)? [y/N] " npm_yn
 if [[ "$npm_yn" =~ ^[Yy]$ ]]; then
