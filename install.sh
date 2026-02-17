@@ -234,8 +234,19 @@ else
   go install github.com/jesseduffield/lazygit@latest
 fi
 
-# JetBrainsMono Nerd Font (skip on Termux — fonts are managed by the app)
-if [ "$PKG" != "termux" ]; then
+# JetBrainsMono Nerd Font
+if [ "$PKG" = "termux" ]; then
+  if [ -f "$HOME/.termux/font.ttf" ]; then
+    ok "Termux font already installed"
+  else
+    info "Installing JetBrainsMono Nerd Font for Termux..."
+    mkdir -p "$HOME/.termux"
+    curl -fsSL -o "$HOME/.termux/font.ttf" \
+      https://github.com/ryanoasis/nerd-fonts/raw/HEAD/patched-fonts/JetBrainsMono/Ligatures/Regular/JetBrainsMonoNerdFont-Regular.ttf
+    termux-reload-settings
+    ok "JetBrainsMono Nerd Font installed (restart Termux if needed)"
+  fi
+elif [ "$PKG" != "termux" ]; then
   if fc-list 2>/dev/null | grep -qi "JetBrainsMono" || ([ "$PKG" = "brew" ] && brew list --cask font-jetbrains-mono-nerd-font &>/dev/null 2>&1); then
     ok "JetBrainsMono Nerd Font already installed"
   else
