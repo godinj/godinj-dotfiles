@@ -1,0 +1,4 @@
+[[session]]
+name = " drem-soundscape"
+path = "~/dev/drem-soundscape/"
+startup_command = "nvim"
