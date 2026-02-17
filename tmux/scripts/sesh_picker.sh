@@ -2,11 +2,11 @@
 export PATH="$HOME/go/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
 
 sesh connect "$(
-  sesh list --icons | fzf-tmux -p 80%,70% \
+  sesh list -t -c -z --icons | fzf-tmux -p 80%,70% \
     --no-sort --ansi --border-label ' mba sesh ' --prompt '⚡  ' \
     --header '  ^a all ^t tmux ^g configs ^x zoxide ^d tmux kill ^f find' \
     --bind 'tab:down,btab:up' \
-    --bind 'ctrl-a:change-prompt(⚡  )+reload(sesh list --icons)' \
+    --bind 'ctrl-a:change-prompt(⚡  )+reload(sesh list -t -c -z --icons)' \
     --bind 'ctrl-t:change-prompt(🪟  )+reload(sesh list -t --icons)' \
     --bind 'ctrl-g:change-prompt(⚙️  )+reload(sesh list -c --icons)' \
     --bind 'ctrl-x:change-prompt(📁  )+reload(sesh list -z --icons)' \

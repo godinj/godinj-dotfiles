@@ -12,11 +12,6 @@ startup_command = "nvim"
 preview_command = "bat --color=always ~/.config/sesh/sesh.toml"
 
 [[session]]
-name = "󰞵 deb-desk"
-path = "~"
-startup_command = "dd"
-
-[[session]]
 name = "󱘖 fastfetch"
 path = "~"
 startup_command = "fastfetch"
@@ -25,3 +20,8 @@ startup_command = "fastfetch"
 name = "󱘖 btop"
 path = "~"
 startup_command = "btop"
+
+[[session]]
+name = " drem-soundscape"
+path = "~/dev/drem-soundscape/"
+startup_command = "nvim"

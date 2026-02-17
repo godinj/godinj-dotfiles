@@ -380,20 +380,6 @@ if [ "$PKG" = "brew" ]; then
   fi
 fi
 
-# ── Step 9: Optional — npm globals ──────────────────────────────────────────
-
-read -rp "Install npm globals (mcp-hub)? [y/N] " npm_yn
-if [[ "$npm_yn" =~ ^[Yy]$ ]]; then
-  if command -v npm &>/dev/null; then
-    npm install -g mcp-hub
-    ok "mcp-hub installed"
-  else
-    warn "npm not found — install Node via nvm first, then run: npm install -g mcp-hub"
-  fi
-fi
-
-echo ""
-
 # ── Done ─────────────────────────────────────────────────────────────────────
 
 info "Installation complete! Next steps:"

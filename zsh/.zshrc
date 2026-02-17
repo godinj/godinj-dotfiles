@@ -140,7 +140,7 @@ test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_int
 if [ -z "$TMUX" ]
  then
     clear
-    sesh connect "󱘖 fastfetch"
+    sesh connect -c "fastfetch" "󱘖 fastfetch"
 fi
 
 # Optional modules — uncomment to enable
