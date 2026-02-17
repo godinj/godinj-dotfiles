@@ -116,6 +116,7 @@ source $ZSH/oh-my-zsh.sh
 # alias vim="nvim"
 alias dd="ssh -i ~/.ssh/npllm godinj@script.dremhome.org -p 21337"
 alias cl="claude"
+alias cld="claude --dangerously-skip-permissions"
 alias tk="tmux kill-server"
 alias t="tmux"
 alias src="source ~/.zshrc"

@@ -1,0 +1,9 @@
+[[session]]
+name = "󱘖 fastfetch"
+path = "~"
+startup_command = "fastfetch"
+
+[[session]]
+name = "󱘖 btop"
+path = "~"
+startup_command = "btop"
