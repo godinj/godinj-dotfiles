@@ -16,7 +16,8 @@ OS="$(uname -s)"
 case "$OS" in
   Darwin) PKG=brew ;;
   Linux)
-    if command -v apt-get &>/dev/null; then PKG=apt
+    if [ -n "${TERMUX_VERSION:-}" ]; then PKG=termux
+    elif command -v apt-get &>/dev/null; then PKG=apt
     elif command -v dnf &>/dev/null;    then PKG=dnf
     else err "Unsupported Linux distro (no apt or dnf found)"; exit 1; fi
     ;;
@@ -74,15 +75,17 @@ install_pkg() {
   local pkg_name="${2:-$name}"
   info "Installing $name..."
   case "$PKG" in
-    brew) brew install "$pkg_name" ;;
-    apt)  sudo apt-get install -y "$pkg_name" ;;
-    dnf)  sudo dnf install -y "$pkg_name" ;;
+    brew)   brew install "$pkg_name" ;;
+    apt)    sudo apt-get install -y "$pkg_name" ;;
+    dnf)    sudo dnf install -y "$pkg_name" ;;
+    termux) pkg install -y "$pkg_name" ;;
   esac
 }
 
 info "Installing core dependencies..."
 
 install_pkg zsh
+install_pkg unzip
 
 # NVM + Node (needed before Neovim for plugin ecosystem)
 if [ -d "$HOME/.nvm" ] || (command -v brew &>/dev/null && brew list nvm &>/dev/null 2>&1); then
@@ -91,7 +94,7 @@ else
   info "Installing NVM..."
   case "$PKG" in
     brew) brew install nvm && mkdir -p "$HOME/.nvm" ;;
-    apt|dnf)
+    apt|dnf|termux)
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
       ;;
   esac
@@ -116,10 +119,25 @@ else
   fi
 fi
 
-# Neovim — build from source
+# tree-sitter-cli (needed by nvim-treesitter to compile parsers from grammar)
+if command -v tree-sitter &>/dev/null; then
+  ok "tree-sitter-cli already installed"
+elif command -v npm &>/dev/null; then
+  info "Installing tree-sitter-cli..."
+  npm install -g tree-sitter-cli
+  ok "tree-sitter-cli installed"
+else
+  warn "npm not found — skipping tree-sitter-cli install"
+fi
+
+# Neovim — use pkg on Termux, build from source elsewhere
 NEOVIM_SRC="$HOME/neovim"
 if command -v nvim &>/dev/null; then
   ok "nvim already installed ($(nvim --version | head -1))"
+elif [ "$PKG" = "termux" ]; then
+  info "Installing Neovim via pkg..."
+  pkg install -y neovim
+  ok "Neovim installed ($(nvim --version | head -1))"
 else
   info "Installing Neovim build dependencies..."
   case "$PKG" in
@@ -144,34 +162,37 @@ else
 fi
 
 install_pkg tmux
-# fzf + fzf-tmux — apt version is too old (missing --tmux), install from GitHub
-if [ -d "$HOME/.fzf" ]; then
-  git -C "$HOME/.fzf" pull
+# fzf + fzf-tmux — Termux has a recent version; apt version is too old, install from GitHub
+if [ "$PKG" = "termux" ]; then
+  install_pkg fzf
 else
-  git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
-fi
+  if [ -d "$HOME/.fzf" ]; then
+    git -C "$HOME/.fzf" pull
+  else
+    git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+  fi
 
-if command -v fzf &>/dev/null && fzf --version 2>&1 | grep -qv debian; then
-  ok "fzf already installed ($(fzf --version))"
-else
-  info "Installing fzf from GitHub..."
-  "$HOME/.fzf/install" --bin
-  sudo cp "$HOME/.fzf/bin/fzf" /usr/local/bin/fzf
-  ok "fzf installed ($(fzf --version))"
-fi
+  if command -v fzf &>/dev/null && fzf --version 2>&1 | grep -qv debian; then
+    ok "fzf already installed ($(fzf --version))"
+  else
+    info "Installing fzf from GitHub..."
+    "$HOME/.fzf/install" --bin
+    sudo cp "$HOME/.fzf/bin/fzf" /usr/local/bin/fzf
+    ok "fzf installed ($(fzf --version))"
+  fi
 
-if command -v fzf-tmux &>/dev/null; then
-  ok "fzf-tmux already installed"
-else
-  info "Installing fzf-tmux..."
-  sudo cp "$HOME/.fzf/bin/fzf-tmux" /usr/local/bin/fzf-tmux
-  ok "fzf-tmux installed"
+  if command -v fzf-tmux &>/dev/null; then
+    ok "fzf-tmux already installed"
+  else
+    info "Installing fzf-tmux..."
+    sudo cp "$HOME/.fzf/bin/fzf-tmux" /usr/local/bin/fzf-tmux
+    ok "fzf-tmux installed"
+  fi
 fi
-if [ "$PKG" = "apt" ]; then
-  install_pkg fd fd-find
-else
-  install_pkg fd
-fi
+case "$PKG" in
+  apt) install_pkg fd fd-find ;;
+  *)   install_pkg fd ;;
+esac
 install_pkg bat
 install_pkg rg ripgrep
 install_pkg zoxide
@@ -184,13 +205,14 @@ if command -v fastfetch &>/dev/null; then
 else
   info "Installing fastfetch..."
   case "$PKG" in
-    brew) brew install fastfetch ;;
+    brew)   brew install fastfetch ;;
     apt)
       sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch
       sudo apt-get update
       sudo apt-get install -y fastfetch
       ;;
-    dnf) sudo dnf install -y fastfetch ;;
+    dnf)    sudo dnf install -y fastfetch ;;
+    termux) pkg install -y fastfetch ;;
   esac
 fi
 
@@ -202,6 +224,63 @@ if command -v sesh &>/dev/null; then
 else
   info "Installing sesh via Go..."
   go install github.com/joshmedeski/sesh@latest
+fi
+
+# lazygit (via Go)
+if command -v lazygit &>/dev/null; then
+  ok "lazygit already installed"
+else
+  info "Installing lazygit via Go..."
+  go install github.com/jesseduffield/lazygit@latest
+fi
+
+# JetBrainsMono Nerd Font (skip on Termux — fonts are managed by the app)
+if [ "$PKG" != "termux" ]; then
+  if fc-list 2>/dev/null | grep -qi "JetBrainsMono" || ([ "$PKG" = "brew" ] && brew list --cask font-jetbrains-mono-nerd-font &>/dev/null 2>&1); then
+    ok "JetBrainsMono Nerd Font already installed"
+  else
+    info "Installing JetBrainsMono Nerd Font..."
+    case "$PKG" in
+      brew)
+        brew install --cask font-jetbrains-mono-nerd-font
+        ;;
+      apt|dnf)
+        FONT_DIR="$HOME/.local/share/fonts/JetBrainsMono"
+        mkdir -p "$FONT_DIR"
+        FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz"
+        curl -fsSL "$FONT_URL" | tar -xJ -C "$FONT_DIR"
+        fc-cache -fv "$FONT_DIR"
+        ;;
+    esac
+    ok "JetBrainsMono Nerd Font installed"
+  fi
+
+  # Install fonts on Windows side when running under WSL
+  if grep -qi microsoft /proc/version 2>/dev/null; then
+    WIN_LOCALAPPDATA="$(powershell.exe -NoProfile -Command '[Environment]::GetFolderPath("LocalApplicationData")' 2>/dev/null | tr -d '\r')"
+    WIN_FONT_DIR="$WIN_LOCALAPPDATA\\Microsoft\\Windows\\Fonts"
+    LINUX_WIN_FONT_DIR="$(wslpath "$WIN_FONT_DIR")"
+    LINUX_FONT_SRC="$HOME/.local/share/fonts/JetBrainsMono"
+
+    if [ -d "$LINUX_WIN_FONT_DIR" ] && ls "$LINUX_WIN_FONT_DIR"/JetBrains*.ttf &>/dev/null; then
+      ok "JetBrainsMono fonts already installed on Windows"
+    elif [ -d "$LINUX_FONT_SRC" ]; then
+      info "Copying JetBrainsMono fonts to Windows user font directory..."
+      mkdir -p "$LINUX_WIN_FONT_DIR"
+      cp "$LINUX_FONT_SRC"/*.ttf "$LINUX_WIN_FONT_DIR"/
+
+      info "Registering fonts in Windows registry..."
+      for ttf in "$LINUX_WIN_FONT_DIR"/*.ttf; do
+        FILENAME="$(basename "$ttf")"
+        FONTNAME="$(echo "$FILENAME" | sed 's/\.ttf$//' | sed 's/NerdFont/Nerd Font/' | sed 's/-/ /g') (TrueType)"
+        WIN_FONT_PATH="$WIN_FONT_DIR\\$FILENAME"
+        powershell.exe -NoProfile -Command \
+          "New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name '$FONTNAME' -Value '$WIN_FONT_PATH' -PropertyType String -Force" \
+          >/dev/null 2>&1
+      done
+      ok "JetBrainsMono fonts installed and registered on Windows"
+    fi
+  fi
 fi
 
 echo ""
