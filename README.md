@@ -1,52 +1,112 @@
 # dotfiles
 
-Personal development environment configuration for macOS + Linux, centered around a terminal-first workflow with Neovim, tmux, and zsh.
+Personal development environment configuration for macOS, Linux, Termux/Android, and WSL2 — centered around a terminal-first workflow with Neovim, tmux, and zsh.
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/godinj/dotfiles.git ~/dotfiles
-cd ~/dotfiles
+git clone git@github.com:godinj/godinj-dotfiles.git ~/git/godinj-dotfiles
+cd ~/git/godinj-dotfiles
 bash install.sh
 ```
 
 The installer is idempotent — safe to re-run at any time.
 
+## Scripts
+
+### install.sh
+
+Main entry point. Backs up existing configs, prompts for a machine profile, creates symlinks, deploys machine-specific overrides, and installs all dependencies (zsh, neovim, tmux, fzf, ripgrep, sesh, lazygit, Go, nvm, etc.). Detects OS and package manager automatically.
+
+```bash
+bash install.sh
+```
+
+### switch-machine.sh
+
+Switch between machine profiles after installation. Copies the selected profile's tmux, nvim, and sesh configs into place and rebuilds the sesh config.
+
+```bash
+bash switch-machine.sh        # interactive menu
+bash switch-machine.sh mba    # switch directly to a profile
+```
+
+### backup.sh
+
+Creates a timestamped backup of existing config files in `~/.dotfiles-backup/`. Called automatically by `install.sh` but can be run standalone.
+
+```bash
+bash backup.sh
+```
+
+### ssh-setup.sh
+
+Sets up SSH for GitHub end-to-end: generates an ed25519 key, installs and authenticates with `gh`, and uploads the public key. Cross-platform (macOS, Linux, Termux).
+
+```bash
+bash ssh-setup.sh
+```
+
+### sesh/build_sesh_config.sh
+
+Merges sesh configuration from multiple sources into `~/.config/sesh/sesh.toml`. Called by `install.sh` and `switch-machine.sh`. Sources are merged in order:
+
+1. `sesh/base.toml` — sort order and base settings
+2. `sesh/sessions/*.toml` — shared sessions (excludes `local.toml`)
+3. `machines/<profile>/sesh/sessions/*.toml` — machine-specific sessions
+4. `sesh/sessions/local.toml` — local overrides (gitignored)
+
+```bash
+bash sesh/build_sesh_config.sh
+```
+
+### machine.sh
+
+Shared helper sourced by `install.sh`, `switch-machine.sh`, and `build_sesh_config.sh`. Reads `.machine` to resolve the active profile name and directory. Not meant to be run directly.
+
+### tmux/scripts/sesh_picker.sh
+
+Interactive tmux session picker using fzf. Provides keyboard shortcuts for filtering by session type (`Ctrl+T` tmux, `Ctrl+G` config, `Ctrl+X` zoxide, `Ctrl+F` find, `Ctrl+D` kill). Bound in the tmux config — not meant to be run directly.
+
+## Machine Profiles
+
+Machine-specific configs live under `machines/<name>/`. Each profile can override tmux config, nvim theme, and sesh sessions. The active profile is stored in `.machine` (gitignored).
+
+Available profiles: `default`, `mba`, `wsl-sd`.
+
 ## Structure
 
 ```
 godinj-dotfiles/
-├── .gitignore
+├── install.sh             # Main installer
+├── backup.sh              # Config backup
+├── switch-machine.sh      # Switch machine profiles
+├── ssh-setup.sh           # GitHub SSH setup
+├── machine.sh             # Machine profile helper (sourced)
 ├── .env.template          # API key template (copy to .env)
-├── backup.sh              # Back up existing configs
-├── install.sh             # Idempotent installer
-├── README.md
+├── machines/              # Machine-specific overrides
+│   ├── default/
+│   ├── mba/
+│   └── wsl-sd/
 ├── zsh/
-│   ├── .zshrc             # Shell config (symlinked to ~/.zshrc)
+│   ├── .zshrc
 │   └── modules/
-│       └── audio-dev.zsh  # Optional audio dev PKG_CONFIG_PATHs
+│       └── audio-dev.zsh
 ├── git/
-│   └── .gitconfig         # Git config (symlinked to ~/.gitconfig)
-├── nvim/                  # Neovim config (symlinked to ~/.config/nvim)
+│   └── .gitconfig
+├── nvim/
 │   ├── init.lua
 │   └── lua/
-│       ├── core/
-│       │   ├── options.lua
-│       │   └── keymaps.lua
-│       ├── plugins/
-│       └── custom/plugins/
-│           ├── theme.lua  # Colorscheme (swappable)
-│           ├── avante.lua
-│           ├── mcphub.lua
-│           └── snacks.lua
-├── tmux/                  # tmux config (symlinked to ~/tmux-config)
-│   ├── .tmux.conf         # Thin loader (also symlinked to ~/.tmux.conf)
-│   ├── core.conf          # Prefix, splits, nav, vi mode
-│   ├── workflow.conf      # Sesh, join, resize, session switching
-│   ├── theme.conf         # Rose-pine, status colors, plugins
-│   └── scripts/           # Helper scripts for multi-pane workflows
+├── tmux/
+│   ├── .tmux.conf
+│   ├── core.conf
+│   ├── workflow.conf
+│   ├── theme.conf
+│   └── scripts/
 └── sesh/
-    └── sesh.toml          # Named session definitions
+    ├── base.toml
+    ├── build_sesh_config.sh
+    └── sessions/
 ```
 
 ## Symlink Map
@@ -58,7 +118,6 @@ godinj-dotfiles/
 | `nvim/`                   | `~/.config/nvim`          |
 | `tmux/`                   | `~/tmux-config`           |
 | `tmux/.tmux.conf`         | `~/.tmux.conf`            |
-| `sesh/sesh.toml`          | `~/.config/sesh/sesh.toml`|
 
 ## Shell (zsh)
 
