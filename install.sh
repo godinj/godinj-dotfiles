@@ -30,7 +30,39 @@ info "Running backup..."
 bash "$DOTFILES_DIR/backup.sh"
 echo ""
 
-# ── Step 2: Install core dependencies ───────────────────────────────────────
+# ── Step 2: Symlinks ──────────────────────────────────────────────────────
+
+create_link() {
+  local src="$1"
+  local dest="$2"
+
+  if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+    ok "$(basename "$dest") already linked"
+    return
+  fi
+
+  # Remove existing file/dir/symlink at destination
+  if [ -e "$dest" ] || [ -L "$dest" ]; then
+    rm -rf "$dest"
+  fi
+
+  mkdir -p "$(dirname "$dest")"
+  ln -sf "$src" "$dest"
+  ok "Linked $dest -> $src"
+}
+
+info "Creating symlinks..."
+create_link "$DOTFILES_DIR/zsh/.zshrc"        "$HOME/.zshrc"
+create_link "$DOTFILES_DIR/git/.gitconfig"     "$HOME/.gitconfig"
+create_link "$DOTFILES_DIR/nvim"               "$HOME/.config/nvim"
+create_link "$DOTFILES_DIR/tmux"               "$HOME/tmux-config"
+create_link "$DOTFILES_DIR/tmux/.tmux.conf"    "$HOME/.tmux.conf"
+create_link "$DOTFILES_DIR/sesh/sesh.toml"     "$HOME/.config/sesh/sesh.toml"
+create_link "$DOTFILES_DIR/.env.template"      "$HOME/.env.template"
+
+echo ""
+
+# ── Step 3: Install core dependencies ───────────────────────────────────────
 
 install_pkg() {
   local name="$1"
@@ -51,6 +83,38 @@ install_pkg() {
 info "Installing core dependencies..."
 
 install_pkg zsh
+
+# NVM + Node (needed before Neovim for plugin ecosystem)
+if [ -d "$HOME/.nvm" ] || (command -v brew &>/dev/null && brew list nvm &>/dev/null 2>&1); then
+  ok "NVM already installed"
+else
+  info "Installing NVM..."
+  case "$PKG" in
+    brew) brew install nvm && mkdir -p "$HOME/.nvm" ;;
+    apt|dnf)
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+      ;;
+  esac
+fi
+
+# Source NVM for current shell
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+if [ "$PKG" = "brew" ]; then
+  [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && . "$(brew --prefix)/opt/nvm/nvm.sh"
+fi
+
+if command -v node &>/dev/null; then
+  ok "node already installed ($(node --version))"
+else
+  if command -v nvm &>/dev/null; then
+    info "Installing Node LTS via NVM..."
+    nvm install --lts
+    ok "Node installed ($(node --version))"
+  else
+    warn "NVM not available — install Node manually before opening Neovim"
+  fi
+fi
 
 # Neovim — build from source
 NEOVIM_SRC="$HOME/neovim"
@@ -115,7 +179,7 @@ fi
 
 echo ""
 
-# ── Step 3: Oh-My-Zsh ───────────────────────────────────────────────────────
+# ── Step 4: Oh-My-Zsh ───────────────────────────────────────────────────────
 
 if [ -d "$HOME/.oh-my-zsh" ]; then
   ok "Oh-My-Zsh already installed"
@@ -124,7 +188,7 @@ else
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 fi
 
-# ── Step 4: TPM (Tmux Plugin Manager) ───────────────────────────────────────
+# ── Step 5: TPM (Tmux Plugin Manager) ───────────────────────────────────────
 
 if [ -d "$HOME/.tmux/plugins/tpm" ]; then
   ok "TPM already installed"
@@ -132,22 +196,6 @@ else
   info "Installing TPM..."
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
-
-# ── Step 5: NVM ─────────────────────────────────────────────────────────────
-
-if [ -d "$HOME/.nvm" ] || (command -v brew &>/dev/null && brew list nvm &>/dev/null 2>&1); then
-  ok "NVM already installed"
-else
-  info "Installing NVM..."
-  case "$PKG" in
-    brew) brew install nvm ;;
-    apt|dnf)
-      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-      ;;
-  esac
-fi
-
-echo ""
 
 # ── Step 6: Create .env from template ───────────────────────────────────────
 
@@ -159,39 +207,7 @@ else
   warn "Edit ~/.env to add your API keys"
 fi
 
-# ── Step 7: Symlinks ────────────────────────────────────────────────────────
-
-create_link() {
-  local src="$1"
-  local dest="$2"
-
-  if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
-    ok "$(basename "$dest") already linked"
-    return
-  fi
-
-  # Remove existing file/dir/symlink at destination
-  if [ -e "$dest" ] || [ -L "$dest" ]; then
-    rm -rf "$dest"
-  fi
-
-  mkdir -p "$(dirname "$dest")"
-  ln -sf "$src" "$dest"
-  ok "Linked $dest -> $src"
-}
-
-info "Creating symlinks..."
-create_link "$DOTFILES_DIR/zsh/.zshrc"        "$HOME/.zshrc"
-create_link "$DOTFILES_DIR/git/.gitconfig"     "$HOME/.gitconfig"
-create_link "$DOTFILES_DIR/nvim"               "$HOME/.config/nvim"
-create_link "$DOTFILES_DIR/tmux"               "$HOME/tmux-config"
-create_link "$DOTFILES_DIR/tmux/.tmux.conf"    "$HOME/.tmux.conf"
-create_link "$DOTFILES_DIR/sesh/sesh.toml"     "$HOME/.config/sesh/sesh.toml"
-create_link "$DOTFILES_DIR/.env.template"      "$HOME/.env.template"
-
-echo ""
-
-# ── Step 8: Optional — audio dev dependencies ───────────────────────────────
+# ── Step 7: Optional — audio dev dependencies ───────────────────────────────
 
 if [ "$PKG" = "brew" ]; then
   read -rp "Install audio dev dependencies (Ardour build libs)? [y/N] " audio_yn
@@ -203,7 +219,7 @@ if [ "$PKG" = "brew" ]; then
   fi
 fi
 
-# ── Step 9: Optional — npm globals ──────────────────────────────────────────
+# ── Step 8: Optional — npm globals ──────────────────────────────────────────
 
 read -rp "Install npm globals (mcp-hub)? [y/N] " npm_yn
 if [[ "$npm_yn" =~ ^[Yy]$ ]]; then
