@@ -51,7 +51,34 @@ install_pkg() {
 info "Installing core dependencies..."
 
 install_pkg zsh
-install_pkg nvim neovim
+
+# Neovim — build from source
+NEOVIM_SRC="$HOME/neovim"
+if command -v nvim &>/dev/null; then
+  ok "nvim already installed ($(nvim --version | head -1))"
+else
+  info "Installing Neovim build dependencies..."
+  case "$PKG" in
+    brew) brew install ninja cmake gettext curl ;;
+    apt)  sudo apt-get install -y ninja-build gettext cmake curl build-essential ;;
+    dnf)  sudo dnf install -y ninja-build cmake gcc make gettext curl glibc-gconv-extra ;;
+  esac
+
+  if [ -d "$NEOVIM_SRC" ]; then
+    info "Updating existing Neovim source..."
+    git -C "$NEOVIM_SRC" pull
+  else
+    info "Cloning Neovim from source..."
+    git clone https://github.com/neovim/neovim.git "$NEOVIM_SRC"
+  fi
+
+  info "Building Neovim (RelWithDebInfo)..."
+  make -C "$NEOVIM_SRC" CMAKE_BUILD_TYPE=RelWithDebInfo
+  info "Installing Neovim..."
+  sudo make -C "$NEOVIM_SRC" install
+  ok "Neovim installed ($(nvim --version | head -1))"
+fi
+
 install_pkg tmux
 install_pkg fzf
 if [ "$PKG" = "apt" ]; then
