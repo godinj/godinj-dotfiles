@@ -176,8 +176,6 @@ Edit `nvim/lua/custom/plugins/theme.lua` to change the colorscheme. The file is 
 - **conform.nvim** — formatting
 - **gitsigns.nvim** — inline git signs
 - **treesitter** — syntax highlighting
-- **avante.nvim** — AI assistant
-- **mcphub.nvim** — MCP server integration
 - **snacks.nvim** — dashboard, indent guides, notifier
 
 ## tmux
@@ -228,7 +226,6 @@ All dependencies are installed automatically by `install.sh`.
 
 **Optional:**
 
-- [Ollama](https://ollama.com/) — local LLM for Avante
 - Docker
 - Python 3
 - Audio dev libs (prompted during install on macOS)
