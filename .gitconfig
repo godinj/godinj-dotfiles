@@ -1,0 +1,28 @@
+[user]
+email = jon.m.godin@gmail.com
+name = Jon Godin
+[diff]
+    tool = vimdiff
+    # git diff will use (i)ndex (w)ork tree, (c)ommit, and (o)bject instead of
+    # a/b/c/... as prefix for patches.
+    mnemonicprefix = true
+[difftool]
+    prompt = false
+[color]
+    ui = true
+[push]
+    default = simple
+[alias]
+    st = status
+    history = log --pretty=format:'%h %ad |%C(red)%d%C(reset) %s [%an]' --graph --date=short --all
+    ht = log --pretty=format:'%h %ad |%C(red)%d%C(reset) %s [%an]' --graph --date=short --all -n 30
+    recent = log --pretty=format:'%h %ar |%C(red)%d%C(reset) %s [%an]' --graph --date=short --all -n 15 --since=1.month.ago
+    type = cat-file -t
+    dump = cat-file -p
+dag = log --graph --format='format:%C(yellow)%h%C(reset)%C(blue)\"%an\" <%ae>%C(reset)%C(magenta)%cr%C(reset)%C(auto)%d%C(reset)%n%s' --date-order
+[merge]
+tool = vimdiff
+[core]
+editor = /usr/bin/vim
+excludesfile = ~/.gitignore_global
+pager = less -FMRiX

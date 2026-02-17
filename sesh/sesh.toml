@@ -1,0 +1,97 @@
+sort_order = [
+    "tmux", # show first
+    "tmuxinator",
+    "config",
+    "zoxide", # show last
+]
+
+[[session]]
+name = "󱘖 fastfetch"
+path = "~"
+startup_command = "fastfetch"
+
+[[session]]
+name = "󱘖 btop"
+path = "~"
+startup_command = "btop"
+
+[[session]]
+name = "󱘖 sesh"
+path = "~/.config/sesh/"
+startup_command = "nvim sesh.toml"
+preview_command = "bat --color=always ~/.config/sesh/sesh.toml"
+
+[[session]]
+name = " tmux"
+path = "~/tmux-config/"
+startup_command = "nvim .tmux.conf"
+preview_command = "bat --color=always ~/tmux-config/.tmux.conf"
+
+[[session]]
+name = " nvim"
+path = "~/.config/nvim/"
+startup_command = "nvim"
+preview_command = "bat --color=always ~/.config/sesh/sesh.toml"
+
+[[session]]
+name = "󰰸 zsh"
+path = "~"
+startup_command = "nvim ~/.zshrc"
+preview_command = "bat --color=always ~/.zshrc"
+
+[[session]]
+name = "󰞵 deb-desk"
+path = "~"
+startup_command = "dd"
+
+[[session]]
+name = " drem-ninja"
+path = "~/git/drem-ninja/"
+startup_command = "nvim"
+
+[[session]]
+name = " drem-soundscape"
+path = "~/dev/drem-soundscape/"
+startup_command = "nvim"
+
+[[session]]
+name = " juce editor"
+path = "~/dev/JUCE/"
+startup_command = "nvim"
+
+[[session]]
+name = " BibInc"
+path = "~/Dropbox/Bible Stuff/BibleIncrementer"
+startup_command = "nvim pom.xml"
+preview_command = "bat --color=always ~/Dropbox/Bible Stuff/BibleIncrementer/pom.xml"
+
+[[session]]
+name = " notes editor"
+path = "~/notes/"
+startup_command = "nvim"
+
+[[session]]
+name = " ardourdev editor"
+path = "~/dev/ardour_dev/"
+startup_command = "nvim"
+preview_command = "bat --color=always ~/dev/ardour_dev/.devcontainer.json"
+
+[[session]]
+name = " docker start"
+path = "~/dev/ardour_dev/"
+startup_command = "open -a Docker"
+
+[[session]]
+name = "󱘖 ardourdev connect"
+path = "~/dev/ardour_dev/"
+startup_command = "ssh ardourdev.devpod"
+
+[[session]]
+name = " python leetcode"
+path = "~/Dropbox/Python/PythonAlgoMonster/"
+startup_command = "nvim"
+
+[[session]]
+name = " bawb game"
+path = "~/dev/bawb-game/"
+startup_command = "cl"
