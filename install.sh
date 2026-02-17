@@ -144,7 +144,29 @@ else
 fi
 
 install_pkg tmux
-install_pkg fzf
+# fzf + fzf-tmux — apt version is too old (missing --tmux), install from GitHub
+if [ -d "$HOME/.fzf" ]; then
+  git -C "$HOME/.fzf" pull
+else
+  git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+fi
+
+if command -v fzf &>/dev/null && fzf --version 2>&1 | grep -qv debian; then
+  ok "fzf already installed ($(fzf --version))"
+else
+  info "Installing fzf from GitHub..."
+  "$HOME/.fzf/install" --bin
+  sudo cp "$HOME/.fzf/bin/fzf" /usr/local/bin/fzf
+  ok "fzf installed ($(fzf --version))"
+fi
+
+if command -v fzf-tmux &>/dev/null; then
+  ok "fzf-tmux already installed"
+else
+  info "Installing fzf-tmux..."
+  sudo cp "$HOME/.fzf/bin/fzf-tmux" /usr/local/bin/fzf-tmux
+  ok "fzf-tmux installed"
+fi
 if [ "$PKG" = "apt" ]; then
   install_pkg fd fd-find
 else
@@ -156,25 +178,30 @@ install_pkg zoxide
 install_pkg git
 install_pkg make
 install_pkg curl
-install_pkg fastfetch
+# fastfetch — not in default apt repos
+if command -v fastfetch &>/dev/null; then
+  ok "fastfetch already installed"
+else
+  info "Installing fastfetch..."
+  case "$PKG" in
+    brew) brew install fastfetch ;;
+    apt)
+      sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch
+      sudo apt-get update
+      sudo apt-get install -y fastfetch
+      ;;
+    dnf) sudo dnf install -y fastfetch ;;
+  esac
+fi
 
-# sesh
+install_pkg go golang
+
+# sesh (via Go)
 if command -v sesh &>/dev/null; then
   ok "sesh already installed"
 else
-  info "Installing sesh..."
-  case "$PKG" in
-    brew)
-      brew install joshmedeski/sesh/sesh
-      ;;
-    apt|dnf)
-      if command -v go &>/dev/null; then
-        go install github.com/joshmedeski/sesh@latest
-      else
-        warn "Go not found — install Go first, then run: go install github.com/joshmedeski/sesh@latest"
-      fi
-      ;;
-  esac
+  info "Installing sesh via Go..."
+  go install github.com/joshmedeski/sesh@latest
 fi
 
 echo ""

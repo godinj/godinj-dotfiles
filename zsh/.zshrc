@@ -5,7 +5,7 @@ DOTFILES_DIR="$(cd "$(dirname "$(readlink -f ~/.zshrc)" 2>/dev/null || readlink 
 [ -f ~/.env ] && source ~/.env
 
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:$HOME/go/bin:/usr/local/bin:$PATH
 export PATH=/opt/homebrew/bin:$PATH
 export PATH=/opt/local/bin:$PATH
 export PATH=/usr/local/lib:$PATH
