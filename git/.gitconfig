@@ -23,6 +23,6 @@ dag = log --graph --format='format:%C(yellow)%h%C(reset)%C(blue)\"%an\" <%ae>%C(
 [merge]
 tool = vimdiff
 [core]
-editor = /usr/bin/vim
+editor = nvim
 excludesfile = ~/.gitignore_global
 pager = less -FMRiX

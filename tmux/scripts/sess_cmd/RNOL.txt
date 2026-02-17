@@ -1,0 +1,3 @@
+brazil ws sync -md && brazil ws clean && brazil-build build
+bb build
+bb build

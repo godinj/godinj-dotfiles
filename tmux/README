@@ -1,0 +1,10 @@
+# Remember to link this ~/.tmux_conf to your home directory!
+sudo ln -s ~/tmux-config/.tmux.conf ~/.tmux_conf
+
+# Add these to your .zshrc or whatever you use for your shell config
+export PATH=$PATH:~/tmux-config/scripts
+...
+source ~/tmux-config/.tmux_init_script
+
+
+Enjoy!

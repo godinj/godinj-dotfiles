@@ -1,20 +1,15 @@
+# Dotfiles directory detection
+DOTFILES_DIR="$(cd "$(dirname "$(readlink -f ~/.zshrc)" 2>/dev/null || readlink ~/.zshrc)" && cd .. && pwd)"
+
+# Source secrets from .env (gitignored)
+[ -f ~/.env ] && source ~/.env
+
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 export PATH=/opt/homebrew/bin:$PATH
 export PATH=/opt/local/bin:$PATH
 export PATH=/usr/local/lib:$PATH
-
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/Cellar/glib/2.84.2/lib/pkgconfig
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/Cellar/glibmm/2.84.0/lib/pkgconfig
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/homebrew/Cellar/libarchive/3.8.0/lib/pkgconfig
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/homebrew/Cellar/liblo/0.32/lib/pkgconfig
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/homebrew/Cellar/taglib/2.1/lib/pkgconfig
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/homebrew/Cellar/vamp-plugin-sdk/2.10.0_1/lib/pkgconfig
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/homebrew/Cellar/fftw/3.3.10_2/lib/pkgconfig
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/homebrew/Cellar/fftw/0.4.9_4/lib/pkgconfig
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/homebrew/Cellar/pango/1.56.3/lib/pkgconfig
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/homebrew/Cellar/gobject-introspection/1.84.0_1/lib/pkgconfig 
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/local/lib/pkgconfig
+export PATH="$HOME/tmux-config/scripts:$PATH"
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -23,6 +18,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+# To swap themes, change the value below and run: source ~/.zshrc
 ZSH_THEME="rkj-repos"
 export TERM="xterm-256color"
 
@@ -116,12 +112,6 @@ source $ZSH/oh-my-zsh.sh
 # - $ZSH_CUSTOM/macos.zsh
 # For a full list of active aliases, run `alias`.
 
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-export AVANTE_ANTHROPIC_API_KEY="REDACTED_ANTHROPIC_KEY"
-export DROPBOX_ACCESS_TOKEN="REDACTED_DROPBOX_TOKEN"
-
 # alias v="nvim"
 # alias vim="nvim"
 alias dd="ssh -i ~/.ssh/npllm godinj@script.dremhome.org -p 21337"
@@ -131,20 +121,26 @@ alias t="tmux"
 alias src="source ~/.zshrc"
 alias vrc="nvim ~/.zshrc"
 export NVM_DIR="$HOME/.nvm"
-[ -s "$(brew --prefix nvm)/nvm.sh" ] && \. "$(brew --prefix nvm)/nvm.sh"
-[ -s "$(brew --prefix nvm)/etc/bash_completion.d/nvm" ] && \. "$(brew --prefix nvm)/etc/bash_completion.d/nvm"
+if command -v brew &>/dev/null; then
+  [ -s "$(brew --prefix nvm)/nvm.sh" ] && \. "$(brew --prefix nvm)/nvm.sh"
+  [ -s "$(brew --prefix nvm)/etc/bash_completion.d/nvm" ] && \. "$(brew --prefix nvm)/etc/bash_completion.d/nvm"
+elif [ -s "$NVM_DIR/nvm.sh" ]; then
+  \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
 
 # source ~/tmux-config/.tmux_init_script
 source ~/tmux-config/scripts/fzf_init.zsh
 eval "$(zoxide init zsh)"
 
 
-test -e /Users/jonathangodin/.iterm2_shell_integration.zsh && source /Users/jonathangodin/.iterm2_shell_integration.zsh || true
+test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_integration.zsh" || true
 
 if [ -z "$TMUX" ]
  then
     clear
     sesh connect "󱘖 fastfetch"
 fi
-alias ardour='cd /Users/jonathangodin/dev/ardour_dev/ardour && ./run_ardour.sh'
-alias ardour='cd /Users/jonathangodin/dev/ardour_dev/ardour && ./install/bin/ardour9'
+
+# Optional modules — uncomment to enable
+# source "$DOTFILES_DIR/zsh/modules/audio-dev.zsh"

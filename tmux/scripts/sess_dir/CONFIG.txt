@@ -1,0 +1,2 @@
+$HOME/workplace/$RNDV_D/src/RexNotificationsDatapathViewsPantherTranslation
+$HOME/workplace/$RNDV_D/src/RexNotificationsDatapathViews

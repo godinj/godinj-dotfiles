@@ -1,0 +1,3 @@
+echo "huh bro?" && sleep 4
+echo "what you say sis?" && sleep 3
+echo "no way dude" && sleep 3

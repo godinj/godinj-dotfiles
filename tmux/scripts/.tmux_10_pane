@@ -1,0 +1,7 @@
+#!/bin/bash
+
+W_H=$(tmux display -p '#{window_height}')
+P_H=$(tmux display -p '#{pane_height}')
+H_D=$(expr $W_H - $P_H)
+U=$(expr $H_D \* 1 / 10)
+tmux resize-pane -y $U

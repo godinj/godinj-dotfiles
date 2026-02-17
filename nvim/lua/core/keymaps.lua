@@ -1,0 +1,81 @@
+local keymap = vim.keymap
+
+-- Press <F5> to save and run Python
+vim.keymap.set('n', '<F5>', ':w<CR>:split<CR>:terminal python3 %<CR>', { noremap = true, silent = true })
+
+keymap.set('n', '<C-]>', '}zz', { desc = 'text: jump to next paragraph' })
+keymap.set('n', '<C-[>', '{zz', { desc = 'text: jump to previous paragraph' })
+keymap.set('n', '}', '}zz', { desc = 'text: jump to next paragraph' })
+keymap.set('n', '{', '{zz', { desc = 'text: jump to previous paragraph' })
+keymap.set('v', 'zy', '"*y', { desc = 'text: yank to clipboard' })
+keymap.set('n', 'zu', '"*p', { desc = 'text: paste after from clipboard' })
+keymap.set('v', 'zu', '"*p', { desc = 'text: paste after from clipboard' })
+keymap.set('n', 'zU', '"*P', { desc = 'text: paste before from clipboard' })
+keymap.set('v', 'zU', '"*P', { desc = 'text: paste before from clipboard' })
+keymap.set('n', 'zj', '0v', { desc = 'text: start of line -> visual mode' })
+keymap.set('n', 'zk', '0v$h', { desc = 'text: select line without CR char' })
+keymap.set('n', 'zl', '$h', { desc = 'text: end of line without CR char' })
+keymap.set('n', 'zi', 'i <ESC>', { desc = 'text: put space before' })
+keymap.set('n', 'za', 'a <ESC>', { desc = 'text: put space after' })
+keymap.set('n', 'zo', 'o<ESC>', { desc = 'text: put line before' })
+keymap.set('n', 'zO', 'O<ESC>', { desc = 'text: put line after' })
+keymap.set('i', 'zx', '<ESC>', { desc = 'text: put line after' })
+
+keymap.set('n', '<leader>ij', 'viW', { desc = 'text: select within non-delimited word' })
+keymap.set('n', '<leader>aj', 'vaW', { desc = 'text: select within non-delimited word' })
+keymap.set('n', '<leader>ik', 'viw', { desc = 'text: select within delimited word' })
+keymap.set('n', '<leader>ak', 'vaw', { desc = 'text: select around delimited word' })
+keymap.set('n', '<leader>il', 'vip', { desc = 'text: select within delimited paragraph' })
+keymap.set('n', '<leader>al', 'vap', { desc = 'text: select around delimited paragraph' })
+keymap.set('n', '<leader>jk', '?[{[(]<CR><ESC>v%', { desc = 'text: select current or previous enclosing' })
+keymap.set('n', '<leader>jj', '/[{[(]<CR><ESC>v%', { desc = 'text: select next enclosing' })
+
+keymap.set('n', '<leader>ia', "vi'", { desc = "text: select within '" })
+keymap.set('n', '<leader>aa', "va'", { desc = "text: select around '" })
+keymap.set('v', '<leader>ja', "c''<ESC>P", { desc = "text: surround single line selection with ''" })
+keymap.set('v', '<leader>ka', "I'<ESC>gv$<ESC>a'<ESC>", { desc = "text: surround multi line selection with ''" })
+
+keymap.set('n', '<leader>is', 'vi"', { desc = 'text: select within "' })
+keymap.set('n', '<leader>as', 'va"', { desc = 'text: select around "' })
+keymap.set('v', '<leader>js', 'c""<ESC>P', { desc = 'text: surround single line selection with ""' })
+keymap.set('v', '<leader>ks', 'I"<ESC>gv$<ESC>a"<ESC>', { desc = 'text: surround multi line selection with ""' })
+
+keymap.set('n', '<leader>id', 'vi(', { desc = 'text: select within ()' })
+keymap.set('n', '<leader>ad', 'va(', { desc = 'text: select around ()' })
+keymap.set('v', '<leader>jd', 'c()<ESC>P', { desc = 'text: surround single line selection with ()' })
+keymap.set('v', '<leader>kd', 'I(<ESC>gv$<ESC>a)<ESC>', { desc = 'text: surround multi line selection with ()' })
+
+keymap.set('n', '<leader>if', 'vi{', { desc = 'text: select within {}' })
+keymap.set('n', '<leader>af', 'va{', { desc = 'text: select around {}' })
+keymap.set('v', '<leader>jf', 'c{}<ESC>P', { desc = 'text: surround single line selection with {}' })
+keymap.set('v', '<leader>kf', 'I{<ESC>gv$<ESC>a}<ESC>', { desc = 'text: surround multi line selection with {}' })
+
+keymap.set('n', '<leader>ig', 'vi[', { desc = 'text: select within []' })
+keymap.set('n', '<leader>ag', 'va[', { desc = 'text: select around []' })
+keymap.set('v', '<leader>jg', 'c[]<ESC>P', { desc = 'text: surround single line selection with []' })
+keymap.set('v', '<leader>kg', 'I[<ESC>gv$<ESC>a]<ESC>', { desc = 'text: surround multi line selection with []' })
+
+keymap.set('n', '<leader>ih', 'vi<', { desc = 'text: select within <>' })
+keymap.set('n', '<leader>ah', 'va<', { desc = 'text: select around <>' })
+keymap.set('v', '<leader>jh', 'c<><ESC>P', { desc = 'text: surround single line selection with <>' })
+keymap.set('v', '<leader>kh', 'I<<ESC>gv$<ESC>a><ESC>', { desc = 'text: surround multi line selection with <>' })
+
+keymap.set('n', '<leader>in', 'vi`', { desc = 'text: select within ``' })
+keymap.set('n', '<leader>an', 'va`', { desc = 'text: select around ``' })
+keymap.set('v', '<leader>jn', 'c``<ESC>P', { desc = 'text: surround single line selection with ``' })
+keymap.set('v', '<leader>kn', 'I`<ESC>gv$<ESC>a`<ESC>', { desc = 'text: surround multi line selection with ``' })
+
+-- -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+--
+keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Undotree: toggle' })
+keymap.set('n', '<leader>zs', vim.cmd.Git, { desc = 'Git: toggle' })
+
+keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'text: move selection down 1 line' })
+keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'text: move selection up 1 line' })
+keymap.set('n', 'J', 'mzJ`z', { desc = 'text: join line in place substitution' })
+keymap.set('n', '<C-d>', '<C-d>zz', { desc = 'text: page down, center focus' })
+keymap.set('n', 'J', 'mzJ`z', { desc = 'text: join line in place substitution' })
+keymap.set('n', '<C-d>', '<C-d>zz', { desc = 'text: page down, center focus' })
+keymap.set('n', '<C-u>', '<C-u>zz', { desc = 'text: page up, center focus' })
+keymap.set('n', 'n', 'nzzzv', { desc = 'text: next search term, center focus' })
+keymap.set('n', 'N', 'Nzzzv', { desc = 'text: previous search term, center focus' })
