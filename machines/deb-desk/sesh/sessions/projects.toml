@@ -1,0 +1,53 @@
+[[session]]
+name = " drem-ninja"
+path = "~/git/drem-ninja/"
+startup_command = "nvim"
+
+[[session]]
+name = " bib incr"
+path = "~/git/BibleIncrementer"
+startup_command = "nvim"
+
+[[session]]
+name = " bib incr use"
+path = "~/git/BibIncrUse"
+startup_command = "mvn exec:java"
+
+[[session]]
+name = " bib incr ion"
+path = "~/git/BibleIncrementerIon"
+startup_command = "nvim"
+
+[[session]]
+name = "󰇥 pything"
+path = "~/pything/"
+startup_command = "nvim"
+
+[[session]]
+name = "󰇥 ollama"
+path = "~"
+startup_command = "ollama ps"
+
+[[session]]
+name = "󰇥 ai-fundamentals-simple"
+path = "~/git/ai-fundamentals-simple"
+
+[[session]]
+name = "󰇥 model comparison"
+path = "~/experiments/models"
+startup_command = "oc"
+
+[[session]]
+name = "󰇥 learning"
+path = "~/experiments/learning"
+startup_command = "oc"
+
+[[session]]
+name = " drem-soundscape"
+path = "~/dev/drem-soundscape/"
+startup_command = "nvim"
+
+[[session]]
+name = " juce editor"
+path = "~/Documents/JUCE/"
+startup_command = "nvim"

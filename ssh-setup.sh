@@ -117,8 +117,9 @@ fi
 if gh auth status &>/dev/null; then
   ok "Already authenticated with GitHub"
 else
-  info "Authenticating with GitHub..."
-  gh auth login -s admin:public_key
+  info "Authenticating with GitHub (device code flow)..."
+  info "You'll be given a code to enter at https://github.com/login/device"
+  gh auth login -p ssh -h github.com -s admin:public_key
 fi
 
 # ── Step 7: Upload public key ───────────────────────────────────────────────
@@ -143,7 +144,8 @@ fi
 # ── Step 8: Verify ──────────────────────────────────────────────────────────
 
 info "Verifying GitHub SSH connection..."
-if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
+ssh_output="$(ssh -T git@github.com 2>&1 || true)"
+if echo "$ssh_output" | grep -q "successfully authenticated"; then
   ok "SSH connection to GitHub verified"
 else
   warn "Could not verify SSH connection — try: ssh -T git@github.com"
