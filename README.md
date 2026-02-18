@@ -103,9 +103,7 @@ godinj-dotfiles/
 │   ├── mba/
 │   └── wsl-sd/
 ├── zsh/
-│   ├── .zshrc
-│   └── modules/
-│       └── audio-dev.zsh
+│   └── .zshrc
 ├── git/
 │   └── .gitconfig
 ├── nvim/
@@ -154,14 +152,6 @@ Key integrations:
 | `t` | `tmux` |
 | `src` | `source ~/.zshrc` |
 | `vrc` | Open `.zshrc` in Neovim |
-
-### Optional Modules
-
-Enable audio dev tooling by uncommenting the source line at the bottom of `zsh/.zshrc`:
-
-```bash
-source "$DOTFILES_DIR/zsh/modules/audio-dev.zsh"
-```
 
 ## Git
 
@@ -248,4 +238,3 @@ All dependencies are installed automatically by `install.sh`.
 
 - Docker
 - Python 3
-- Audio dev libs (prompted during install on macOS)

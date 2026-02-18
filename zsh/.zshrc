@@ -142,6 +142,3 @@ if [ -z "$TMUX" ]
     clear
     sesh connect -c "fastfetch" "󱘖 fastfetch"
 fi
-
-# Optional modules — uncomment to enable
-# source "$DOTFILES_DIR/zsh/modules/audio-dev.zsh"

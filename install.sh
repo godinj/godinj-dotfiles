@@ -368,17 +368,6 @@ else
   warn "Edit ~/.env to add your API keys"
 fi
 
-# ── Step 8: Optional — audio dev dependencies ───────────────────────────────
-
-if [ "$PKG" = "brew" ]; then
-  read -rp "Install audio dev dependencies (Ardour build libs)? [y/N] " audio_yn
-  if [[ "$audio_yn" =~ ^[Yy]$ ]]; then
-    info "Installing audio dev libs..."
-    brew install glib glibmm libarchive liblo taglib vamp-plugin-sdk fftw pango gobject-introspection
-    ok "Audio dev dependencies installed"
-    info "Uncomment the audio-dev module line in zsh/.zshrc to activate"
-  fi
-fi
 
 # ── Done ─────────────────────────────────────────────────────────────────────
 
