@@ -51,8 +51,8 @@ echo "$MACHINE_NAME" > "$MACHINE_FILE"
 MACHINE_DIR="$MACHINES_DIR/$MACHINE_NAME"
 ok "Machine profile set to: $MACHINE_NAME"
 
-cp "$MACHINE_DIR/tmux/machine.conf" "$DOTFILES_DIR/tmux/machine.conf"
-ok "Copied tmux/machine.conf"
+ln -sf "$MACHINE_DIR/tmux/machine.conf" "$DOTFILES_DIR/tmux/machine.conf"
+ok "Symlinked tmux/machine.conf → $MACHINE_NAME"
 
 cp "$MACHINE_DIR/nvim/theme.lua" "$DOTFILES_DIR/nvim/lua/custom/plugins/machine_theme.lua"
 ok "Copied nvim machine_theme.lua"
