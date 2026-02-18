@@ -51,3 +51,8 @@ startup_command = "nvim"
 name = " juce editor"
 path = "~/Documents/JUCE/"
 startup_command = "nvim"
+
+[[session]]
+name = " drem-catalog"
+path = "~/git/drem-catalog/"
+startup_command = "nvim"

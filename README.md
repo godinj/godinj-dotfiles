@@ -60,19 +60,33 @@ Merges sesh configuration from multiple sources into `~/.config/sesh/sesh.toml`.
 bash sesh/build_sesh_config.sh
 ```
 
+### sesh/new_session.sh
+
+Interactive script to add a new project session. Prompts for a session name, path (defaults to `~/git/<name>/`), and startup command (defaults to `nvim`). Appends a `[[session]]` entry to the machine-specific `projects.toml`, creates the directory on disk if needed, and rebuilds `sesh.toml`.
+
+```bash
+bash sesh/new_session.sh
+```
+
 ### machine.sh
 
 Shared helper sourced by `install.sh`, `switch-machine.sh`, and `build_sesh_config.sh`. Reads `.machine` to resolve the active profile name and directory. Not meant to be run directly.
 
 ### tmux/scripts/sesh_picker.sh
 
-Interactive tmux session picker using fzf. Provides keyboard shortcuts for filtering by session type (`Ctrl+T` tmux, `Ctrl+G` config, `Ctrl+X` zoxide, `Ctrl+F` find, `Ctrl+D` kill). Bound in the tmux config — not meant to be run directly.
+Interactive tmux session picker using fzf. Provides keyboard shortcuts for filtering by session type (`Ctrl+A` all, `Ctrl+T` tmux, `Ctrl+G` config, `Ctrl+X` zoxide, `Ctrl+F` find, `Ctrl+D` kill). Auto-creates missing directories when selecting a path. Sources machine-specific aesthetics from `machines/<profile>/sesh/picker.sh` (popup size, colors, border label). Bound in the tmux config — not meant to be run directly.
 
 ## Machine Profiles
 
 Machine-specific configs live under `machines/<name>/`. Each profile can override tmux config, nvim theme, and sesh sessions. The active profile is stored in `.machine` (gitignored).
 
-Available profiles: `default`, `mba`, `wsl-sd`.
+Available profiles: `deb-desk`, `mba`, `wsl-sd`.
+
+Each profile can include:
+- `tmux/machine.conf` — tmux overrides (prefix key, colors, keybindings)
+- `nvim/theme.lua` — Neovim colorscheme
+- `sesh/sessions/*.toml` — project sessions
+- `sesh/picker.sh` — fzf picker appearance (popup size, colors, border label)
 
 ## Structure
 
@@ -85,7 +99,7 @@ godinj-dotfiles/
 ├── machine.sh             # Machine profile helper (sourced)
 ├── .env.template          # API key template (copy to .env)
 ├── machines/              # Machine-specific overrides
-│   ├── default/
+│   ├── deb-desk/
 │   ├── mba/
 │   └── wsl-sd/
 ├── zsh/
@@ -106,6 +120,7 @@ godinj-dotfiles/
 └── sesh/
     ├── base.toml
     ├── build_sesh_config.sh
+    ├── new_session.sh
     └── sessions/
 ```
 
@@ -166,7 +181,7 @@ Built on [kickstart.nvim](https://github.com/nvim-kickstart/kickstart.nvim) with
 
 ### Swapping Themes
 
-Edit `nvim/lua/custom/plugins/theme.lua` to change the colorscheme. The file is auto-loaded by `{ import = 'custom.plugins' }` in init.lua.
+Themes are set per machine profile in `machines/<profile>/nvim/theme.lua`. The active profile's theme is loaded automatically via `machine_theme.lua`.
 
 ### Key Plugins
 
@@ -177,14 +192,19 @@ Edit `nvim/lua/custom/plugins/theme.lua` to change the colorscheme. The file is 
 - **gitsigns.nvim** — inline git signs
 - **treesitter** — syntax highlighting
 - **snacks.nvim** — dashboard, indent guides, notifier
+- **bufferline.nvim** — buffer tabs
+- **lualine.nvim** — statusline
+- **harpoon** — quick file navigation
+- **render-markdown.nvim** — markdown rendering
+- **nvim-jdtls** — Java LSP support
 
 ## tmux
 
-Prefix key: `C-Space`. Config is split into three sourced files for modularity.
+Prefix key: `C-Space` (overridable per machine via `machine.conf`). Config is split into sourced files for modularity, with machine-specific overrides symlinked from the active profile.
 
 ### Swapping Themes
 
-Edit `tmux/theme.conf` to change the tmux theme independently.
+Edit `tmux/theme.conf` to change the tmux theme independently. Machine profiles can also override tmux settings (prefix key, colors) via `machines/<profile>/tmux/machine.conf`.
 
 ### Session Management
 
