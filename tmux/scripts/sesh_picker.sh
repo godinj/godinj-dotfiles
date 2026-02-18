@@ -23,7 +23,7 @@ if [ -n "$SESH_COLOR" ]; then
   COLOR_FLAG="--color=$SESH_COLOR"
 fi
 
-sesh connect "$(
+SELECTED="$(
   sesh list -t -c -z --icons | fzf-tmux -p "$SESH_POPUP_SIZE" \
     --no-sort --ansi --border-label "$SESH_BORDER_LABEL" --prompt "$SESH_PROMPT" \
     $COLOR_FLAG \
@@ -38,3 +38,13 @@ sesh connect "$(
     --preview-window "$SESH_PREVIEW_WINDOW" \
     --preview 'sesh preview {}'
 )"
+
+[ -z "$SELECTED" ] && exit 0
+
+# Create the directory if the selection looks like a path and doesn't exist
+DIR="${SELECTED/#\~/$HOME}"
+if [[ "$DIR" == /* ]] && [ ! -d "$DIR" ]; then
+  mkdir -p "$DIR"
+fi
+
+sesh connect "$SELECTED"
