@@ -1,17 +1,40 @@
 #!/usr/bin/env bash
 export PATH="$HOME/go/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
 
+# Resolve dotfiles dir and source machine-specific picker overrides
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+source "$DOTFILES_DIR/machine.sh"
+
+PICKER_CONF="$MACHINE_DIR/sesh/picker.sh"
+if [ -f "$PICKER_CONF" ]; then
+  source "$PICKER_CONF"
+fi
+
+SESH_BORDER_LABEL="${SESH_BORDER_LABEL:- sesh }"
+SESH_PROMPT="${SESH_PROMPT:-⚡  }"
+SESH_POPUP_SIZE="${SESH_POPUP_SIZE:-80%,70%}"
+SESH_PREVIEW_WINDOW="${SESH_PREVIEW_WINDOW:-right:75%}"
+SESH_COLOR="${SESH_COLOR:-}"
+
+COLOR_FLAG=""
+if [ -n "$SESH_COLOR" ]; then
+  COLOR_FLAG="--color=$SESH_COLOR"
+fi
+
 sesh connect "$(
-  sesh list -t -c -z --icons | fzf-tmux -p 80%,70% \
-    --no-sort --ansi --border-label ' mba sesh ' --prompt '⚡  ' \
+  sesh list -t -c -z --icons | fzf-tmux -p "$SESH_POPUP_SIZE" \
+    --no-sort --ansi --border-label "$SESH_BORDER_LABEL" --prompt "$SESH_PROMPT" \
+    $COLOR_FLAG \
     --header '  ^a all ^t tmux ^g configs ^x zoxide ^d tmux kill ^f find' \
     --bind 'tab:down,btab:up' \
-    --bind 'ctrl-a:change-prompt(⚡  )+reload(sesh list -t -c -z --icons)' \
+    --bind "ctrl-a:change-prompt($SESH_PROMPT)+reload(sesh list -t -c -z --icons)" \
     --bind 'ctrl-t:change-prompt(🪟  )+reload(sesh list -t --icons)' \
     --bind 'ctrl-g:change-prompt(⚙️  )+reload(sesh list -c --icons)' \
     --bind 'ctrl-x:change-prompt(📁  )+reload(sesh list -z --icons)' \
     --bind 'ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~)' \
-    --bind 'ctrl-d:execute(tmux kill-session -t {2..})+change-prompt(⚡  )+reload(sesh list --icons)' \
-    --preview-window 'right:75%' \
+    --bind "ctrl-d:execute(tmux kill-session -t {2..})+change-prompt($SESH_PROMPT)+reload(sesh list --icons)" \
+    --preview-window "$SESH_PREVIEW_WINDOW" \
     --preview 'sesh preview {}'
 )"

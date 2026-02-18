@@ -1,0 +1,5 @@
+SESH_BORDER_LABEL=" mba sesh "
+SESH_PROMPT="⚡  "
+SESH_POPUP_SIZE="80%,70%"
+SESH_PREVIEW_WINDOW="right:75%"
+SESH_COLOR="border:#7aa2f7,label:#7aa2f7,header:#e0af68,prompt:#e0af68,pointer:#f7768e,info:#9ece6a"
