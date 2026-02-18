@@ -40,15 +40,11 @@ end)
 keymap.set('n', '<C-n>', function()
   require('harpoon.ui').nav_file(3)
 end)
-keymap.set('n', '<C-b>', function()
+keymap.set('n', '<C-p>', function()
   require('harpoon.ui').nav_file(4)
 end)
 
--- Press <F5> to save and run Python
-vim.keymap.set('n', '<F5>', ':w<CR>:split<CR>:terminal python3 %<CR>', { noremap = true, silent = true })
-
 keymap.set('n', '<C-]>', '}zz', { desc = 'text: jump to next paragraph' })
-keymap.set('n', '<C-[>', '{zz', { desc = 'text: jump to previous paragraph' })
 keymap.set('n', '}', '}zz', { desc = 'text: jump to next paragraph' })
 keymap.set('n', '{', '{zz', { desc = 'text: jump to previous paragraph' })
 -- keymap.set('v', 'zy', '"*y', { desc = 'text: yank to clipboard' })
