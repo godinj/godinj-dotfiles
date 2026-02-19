@@ -117,10 +117,10 @@ if [ "$OS" = "Darwin" ]; then
   create_link "$DOTFILES_DIR/machines/mba/scripts/com.godinj.clipboard-listener.plist" \
     "$HOME/Library/LaunchAgents/com.godinj.clipboard-listener.plist"
 
-  if launchctl list | grep -q com.godinj.clipboard-listener; then
-    launchctl unload "$HOME/Library/LaunchAgents/com.godinj.clipboard-listener.plist" 2>/dev/null || true
-  fi
-  launchctl load "$HOME/Library/LaunchAgents/com.godinj.clipboard-listener.plist"
+  PLIST="$HOME/Library/LaunchAgents/com.godinj.clipboard-listener.plist"
+  GUI_DOMAIN="gui/$(id -u)"
+  launchctl bootout "$GUI_DOMAIN/com.godinj.clipboard-listener" 2>/dev/null || true
+  launchctl bootstrap "$GUI_DOMAIN" "$PLIST"
   ok "Clipboard listener LaunchAgent loaded"
 fi
 

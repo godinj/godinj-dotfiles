@@ -113,7 +113,6 @@ vim.o.showmode = false
 -- Sync clipboard between OS and Neovim.
 --  See `:help 'clipboard'`
 vim.schedule(function()
-  vim.o.clipboard = 'unnamedplus'
   if os.getenv('SSH_TTY') then
     vim.g.clipboard = {
       name = 'remote-clipboard',
@@ -155,6 +154,7 @@ vim.schedule(function()
       },
     }
   end
+  vim.o.clipboard = 'unnamedplus'
 end)
 
 -- Enable break indent
