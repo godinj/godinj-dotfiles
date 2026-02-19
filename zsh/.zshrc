@@ -22,6 +22,9 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="rkj-repos"
 export TERM="xterm-256color"
 
+# Machine-specific zsh overrides (theme, etc.)
+[ -f "$DOTFILES_DIR/zsh/machine.zsh" ] && source "$DOTFILES_DIR/zsh/machine.zsh"
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/

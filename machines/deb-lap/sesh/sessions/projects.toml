@@ -1,0 +1,77 @@
+[[session]]
+name = " drem-ninja"
+path = "~/git/drem-ninja/"
+startup_command = "nvim"
+
+[[session]]
+name = " qjackctl"
+path = "~"
+startup_command = "qjackctl"
+
+[[session]]
+name = " notes editor"
+path = "~/notes/"
+startup_command = "nvim"
+
+[[session]]
+name = " dropbox client"
+path = "~"
+startup_command = "~/.dropbox-dist/dropboxd"
+
+[[session]]
+name = " python editor"
+path = "~/Dropbox/Python/"
+startup_command = "nvim"
+
+[[session]]
+name = " bibincr"
+path = "~/Dropbox/Bible Stuff/BibleIncrementer/"
+startup_command = "nvim"
+
+[[session]]
+name = " firefox editor"
+path = "~/.mozilla/firefox/dorzuxaz.default-esr"
+startup_command = "nvim ~/.mozilla/firefox/dorzuxaz.default-esr/chrome/userChrome.css"
+
+[[session]]
+name = " ardour editor"
+path = "~/git/ardour"
+startup_command = "nvim ~/git/ardour"
+
+[[session]]
+name = " sources"
+path = "~"
+startup_command = "sudo nvim /etc/apt/sources.list"
+
+[[session]]
+name = " ardour git"
+path = "~/git/ardour"
+
+[[session]]
+name = " downloads"
+path = "~/Downloads"
+
+[[session]]
+name = "󱔗 documents"
+path = "~/Documents"
+
+[[session]]
+name = " /usr/bin"
+path = "/usr/bin"
+
+[[session]]
+name = "󰶭 share applications"
+path = "~/.local/share/applications"
+
+[[session]]
+name = " drem-soundscape"
+path = "~/dev/drem-soundscape/"
+startup_command = "nvim"
+
+[[session]]
+name = " git projects"
+path = "~/git"
+
+[[session]]
+name = " go root"
+path = "~/go"
