@@ -10,6 +10,13 @@ ok()    { printf "\033[1;32m✓\033[0m  %s\n" "$*"; }
 warn()  { printf "\033[1;33m!\033[0m  %s\n" "$*"; }
 err()   { printf "\033[1;31m✗\033[0m  %s\n" "$*"; }
 
+render_template() {
+  local src="$1" dest="$2"
+  mkdir -p "$(dirname "$dest")"
+  envsubst < "$src" > "$dest"
+  ok "Rendered $(basename "$dest")"
+}
+
 # ── Detect OS & package manager ─────────────────────────────────────────────
 
 OS="$(uname -s)"
@@ -65,6 +72,11 @@ if [ ! -f "$MACHINE_FILE" ]; then
   MACHINE_DIR="$MACHINES_DIR/$MACHINE_NAME"
   ok "Machine profile set to: $MACHINE_NAME"
 fi
+
+if [ -f "$MACHINE_DIR/vars.sh" ]; then
+  source "$MACHINE_DIR/vars.sh"
+  ok "Loaded vars from $MACHINE_NAME"
+fi
 echo ""
 
 # ── Step 3: Symlinks ──────────────────────────────────────────────────────
@@ -109,15 +121,13 @@ ok "Built sesh.toml from modular configs"
 if [ "$OS" = "Darwin" ]; then
   info "Setting up clipboard listener LaunchAgent..."
   mkdir -p "$HOME/.local/bin"
-  cp "$DOTFILES_DIR/machines/mba/scripts/clipboard-listener.sh" "$HOME/.local/bin/clipboard-listener.sh"
+  cp "$MACHINE_DIR/scripts/clipboard-listener.sh" "$HOME/.local/bin/clipboard-listener.sh"
   chmod +x "$HOME/.local/bin/clipboard-listener.sh"
   ok "Copied clipboard-listener.sh → ~/.local/bin/"
 
-  mkdir -p "$HOME/Library/LaunchAgents"
-  create_link "$DOTFILES_DIR/machines/mba/scripts/com.godinj.clipboard-listener.plist" \
-    "$HOME/Library/LaunchAgents/com.godinj.clipboard-listener.plist"
-
   PLIST="$HOME/Library/LaunchAgents/com.godinj.clipboard-listener.plist"
+  render_template "$MACHINE_DIR/scripts/com.godinj.clipboard-listener.plist.tpl" "$PLIST"
+
   GUI_DOMAIN="gui/$(id -u)"
   launchctl bootout "$GUI_DOMAIN/com.godinj.clipboard-listener" 2>/dev/null || true
   launchctl bootstrap "$GUI_DOMAIN" "$PLIST"

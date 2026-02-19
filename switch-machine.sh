@@ -51,6 +51,11 @@ echo "$MACHINE_NAME" > "$MACHINE_FILE"
 MACHINE_DIR="$MACHINES_DIR/$MACHINE_NAME"
 ok "Machine profile set to: $MACHINE_NAME"
 
+if [ -f "$MACHINE_DIR/vars.sh" ]; then
+  source "$MACHINE_DIR/vars.sh"
+  ok "Loaded vars from $MACHINE_NAME"
+fi
+
 ln -sf "$MACHINE_DIR/tmux/machine.conf" "$DOTFILES_DIR/tmux/machine.conf"
 ok "Symlinked tmux/machine.conf → $MACHINE_NAME"
 
