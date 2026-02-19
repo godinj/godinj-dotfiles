@@ -2,7 +2,7 @@ return {
   'nvim-treesitter/nvim-treesitter',
   build = ':TSUpdate',
   opts = {
-    ensure_installed = { 'golang', 'lua', 'java', 'json', 'python', 'vim', 'help' },
+    ensure_installed = { 'go', 'lua', 'java', 'json', 'python', 'vim', 'vimdoc' },
     highlight = { enable = true },
     indent = { enable = true },
   },
@@ -46,6 +46,6 @@ return {
         vim.bo.expandtab = false
       end,
     })
-    require('nvim-treesitter.config').setup(opts)
+    require('nvim-treesitter.configs').setup(opts)
   end,
 }

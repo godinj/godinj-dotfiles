@@ -1,4 +1,9 @@
 [[session]]
+name = "󰞵 deb-desk"
+path = "~"
+startup_command = "dd"
+
+[[session]]
 name = " drem-ninja"
 path = "~/git/drem-ninja/"
 startup_command = "nvim"
