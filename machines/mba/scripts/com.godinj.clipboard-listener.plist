@@ -7,7 +7,7 @@
   <key>ProgramArguments</key>
   <array>
     <string>/bin/bash</string>
-    <string>/Users/godinj/.local/bin/clipboard-listener.sh</string>
+    <string>/Users/jonathangodin/.local/bin/clipboard-listener.sh</string>
   </array>
   <key>RunAtLoad</key>
   <true/>
