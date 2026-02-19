@@ -105,6 +105,25 @@ ok "Copied nvim machine_theme.lua"
 bash "$DOTFILES_DIR/sesh/build_sesh_config.sh"
 ok "Built sesh.toml from modular configs"
 
+# Darwin-specific: clipboard listener LaunchAgent
+if [ "$OS" = "Darwin" ]; then
+  info "Setting up clipboard listener LaunchAgent..."
+  mkdir -p "$HOME/.local/bin"
+  cp "$DOTFILES_DIR/machines/mba/scripts/clipboard-listener.sh" "$HOME/.local/bin/clipboard-listener.sh"
+  chmod +x "$HOME/.local/bin/clipboard-listener.sh"
+  ok "Copied clipboard-listener.sh → ~/.local/bin/"
+
+  mkdir -p "$HOME/Library/LaunchAgents"
+  create_link "$DOTFILES_DIR/machines/mba/scripts/com.godinj.clipboard-listener.plist" \
+    "$HOME/Library/LaunchAgents/com.godinj.clipboard-listener.plist"
+
+  if launchctl list | grep -q com.godinj.clipboard-listener; then
+    launchctl unload "$HOME/Library/LaunchAgents/com.godinj.clipboard-listener.plist" 2>/dev/null || true
+  fi
+  launchctl load "$HOME/Library/LaunchAgents/com.godinj.clipboard-listener.plist"
+  ok "Clipboard listener LaunchAgent loaded"
+fi
+
 echo ""
 
 # ── Step 4: Install core dependencies ───────────────────────────────────────

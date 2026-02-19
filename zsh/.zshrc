@@ -114,13 +114,24 @@ source $ZSH/oh-my-zsh.sh
 
 # alias v="nvim"
 # alias vim="nvim"
-alias dd="ssh -i ~/.ssh/npllm godinj@script.dremhome.org -p 21337"
+alias dd="ssh -i ~/.ssh/npllm -R 2224:localhost:2224 godinj@script.dremhome.org -p 21337"
 alias cl="claude"
 alias cld="claude --dangerously-skip-permissions"
 alias tk="tmux kill-server"
 alias t="sesh connect -c 'fastfetch' '󱘖 fastfetch'"
 alias src="source ~/.zshrc"
 alias vrc="nvim ~/.zshrc"
+
+# Copy stdin or file contents to the clipboard.
+# On Mac: uses native pbcopy. On remote: sends through SSH reverse tunnel.
+# Usage: echo "text" | clip   or   clip file.txt
+clip() {
+  if command -v pbcopy &>/dev/null; then
+    cat "$@" | pbcopy
+  else
+    cat "$@" | nc -q 0 localhost 2224
+  fi
+}
 export NVM_DIR="$HOME/.nvm"
 if command -v brew &>/dev/null; then
   [ -s "$(brew --prefix nvm)/nvm.sh" ] && \. "$(brew --prefix nvm)/nvm.sh"

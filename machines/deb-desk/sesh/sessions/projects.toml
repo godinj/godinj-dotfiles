@@ -53,6 +53,11 @@ path = "~/Documents/JUCE/"
 startup_command = "nvim"
 
 [[session]]
-name = " drem-catalog"
+name = " drem-catalog"
 path = "~/git/drem-catalog/"
+startup_command = "nvim"
+
+[[session]]
+name = " drem-echo"
+path = "~/git/drem-echo/"
 startup_command = "nvim"

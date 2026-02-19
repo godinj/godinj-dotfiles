@@ -111,11 +111,50 @@ vim.o.mouse = 'a'
 vim.o.showmode = false
 
 -- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
 vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
+  if os.getenv('SSH_TTY') then
+    vim.g.clipboard = {
+      name = 'remote-clipboard',
+      copy = {
+        ['+'] = function(lines)
+          local s = table.concat(lines, '\n')
+          vim.fn.system({ 'nc', '-q', '0', 'localhost', '2224' }, s)
+          if os.getenv('TMUX') then
+            vim.fn.system({ 'tmux', 'load-buffer', '-' }, s)
+          end
+        end,
+        ['*'] = function(lines)
+          local s = table.concat(lines, '\n')
+          vim.fn.system({ 'nc', '-q', '0', 'localhost', '2224' }, s)
+          if os.getenv('TMUX') then
+            vim.fn.system({ 'tmux', 'load-buffer', '-' }, s)
+          end
+        end,
+      },
+      paste = {
+        ['+'] = function()
+          if os.getenv('TMUX') then
+            local out = vim.fn.system({ 'tmux', 'save-buffer', '-' })
+            if vim.v.shell_error == 0 then
+              return vim.split(out, '\n')
+            end
+          end
+          return {}
+        end,
+        ['*'] = function()
+          if os.getenv('TMUX') then
+            local out = vim.fn.system({ 'tmux', 'save-buffer', '-' })
+            if vim.v.shell_error == 0 then
+              return vim.split(out, '\n')
+            end
+          end
+          return {}
+        end,
+      },
+    }
+  end
 end)
 
 -- Enable break indent
