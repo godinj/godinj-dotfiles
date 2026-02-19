@@ -140,6 +140,21 @@ if [ "$OS" = "Darwin" ]; then
   ok "Clipboard listener LaunchAgent loaded"
 fi
 
+# Linux-specific: clipboard listener systemd user service
+if [ "$OS" = "Linux" ] && [ -f "$MACHINE_DIR/scripts/clipboard-listener.sh" ]; then
+  info "Setting up clipboard listener systemd service..."
+  mkdir -p "$HOME/.local/bin"
+  cp "$MACHINE_DIR/scripts/clipboard-listener.sh" "$HOME/.local/bin/clipboard-listener.sh"
+  chmod +x "$HOME/.local/bin/clipboard-listener.sh"
+  ok "Copied clipboard-listener.sh → ~/.local/bin/"
+
+  mkdir -p "$HOME/.config/systemd/user"
+  cp "$MACHINE_DIR/scripts/clipboard-listener.service" "$HOME/.config/systemd/user/clipboard-listener.service"
+  systemctl --user daemon-reload
+  systemctl --user enable --now clipboard-listener.service
+  ok "Clipboard listener systemd service enabled"
+fi
+
 echo ""
 
 # ── Step 4: Install core dependencies ───────────────────────────────────────

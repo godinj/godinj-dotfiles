@@ -1,0 +1,9 @@
+[Unit]
+Description=Clipboard listener for SSH reverse tunnel
+
+[Service]
+ExecStart=%h/.local/bin/clipboard-listener.sh
+Restart=always
+
+[Install]
+WantedBy=default.target
