@@ -33,6 +33,19 @@ return {
         vim.bo.expandtab = true
       end,
     })
+
+    vim.api.nvim_create_autocmd('FileType', {
+      pattern = { 'go', 'gomod', 'gowork', 'gotmpl' },
+      callback = function()
+        vim.opt_local.foldmethod = 'expr'
+        vim.opt_local.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+        vim.opt_local.foldlevel = 99
+        vim.bo.tabstop = 4
+        vim.bo.shiftwidth = 4
+        vim.bo.softtabstop = 4
+        vim.bo.expandtab = false
+      end,
+    })
     require('nvim-treesitter.config').setup(opts)
   end,
 }
