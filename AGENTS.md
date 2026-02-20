@@ -25,13 +25,23 @@ There must be only ONE treesitter plugin spec, in `nvim/init.lua`. Do not create
 
 Filetype-specific fold/indent autocmds live in `nvim/lua/core/options.lua`, not in the treesitter plugin spec.
 
-## Clipboard tunnel architecture
+## Clipboard & file transfer tunnel architecture
 
 ```
-deb-lap → SSH (-R 2224:localhost:2224) → deb-desk
+mba → rsh host (-R 2224:…:2224 -R 2225:…:2225) → remote
 ```
-- **deb-desk** (sender): `clip()` / nvim yank → `nc -q 0 localhost 2224`
-- **deb-lap** (listener): systemd user service → `nc -l 127.0.0.1 2224 | wl-copy`
+
+### Port 2224 — Clipboard
+- **remote** (sender): `clip()` → `nc 127.0.0.1 2224`
 - **mba** (listener): LaunchAgent → `nc -l 127.0.0.1 2224 | pbcopy`
+- **deb-lap** (listener): systemd user service → `nc -l 127.0.0.1 2224 | wl-copy`
+- **deb-desk** (sender): `clip()` / nvim yank → `nc -q 0 localhost 2224`
+
+### Port 2225 — File transfer
+- **remote** (sender): `send <file>` → basename + contents to `nc 127.0.0.1 2225`
+- **mba** (listener): LaunchAgent → parses filename from first line, writes to `$MACHINE_RECEIVE_DIR` (default `~/Downloads`)
+
+### `rsh` function (mba)
+Defined in `machines/mba/zsh/machine.zsh`. SSHs with `-t` and both reverse tunnels, then injects `clip` and `send` helper functions into the remote bash session via `exec bash --rcfile <(...)`. No files are deployed to the remote host.
 
 The deb-lap systemd service uses `WantedBy=graphical-session.target` (not `default.target`) so `wl-copy` has access to Wayland env vars (`WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR`).

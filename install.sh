@@ -163,6 +163,19 @@ if [ "$OS" = "Darwin" ]; then
   launchctl bootout "$GUI_DOMAIN/com.godinj.clipboard-listener" 2>/dev/null || true
   launchctl bootstrap "$GUI_DOMAIN" "$PLIST"
   ok "Clipboard listener LaunchAgent loaded"
+
+  info "Setting up file-receive listener LaunchAgent..."
+
+  cp "$MACHINE_DIR/scripts/file-receive-listener.sh" "$HOME/.local/bin/file-receive-listener.sh"
+  chmod +x "$HOME/.local/bin/file-receive-listener.sh"
+  ok "Copied file-receive-listener.sh → ~/.local/bin/"
+
+  FILE_PLIST="$HOME/Library/LaunchAgents/com.godinj.file-receive-listener.plist"
+  render_template "$MACHINE_DIR/scripts/com.godinj.file-receive-listener.plist.tpl" "$FILE_PLIST"
+
+  launchctl bootout "$GUI_DOMAIN/com.godinj.file-receive-listener" 2>/dev/null || true
+  launchctl bootstrap "$GUI_DOMAIN" "$FILE_PLIST"
+  ok "File-receive listener LaunchAgent loaded"
 fi
 
 

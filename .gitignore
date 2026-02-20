@@ -12,3 +12,4 @@ nvim/lua/custom/plugins/machine_theme.lua
 nvim/lua/custom/plugins/local_theme.lua
 zsh/machine.zsh
 machines/mba/scripts/com.godinj.clipboard-listener.plist
+machines/mba/scripts/com.godinj.file-receive-listener.plist
