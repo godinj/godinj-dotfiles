@@ -126,6 +126,14 @@ ok "Built sesh.toml from modular configs"
 # Darwin-specific: clipboard listener LaunchAgent
 if [ "$OS" = "Darwin" ]; then
   info "Setting up clipboard listener LaunchAgent..."
+
+  for cmd in pbcopy nc; do
+    if ! command -v "$cmd" &>/dev/null; then
+      err "Required command '$cmd' not found"; exit 1
+    fi
+  done
+  ok "Clipboard dependencies verified (pbcopy, nc)"
+
   mkdir -p "$HOME/.local/bin"
   cp "$MACHINE_DIR/scripts/clipboard-listener.sh" "$HOME/.local/bin/clipboard-listener.sh"
   chmod +x "$HOME/.local/bin/clipboard-listener.sh"
@@ -143,6 +151,13 @@ fi
 # Linux-specific: clipboard listener systemd user service
 if [ "$OS" = "Linux" ] && [ -f "$MACHINE_DIR/scripts/clipboard-listener.sh" ]; then
   info "Setting up clipboard listener systemd service..."
+
+  install_pkg wl-copy wl-clipboard
+  if ! command -v nc &>/dev/null; then
+    install_pkg nc netcat-openbsd
+  fi
+  ok "Clipboard dependencies verified (wl-copy, nc)"
+
   mkdir -p "$HOME/.local/bin"
   cp "$MACHINE_DIR/scripts/clipboard-listener.sh" "$HOME/.local/bin/clipboard-listener.sh"
   chmod +x "$HOME/.local/bin/clipboard-listener.sh"
