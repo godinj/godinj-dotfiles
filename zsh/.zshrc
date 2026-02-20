@@ -1,5 +1,5 @@
 # Dotfiles directory detection
-DOTFILES_DIR="$(cd "$(dirname "$(readlink -f ~/.zshrc)" 2>/dev/null || readlink ~/.zshrc)" && cd .. && pwd)"
+export DOTFILES_DIR="$(cd "$(dirname "$(readlink -f ~/.zshrc)" 2>/dev/null || readlink ~/.zshrc)" && cd .. && pwd)"
 
 # Source secrets from .env (gitignored)
 [ -f ~/.env ] && source ~/.env
@@ -10,6 +10,7 @@ export PATH=/opt/homebrew/bin:$PATH
 export PATH=/opt/local/bin:$PATH
 export PATH=/usr/local/lib:$PATH
 export PATH="$HOME/tmux-config/scripts:$PATH"
+export PATH="$HOME/git/godinj-dotfiles/sesh:$PATH"
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -124,6 +125,8 @@ alias tk="tmux kill-server"
 alias t="sesh connect -c 'fastfetch' '󱘖 fastfetch'"
 alias src="source ~/.zshrc"
 alias vrc="nvim ~/.zshrc"
+alias cns="$DOTFILES_DIR/sesh/new_session.sh"
+alias bsc="$DOTFILES_DIR/sesh/build_sesh_config.sh"
 
 # Copy stdin or file contents to the clipboard.
 # Mac: pbcopy, local Linux: wl-copy, remote/SSH: OSC 52 escape sequence.
