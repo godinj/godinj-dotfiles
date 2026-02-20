@@ -1,9 +1,10 @@
 [Unit]
 Description=Clipboard listener for SSH reverse tunnel
+After=graphical-session.target
 
 [Service]
 ExecStart=%h/.local/bin/clipboard-listener.sh
 Restart=always
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target
