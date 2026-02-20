@@ -117,7 +117,7 @@ source $ZSH/oh-my-zsh.sh
 
 # alias v="nvim"
 # alias vim="nvim"
-alias dd="ssh -i ~/.ssh/npllm -R 2224:localhost:2224 godinj@script.dremhome.org -p 21337"
+alias dd="ssh -i ~/.ssh/npllm -R 2224:127.0.0.1:2224 godinj@script.dremhome.org -p 21337"
 alias cl="claude"
 alias cld="claude --dangerously-skip-permissions"
 alias tk="tmux kill-server"
