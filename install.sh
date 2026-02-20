@@ -10,6 +10,23 @@ ok()    { printf "\033[1;32m✓\033[0m  %s\n" "$*"; }
 warn()  { printf "\033[1;33m!\033[0m  %s\n" "$*"; }
 err()   { printf "\033[1;31m✗\033[0m  %s\n" "$*"; }
 
+install_pkg() {
+  local name="$1"
+  if command -v "$name" &>/dev/null; then
+    ok "$name already installed"
+    return
+  fi
+
+  local pkg_name="${2:-$name}"
+  info "Installing $name..."
+  case "$PKG" in
+    brew)   brew install "$pkg_name" ;;
+    apt)    sudo apt-get install -y "$pkg_name" ;;
+    dnf)    sudo dnf install -y "$pkg_name" ;;
+    termux) pkg install -y "$pkg_name" ;;
+  esac
+}
+
 render_template() {
   local src="$1" dest="$2"
   mkdir -p "$(dirname "$dest")"
@@ -173,23 +190,6 @@ fi
 echo ""
 
 # ── Step 4: Install core dependencies ───────────────────────────────────────
-
-install_pkg() {
-  local name="$1"
-  if command -v "$name" &>/dev/null; then
-    ok "$name already installed"
-    return
-  fi
-
-  local pkg_name="${2:-$name}"
-  info "Installing $name..."
-  case "$PKG" in
-    brew)   brew install "$pkg_name" ;;
-    apt)    sudo apt-get install -y "$pkg_name" ;;
-    dnf)    sudo dnf install -y "$pkg_name" ;;
-    termux) pkg install -y "$pkg_name" ;;
-  esac
-}
 
 info "Installing core dependencies..."
 
