@@ -165,28 +165,6 @@ if [ "$OS" = "Darwin" ]; then
   ok "Clipboard listener LaunchAgent loaded"
 fi
 
-# Linux-specific: clipboard listener systemd user service
-if [ "$OS" = "Linux" ] && [ -f "$MACHINE_DIR/scripts/clipboard-listener.sh" ]; then
-  info "Setting up clipboard listener systemd service..."
-
-  install_pkg wl-copy wl-clipboard
-  if ! command -v nc &>/dev/null; then
-    install_pkg nc netcat-openbsd
-  fi
-  ok "Clipboard dependencies verified (wl-copy, nc)"
-
-  mkdir -p "$HOME/.local/bin"
-  cp "$MACHINE_DIR/scripts/clipboard-listener.sh" "$HOME/.local/bin/clipboard-listener.sh"
-  chmod +x "$HOME/.local/bin/clipboard-listener.sh"
-  ok "Copied clipboard-listener.sh → ~/.local/bin/"
-
-  mkdir -p "$HOME/.config/systemd/user"
-  cp "$MACHINE_DIR/scripts/clipboard-listener.service" "$HOME/.config/systemd/user/clipboard-listener.service"
-  systemctl --user daemon-reload
-  systemctl --user enable clipboard-listener.service
-  systemctl --user restart clipboard-listener.service
-  ok "Clipboard listener systemd service enabled and restarted"
-fi
 
 echo ""
 

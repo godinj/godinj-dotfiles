@@ -114,23 +114,12 @@ vim.o.showmode = false
 --  See `:help 'clipboard'`
 vim.schedule(function()
   if os.getenv('SSH_TTY') then
+    local osc52 = require('vim.ui.clipboard.osc52')
     vim.g.clipboard = {
-      name = 'remote-clipboard',
+      name = 'OSC 52',
       copy = {
-        ['+'] = function(lines)
-          local s = table.concat(lines, '\n')
-          vim.fn.system({ 'nc', '-q', '0', 'localhost', '2224' }, s)
-          if os.getenv('TMUX') then
-            vim.fn.system({ 'tmux', 'load-buffer', '-' }, s)
-          end
-        end,
-        ['*'] = function(lines)
-          local s = table.concat(lines, '\n')
-          vim.fn.system({ 'nc', '-q', '0', 'localhost', '2224' }, s)
-          if os.getenv('TMUX') then
-            vim.fn.system({ 'tmux', 'load-buffer', '-' }, s)
-          end
-        end,
+        ['+'] = osc52.copy('+'),
+        ['*'] = osc52.copy('*'),
       },
       paste = {
         ['+'] = function()
