@@ -183,8 +183,9 @@ if [ "$OS" = "Linux" ] && [ -f "$MACHINE_DIR/scripts/clipboard-listener.sh" ]; t
   mkdir -p "$HOME/.config/systemd/user"
   cp "$MACHINE_DIR/scripts/clipboard-listener.service" "$HOME/.config/systemd/user/clipboard-listener.service"
   systemctl --user daemon-reload
-  systemctl --user enable --now clipboard-listener.service
-  ok "Clipboard listener systemd service enabled"
+  systemctl --user enable clipboard-listener.service
+  systemctl --user restart clipboard-listener.service
+  ok "Clipboard listener systemd service enabled and restarted"
 fi
 
 echo ""
