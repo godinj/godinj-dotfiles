@@ -6,7 +6,8 @@ WT_BRANCH_PREFIX="feature/"
 WT_GIT_BASE="$HOME/git"
 WT_AGENT_CMD="${WT_AGENT_CMD:-cld}"
 WT_DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-WT_WORKTREES_TOML="$WT_DOTFILES_DIR/sesh/sessions/worktrees.toml"
+source "$WT_DOTFILES_DIR/machine.sh"
+WT_WORKTREES_TOML="$MACHINE_DIR/sesh/sessions/worktrees.toml"
 
 # Add branch prefix if not already present.
 wt_ensure_prefix() {
