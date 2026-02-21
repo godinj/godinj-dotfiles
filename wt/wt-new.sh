@@ -12,7 +12,7 @@ usage() {
 
 [ $# -lt 1 ] && usage
 
-branch="$1"
+branch="$(wt_ensure_prefix "$1")"
 base="${2:-}"
 
 bare_root="$(wt_find_bare_root)" || {

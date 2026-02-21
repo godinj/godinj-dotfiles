@@ -1,11 +1,22 @@
 #!/usr/bin/env bash
 # Shared helpers for wt commands. Sourced, not executed.
 
-WT_ICON=""
+WT_ICON="󰀜"
+WT_BRANCH_PREFIX="feature/"
 WT_GIT_BASE="$HOME/git"
 WT_AGENT_CMD="${WT_AGENT_CMD:-cld}"
 WT_DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 WT_WORKTREES_TOML="$WT_DOTFILES_DIR/sesh/sessions/worktrees.toml"
+
+# Add branch prefix if not already present.
+wt_ensure_prefix() {
+  local branch="$1"
+  if [[ "$branch" == "$WT_BRANCH_PREFIX"* ]]; then
+    echo "$branch"
+  else
+    echo "${WT_BRANCH_PREFIX}${branch}"
+  fi
+}
 
 # Detect bare repo root from any worktree or bare repo directory.
 # Returns the path to the bare repo (e.g. ~/git/project.git).
@@ -33,12 +44,20 @@ wt_project_name() {
   basename "$bare_root" .git
 }
 
-# Generate session name: " project/branch" or " project" for default branch.
+# Generate session name:
+#   "󰀜 feature/project/name" for feature branches
+#   "󰀜 project/branch"       for non-prefixed branches (legacy)
+#   "󰀜 project"              for default branch
 wt_session_name() {
   local project="$1"
   local branch="${2:-}"
   if [ -n "$branch" ]; then
-    echo "$WT_ICON $project/$branch"
+    if [[ "$branch" == "$WT_BRANCH_PREFIX"* ]]; then
+      local suffix="${branch#$WT_BRANCH_PREFIX}"
+      echo "$WT_ICON $WT_BRANCH_PREFIX$project/$suffix"
+    else
+      echo "$WT_ICON $project/$branch"
+    fi
   else
     echo "$WT_ICON $project"
   fi

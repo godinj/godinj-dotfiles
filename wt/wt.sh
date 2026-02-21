@@ -21,10 +21,10 @@ Commands:
 
 Examples:
   wt init git@github.com:user/myapp.git
-  wt new feature-auth
+  wt new auth           # creates branch feature/auth
   wt agent spawn
   wt promote
-  wt rm feature-auth
+  wt rm auth            # removes feature/auth worktree
 EOF
 }
 
