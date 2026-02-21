@@ -30,6 +30,7 @@ install_pkg() {
 render_template() {
   local src="$1" dest="$2"
   mkdir -p "$(dirname "$dest")"
+  rm -f "$dest"
   envsubst < "$src" > "$dest"
   ok "Rendered $(basename "$dest")"
 }
@@ -124,6 +125,7 @@ create_link "$DOTFILES_DIR/nvim"               "$HOME/.config/nvim"
 create_link "$DOTFILES_DIR/tmux"               "$HOME/tmux-config"
 create_link "$DOTFILES_DIR/tmux/.tmux.conf"    "$HOME/.tmux.conf"
 create_link "$DOTFILES_DIR/.env.template"      "$HOME/.env.template"
+create_link "$DOTFILES_DIR/claude/commands"    "$HOME/.claude/commands"
 
 # Deploy machine-specific files
 info "Deploying machine profile: $MACHINE_NAME"
