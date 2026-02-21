@@ -11,7 +11,7 @@ usage() {
 
 [ $# -lt 1 ] && usage
 
-branch="$1"
+branch="$(wt_ensure_prefix "$1")"
 
 bare_root="$(wt_find_bare_root)" || {
   echo "Error: not inside a git worktree or bare repo" >&2
