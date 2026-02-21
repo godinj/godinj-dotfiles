@@ -61,3 +61,18 @@ startup_command = "nvim"
 name = " drem-echo"
 path = "~/git/drem-echo/"
 startup_command = "nvim"
+
+[[session]]
+name = " golden-agents"
+path = "~/git/golden-agents/"
+startup_command = "nvim"
+
+[[session]]
+name = " drem-canvas"
+path = "~/git/drem-canvas/"
+startup_command = "cld"
+
+[[session]]
+name = " agent-notify"
+path = "~/git/agent-notify/"
+startup_command = "nvim"

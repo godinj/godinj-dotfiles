@@ -43,7 +43,7 @@ mkdir -p "$PROJECTS_DIR"
   fi
   cat <<EOF
 [[session]]
-name = " ${name}"
+name = " ${name}"
 path = "${path}"
 startup_command = "${startup_command}"
 EOF
