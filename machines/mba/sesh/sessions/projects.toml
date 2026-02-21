@@ -39,3 +39,8 @@ startup_command = "nvim"
 name = " bawb game"
 path = "~/dev/bawb-game/"
 startup_command = "cld"
+
+[[session]]
+name = " drem-canvas"
+path = "~/git/drem-canvas/"
+startup_command = "cld"
