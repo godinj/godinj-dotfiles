@@ -26,9 +26,10 @@ fi
 TREE_LIST="$DOTFILES_DIR/sesh/sesh_tree_list.sh"
 
 SELECTED="$(
-  sesh list -t -c -z --icons | "$TREE_LIST" | fzf-tmux -p "$SESH_POPUP_SIZE" \
+  sesh list -t -c -z --icons | "$TREE_LIST" | fzf \
+    --tmux "center,$SESH_POPUP_SIZE" \
     --no-sort --ansi --border-label "$SESH_BORDER_LABEL" --prompt "$SESH_PROMPT" \
-    --delimiter=$'\t' --with-nth=2 --accept-nth=1 \
+    --delimiter='\t' --with-nth=2 --accept-nth=1 \
     $COLOR_FLAG \
     --header '  ^a all ^t tmux ^g configs ^x zoxide ^w worktrees ^d tmux kill ^f find' \
     --bind 'tab:down,btab:up' \

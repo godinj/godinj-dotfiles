@@ -3,6 +3,9 @@
 # Groups worktree children under their parent session with tree-style
 # indentation for use with fzf --delimiter --with-nth --accept-nth.
 #
+# fzf displays bottom-to-top, so children are emitted BEFORE their parent
+# and tree chars are reversed (└── for first child, ├── for the rest).
+#
 # Input:  sesh list output (with --icons, including ANSI codes) on stdin
 # Output: ORIGINAL<TAB>DISPLAY per line
 
@@ -43,15 +46,14 @@ END {
   }
 
   # Output lines with tree structure
+  # Children are emitted BEFORE their parent (fzf shows bottom-to-top)
   for (i = 1; i <= total; i++) {
     if (emitted[i]) continue
-    if (is_child[i] != "") continue  # Will be emitted after parent
+    if (is_child[i] != "") continue  # Will be emitted before parent
 
-    emitted[i] = 1
-    printf "%s\t%s\n", lines[i], lines[i]
-
-    # Emit children of this parent
     name = session_name[i]
+
+    # Emit children before this parent
     if (children_of[name] != "") {
       n = split(children_of[name], child_arr, " ")
 
@@ -73,12 +75,14 @@ END {
         icon = ""
       }
 
-      for (j = 1; j <= pending_count; j++) {
+      # Emit in reverse order (last child first) so fzf bottom-to-top
+      # shows first child closest to parent
+      for (j = pending_count; j >= 1; j--) {
         ci = pending[j]
         emitted[ci] = 1
         branch = substr(session_name[ci], length(name) + 2)
 
-        if (j == pending_count) {
+        if (j == 1) {
           tree = "\342\224\224\342\224\200\342\224\200 "
         } else {
           tree = "\342\224\234\342\224\200\342\224\200 "
@@ -87,6 +91,9 @@ END {
         printf "%s\t   %s%s %s\n", lines[ci], tree, icon, branch
       }
     }
+
+    emitted[i] = 1
+    printf "%s\t%s\n", lines[i], lines[i]
   }
 }
 '
