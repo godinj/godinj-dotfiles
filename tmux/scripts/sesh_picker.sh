@@ -27,12 +27,13 @@ SELECTED="$(
   sesh list -t -c -z --icons | fzf-tmux -p "$SESH_POPUP_SIZE" \
     --no-sort --ansi --border-label "$SESH_BORDER_LABEL" --prompt "$SESH_PROMPT" \
     $COLOR_FLAG \
-    --header '  ^a all ^t tmux ^g configs ^x zoxide ^d tmux kill ^f find' \
+    --header '  ^a all ^t tmux ^g configs ^x zoxide ^w worktrees ^d tmux kill ^f find' \
     --bind 'tab:down,btab:up' \
     --bind "ctrl-a:change-prompt($SESH_PROMPT)+reload(sesh list -t -c -z --icons)" \
     --bind 'ctrl-t:change-prompt(🪟  )+reload(sesh list -t --icons)' \
     --bind 'ctrl-g:change-prompt(⚙️  )+reload(sesh list -c --icons)' \
     --bind 'ctrl-x:change-prompt(📁  )+reload(sesh list -z --icons)' \
+    --bind 'ctrl-w:change-prompt(  )+reload(sesh list -t --icons | grep " ")' \
     --bind 'ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~)' \
     --bind "ctrl-d:execute(tmux kill-session -t {2..})+change-prompt($SESH_PROMPT)+reload(sesh list --icons)" \
     --preview-window "$SESH_PREVIEW_WINDOW" \

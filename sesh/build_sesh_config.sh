@@ -18,13 +18,20 @@ mkdir -p "$OUTPUT_DIR"
   # 1. Base config
   cat "$SESH_DIR/base.toml"
 
-  # 2. Shared sessions (skip local.toml)
+  # 2. Shared sessions (skip local.toml and worktrees.toml)
   for f in "$SESH_DIR"/sessions/*.toml; do
     [ -f "$f" ] || continue
     [ "$(basename "$f")" = "local.toml" ] && continue
+    [ "$(basename "$f")" = "worktrees.toml" ] && continue
     printf '\n'
     cat "$f"
   done
+
+  # 2.5. Worktree sessions (promoted worktrees)
+  if [ -f "$SESH_DIR/sessions/worktrees.toml" ]; then
+    printf '\n'
+    cat "$SESH_DIR/sessions/worktrees.toml"
+  fi
 
   # 3. Machine-specific sessions
   if [ -d "$MACHINE_DIR/sesh/sessions" ]; then

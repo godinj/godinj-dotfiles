@@ -25,6 +25,14 @@ There must be only ONE treesitter plugin spec, in `nvim/init.lua`. Do not create
 
 Filetype-specific fold/indent autocmds live in `nvim/lua/core/options.lua`, not in the treesitter plugin spec.
 
+## Worktree session naming
+
+Worktree sessions use the ` ` (Nerd Font git-branch) icon prefix. Session names follow the pattern:
+- ` project` — for the default branch worktree
+- ` project/branch` — for feature branch worktrees
+
+The `wt/` directory contains all worktree management scripts. Promoted worktree sessions are stored in `sesh/sessions/worktrees.toml` (gitignored, machine-local).
+
 ## Clipboard & file transfer tunnel architecture
 
 ```

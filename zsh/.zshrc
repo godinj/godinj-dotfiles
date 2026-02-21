@@ -11,6 +11,7 @@ export PATH=/opt/local/bin:$PATH
 export PATH=/usr/local/lib:$PATH
 export PATH="$HOME/tmux-config/scripts:$PATH"
 export PATH="$HOME/git/godinj-dotfiles/sesh:$PATH"
+export PATH="$DOTFILES_DIR/wt:$PATH"
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -127,6 +128,7 @@ alias src="source ~/.zshrc"
 alias vrc="nvim ~/.zshrc"
 alias cns="$DOTFILES_DIR/sesh/new_session.sh"
 alias bsc="$DOTFILES_DIR/sesh/build_sesh_config.sh"
+alias wt="wt.sh"
 
 # Copy stdin or file contents to the clipboard.
 # Mac: pbcopy, local Linux: wl-copy, remote/SSH: OSC 52 escape sequence.
