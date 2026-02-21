@@ -25,13 +25,41 @@ There must be only ONE treesitter plugin spec, in `nvim/init.lua`. Do not create
 
 Filetype-specific fold/indent autocmds live in `nvim/lua/core/options.lua`, not in the treesitter plugin spec.
 
-## Worktree session naming
+## Worktree conventions
 
-Worktree sessions use the ` ` (Nerd Font git-branch) icon prefix. Session names follow the pattern:
-- ` project` — for the default branch worktree
-- ` project/branch` — for feature branch worktrees
+### Bare repo layout
 
-The `wt/` directory contains all worktree management scripts. Promoted worktree sessions are stored in `sesh/sessions/worktrees.toml` (gitignored, machine-local).
+All worktree-managed projects live under `~/git/` as bare repos:
+
+```
+~/git/project.git/              # bare repo
+~/git/project.git/main/         # default branch worktree
+~/git/project.git/feature/foo/  # feature branch worktree
+```
+
+### Branch naming
+
+New worktree branches always get the `feature/` prefix. `wt new auth` creates branch `feature/auth`. The prefix is enforced by `wt_ensure_prefix()` in `wt/wt-helpers.sh`.
+
+### Session naming
+
+Worktree sessions use the `󰀜` (Nerd Font git-branch) icon prefix. The `wt_session_name()` function in `wt/wt-helpers.sh` produces:
+
+- `󰀜 project` — default branch worktree
+- `󰀜 feature/name` — feature branch worktree (project implied by sesh picker ordering)
+- `󰀜 project/branch` — non-prefixed branch (legacy)
+
+### Tmux session layout
+
+Every worktree session has a `code` window with two panes:
+- Left (80%): Neovim editor
+- Right (20%): Claude agent (`$WT_AGENT_CMD`, default `cld`)
+
+Additional agents can be spawned into an `agents` window via `wt agent spawn`.
+
+### Scripts and config
+
+The `wt/` directory contains all worktree management scripts. Promoted worktree sessions are stored in `$MACHINE_DIR/sesh/sessions/worktrees.toml` (gitignored, machine-local) and included during `build_sesh_config.sh`.
 
 ## Clipboard & file transfer tunnel architecture
 
