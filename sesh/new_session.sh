@@ -35,7 +35,7 @@ fi
 # Ensure the sessions directory exists
 mkdir -p "$PROJECTS_DIR"
 
-# Append the new session entry
+# Append the new session entry (bare name; icon added at build time)
 {
   # Add a blank line separator if the file already has content
   if [ -s "$PROJECTS_FILE" ]; then
@@ -43,7 +43,7 @@ mkdir -p "$PROJECTS_DIR"
   fi
   cat <<EOF
 [[session]]
-name = " ${name}"
+name = "${name}"
 path = "${path}"
 startup_command = "${startup_command}"
 EOF

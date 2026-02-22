@@ -6,22 +6,22 @@ sort_order = [
 ]
 
 [[session]]
-name = "󱘖 dotfiles"
+name = "dotfiles"
 path = "~/git/godinj-dotfiles/"
 startup_command = "nvim"
 preview_command = "bat --color=always ~/.config/sesh/sesh.toml"
 
 [[session]]
-name = "󱘖 fastfetch"
+name = "fastfetch"
 path = "~"
 startup_command = "fastfetch"
 
 [[session]]
-name = "󱘖 btop"
+name = "btop"
 path = "~"
 startup_command = "btop"
 
 [[session]]
-name = " drem-soundscape"
+name = "drem-soundscape"
 path = "~/dev/drem-soundscape/"
 startup_command = "nvim"

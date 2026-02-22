@@ -1,8 +1,14 @@
 # Agent Guidelines
 
-## Sesh session names
+## Sesh session icons
 
-Session names in `sesh/sessions/*.toml` and `machines/*/sesh/sessions/*.toml` begin with a Nerd Font icon (e.g. ` `, `󱘖 `, `󰰸 `). Always preserve these icons exactly as they appear. Never strip, replace, or omit them when editing or generating session entries.
+Session names in source TOML files (`sesh/sessions/*.toml`, `machines/*/sesh/sessions/*.toml`) are stored **without** icon prefixes. Icons are defined centrally in `sesh/icons.sh` and prepended at build time by `build_sesh_config.sh`.
+
+When editing source TOML session entries, write bare names (e.g. `name = "fastfetch"`, not `name = "fastfetch"` with an icon). The build script maps each file to its icon category:
+- `tools.toml` → `ICON_TOOL`
+- `config.toml` → `ICON_CONFIG`
+- `worktrees.toml` → `ICON_WORKTREE` or `ICON_WORKTREE_PROJECT` based on `/` in name
+- All other files → `ICON_PROJECT`
 
 ## nvim-treesitter: new API only
 
@@ -61,7 +67,7 @@ Additional agents can be spawned into an `agents` window via `wt agent spawn`.
 
 ### Scripts and config
 
-The `wt/` directory contains all worktree management scripts. Promoted worktree sessions are stored in `$MACHINE_DIR/sesh/sessions/worktrees.toml` (gitignored, machine-local) and included during `build_sesh_config.sh`.
+The `wt/` directory contains all worktree management scripts. Promoted worktree sessions are stored in `$MACHINE_DIR/sesh/sessions/worktrees.toml` (gitignored, machine-local) with bare names (no icon prefix) and included during `build_sesh_config.sh`. The `wt_bare_name()` helper returns the icon-free name for TOML storage; `wt_session_name()` returns the icon-prefixed name for tmux operations.
 
 ## Clipboard & file transfer tunnel architecture
 

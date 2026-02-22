@@ -1,46 +1,46 @@
 [[session]]
-name = "󰞵 deb-desk"
+name = "deb-desk"
 path = "~"
 startup_command = "dd"
 
 [[session]]
-name = " drem-ninja"
+name = "drem-ninja"
 path = "~/git/drem-ninja.git/main/"
 startup_command = "nvim"
 
 [[session]]
-name = " drem-soundscape"
+name = "drem-soundscape"
 path = "~/dev/drem-soundscape/"
 startup_command = "nvim"
 
 [[session]]
-name = " BibInc"
+name = "BibInc"
 path = "~/git/BibleIncrementer.git/main/"
 startup_command = "nvim pom.xml"
 preview_command = "bat --color=always ~/Dropbox/Bible Stuff/BibleIncrementer/pom.xml"
 
 [[session]]
-name = " notes"
+name = "notes"
 path = "~/notes/"
 startup_command = "nvim"
 
 [[session]]
-name = " ardourdev"
+name = "ardourdev"
 path = "~/dev/ardour_dev/"
 startup_command = "nvim"
 preview_command = "bat --color=always ~/dev/ardour_dev/.devcontainer.json"
 
 [[session]]
-name = " python"
+name = "python"
 path = "~/git/python.git/main/"
 startup_command = "nvim"
 
 [[session]]
-name = " bawb game"
+name = "bawb game"
 path = "~/dev/bawb-game/"
 startup_command = "cld"
 
 [[session]]
-name = " drem-canvas"
+name = "drem-canvas"
 path = "~/git/drem-canvas.git/main/"
 startup_command = "cld"

@@ -1,78 +1,78 @@
 [[session]]
-name = " drem-ninja"
+name = "drem-ninja"
 path = "~/git/drem-ninja.git/main/"
 startup_command = "nvim"
 
 [[session]]
-name = " bib incr"
+name = "bib incr"
 path = "~/git/BibleIncrementer.git/main/"
 startup_command = "nvim"
 
 [[session]]
-name = " bib incr use"
+name = "bib incr use"
 path = "~/git/BibIncrUse.git/main/"
 startup_command = "mvn exec:java"
 
 [[session]]
-name = " bib incr ion"
+name = "bib incr ion"
 path = "~/git/BibleIncrementerIon.git/main/"
 startup_command = "nvim"
 
 [[session]]
-name = "󰇥 pything"
+name = "pything"
 path = "~/pything/"
 startup_command = "nvim"
 
 [[session]]
-name = "󰇥 ollama"
+name = "ollama"
 path = "~"
 startup_command = "ollama ps"
 
 [[session]]
-name = "󰇥 ai-fundamentals-simple"
+name = "ai-fundamentals-simple"
 path = "~/git/ai-fundamentals-simple.git/main/"
 
 [[session]]
-name = "󰇥 model comparison"
+name = "model comparison"
 path = "~/experiments/models"
 startup_command = "oc"
 
 [[session]]
-name = "󰇥 learning"
+name = "learning"
 path = "~/experiments/learning"
 startup_command = "oc"
 
 [[session]]
-name = " drem-soundscape"
+name = "drem-soundscape"
 path = "~/dev/drem-soundscape/"
 startup_command = "nvim"
 
 [[session]]
-name = " juce editor"
+name = "juce editor"
 path = "~/Documents/JUCE/"
 startup_command = "nvim"
 
 [[session]]
-name = " drem-catalog"
+name = "drem-catalog"
 path = "~/git/drem-catalog.git/main/"
 startup_command = "nvim"
 
 [[session]]
-name = " drem-echo"
+name = "drem-echo"
 path = "~/git/drem-echo.git/main/"
 startup_command = "nvim"
 
 [[session]]
-name = " golden-agents"
+name = "golden-agents"
 path = "~/git/golden-agents.git/main/"
 startup_command = "nvim"
 
 [[session]]
-name = " drem-canvas"
+name = "drem-canvas"
 path = "~/git/drem-canvas.git/main/"
 startup_command = "cld"
 
 [[session]]
-name = " agent-notify"
+name = "agent-notify"
 path = "~/git/agent-notify.git/main/"
 startup_command = "nvim"

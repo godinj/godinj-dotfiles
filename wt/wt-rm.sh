@@ -33,8 +33,9 @@ if [ "$branch" = "$default_branch" ]; then
   exit 1
 fi
 
-# Determine session name
+# Determine session and bare names
 session_name="$(wt_session_name "$project" "$branch")"
+bare_name="$(wt_bare_name "$project" "$branch")"
 
 # Kill tmux session if active
 if wt_session_exists "$session_name"; then
@@ -49,11 +50,10 @@ git -C "$bare_root" worktree remove "$worktree_dir"
 # Clean worktrees.toml if entry exists
 if [ -f "$WT_WORKTREES_TOML" ]; then
   # Remove the [[session]] block matching this session name
-  local_session_name="$session_name"
-  if grep -q "name = \"$local_session_name\"" "$WT_WORKTREES_TOML" 2>/dev/null; then
+  if grep -q "name = \"$bare_name\"" "$WT_WORKTREES_TOML" 2>/dev/null; then
     echo "Removing entry from worktrees.toml..."
     # Use awk to remove the matching [[session]] block
-    awk -v name="$local_session_name" '
+    awk -v name="$bare_name" '
       BEGIN { skip=0 }
       /^\[\[session\]\]/ {
         block = $0

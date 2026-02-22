@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Shared helpers for wt commands. Sourced, not executed.
 
-WT_ICON="󰀜"
-WT_PROJECT_ICON="󱁤"
 WT_BRANCH_PREFIX="feature/"
 WT_GIT_BASE="$HOME/git"
 WT_DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 source "$WT_DOTFILES_DIR/machine.sh"
+source "$WT_DOTFILES_DIR/sesh/icons.sh"
+WT_ICON="$ICON_WORKTREE"
+WT_PROJECT_ICON="$ICON_WORKTREE_PROJECT"
 WT_WORKTREES_TOML="$MACHINE_DIR/sesh/sessions/worktrees.toml"
 
 # Add branch prefix if not already present.
@@ -56,6 +57,20 @@ wt_session_name() {
     echo "$WT_ICON $project/$branch"
   else
     echo "$WT_PROJECT_ICON $project"
+  fi
+}
+
+# Return bare session name (no icon prefix).
+#   "project/feature/name"  for feature branches
+#   "project/branch"        for non-prefixed branches
+#   "project"               for default branch
+wt_bare_name() {
+  local project="$1"
+  local branch="${2:-}"
+  if [ -n "$branch" ]; then
+    echo "$project/$branch"
+  else
+    echo "$project"
   fi
 }
 

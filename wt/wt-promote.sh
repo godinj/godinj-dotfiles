@@ -27,15 +27,17 @@ else
   branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
 fi
 
-# Determine session name
+# Determine session and bare names
 if [ "$branch" = "$default_branch" ]; then
   session_name="$(wt_session_name "$project")"
+  bare_name="$(wt_bare_name "$project")"
 else
   session_name="$(wt_session_name "$project" "$branch")"
+  bare_name="$(wt_bare_name "$project" "$branch")"
 fi
 
 # Check if already promoted
-if [ -f "$WT_WORKTREES_TOML" ] && grep -q "name = \"$session_name\"" "$WT_WORKTREES_TOML" 2>/dev/null; then
+if [ -f "$WT_WORKTREES_TOML" ] && grep -q "name = \"$bare_name\"" "$WT_WORKTREES_TOML" 2>/dev/null; then
   echo "Session '$session_name' is already promoted." >&2
   exit 1
 fi
@@ -52,7 +54,7 @@ toml_path="${toml_path%%/}/"
   fi
   cat <<EOF
 [[session]]
-name = "$session_name"
+name = "$bare_name"
 path = "$toml_path"
 startup_command = "$WT_DOTFILES_DIR/wt/wt-connect.sh"
 EOF

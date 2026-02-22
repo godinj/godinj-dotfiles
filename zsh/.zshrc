@@ -4,6 +4,9 @@ export DOTFILES_DIR="$(cd "$(dirname "$(readlink -f ~/.zshrc)" 2>/dev/null || re
 # Source secrets from .env (gitignored)
 [ -f ~/.env ] && source ~/.env
 
+# Central icon definitions for sesh sessions
+source "$DOTFILES_DIR/sesh/icons.sh"
+
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:$HOME/go/bin:/usr/local/bin:$PATH
 export PATH=/opt/homebrew/bin:$PATH
@@ -123,7 +126,7 @@ alias dd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} godin
 alias cl="claude"
 alias cld="claude --dangerously-skip-permissions"
 alias tk="tmux kill-server"
-alias t="sesh connect -c 'fastfetch' '󱘖 fastfetch'"
+alias t="sesh connect -c 'fastfetch' '${ICON_TOOL} fastfetch'"
 alias src="source ~/.zshrc"
 alias vrc="nvim ~/.zshrc"
 alias cns="$DOTFILES_DIR/sesh/new_session.sh"
@@ -163,5 +166,5 @@ test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_int
 if [ -z "$TMUX" ]
  then
     clear
-    sesh connect -c "fastfetch" "󱘖 fastfetch"
+    sesh connect -c "fastfetch" "${ICON_TOOL} fastfetch"
 fi
