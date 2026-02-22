@@ -1,5 +1,5 @@
 [[session]]
-name = "󱁤 dotfiles"
+name = "󱁤 godinj-dotfiles"
 path = "~/git/godinj-dotfiles.git/master/"
 startup_command = "nvim"
 preview_command = "bat --color=always ~/.config/sesh/sesh.toml"
