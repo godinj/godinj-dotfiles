@@ -2,6 +2,7 @@
 # Shared helpers for wt commands. Sourced, not executed.
 
 WT_ICON="󰀜"
+WT_PROJECT_ICON="󱁤"
 WT_BRANCH_PREFIX="feature/"
 WT_GIT_BASE="$HOME/git"
 WT_AGENT_CMD="${WT_AGENT_CMD:-cld}"
@@ -46,21 +47,16 @@ wt_project_name() {
 }
 
 # Generate session name:
-#   "󰀜 feature/project/name" for feature branches
-#   "󰀜 project/branch"       for non-prefixed branches (legacy)
-#   "󰀜 project"              for default branch
+#   "󰀜 project/feature/name"  for feature branches
+#   "󰀜 project/branch"        for non-prefixed branches
+#   "󱁤 project"               for default branch
 wt_session_name() {
   local project="$1"
   local branch="${2:-}"
   if [ -n "$branch" ]; then
-    if [[ "$branch" == "$WT_BRANCH_PREFIX"* ]]; then
-      local suffix="${branch#$WT_BRANCH_PREFIX}"
-      echo "$WT_ICON $WT_BRANCH_PREFIX$project/$suffix"
-    else
-      echo "$WT_ICON $project/$branch"
-    fi
+    echo "$WT_ICON $project/$branch"
   else
-    echo "$WT_ICON $project"
+    echo "$WT_PROJECT_ICON $project"
   fi
 }
 

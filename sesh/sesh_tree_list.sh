@@ -3,6 +3,9 @@
 # Groups worktree children under their parent session with tree-style
 # indentation for use with fzf --delimiter --with-nth --accept-nth.
 #
+# Parent matching is icon-agnostic: a child "󰀜 project/name" groups under
+# parent "󱁤 project" even though the leading icons differ.
+#
 # fzf displays bottom-to-top, so children are emitted BEFORE their parent
 # and tree chars are reversed (└── for first child, ├── for the rest).
 #
@@ -24,22 +27,32 @@ exec awk '
   } else {
     session_name[total] = stripped
   }
-  name_exists[session_name[total]] = 1
+
+  # Bare name = session name with leading session icon stripped (icon-agnostic matching)
+  bn = session_name[total]
+  if (match(bn, / /)) {
+    bare[total] = substr(bn, RSTART + 1)
+  } else {
+    bare[total] = bn
+  }
+  bare_to_idx[bare[total]] = total
 }
 
 END {
-  # Build parent-child relationships (only when parent exists in list)
+  # Build parent-child relationships using bare names (icon-agnostic)
   for (i = 1; i <= total; i++) {
-    name = session_name[i]
-    slash = index(name, "/")
+    bn = bare[i]
+    slash = index(bn, "/")
     if (slash > 0) {
-      parent = substr(name, 1, slash - 1)
-      if (name_exists[parent]) {
-        is_child[i] = parent
-        if (children_of[parent] == "") {
-          children_of[parent] = i
+      parent_bare = substr(bn, 1, slash - 1)
+      if (parent_bare in bare_to_idx) {
+        pi = bare_to_idx[parent_bare]
+        parent_full = session_name[pi]
+        is_child[i] = parent_full
+        if (children_of[parent_full] == "") {
+          children_of[parent_full] = i
         } else {
-          children_of[parent] = children_of[parent] " " i
+          children_of[parent_full] = children_of[parent_full] " " i
         }
       }
     }
@@ -67,20 +80,24 @@ END {
         }
       }
 
-      # Extract session icon from parent name (first word)
-      icon_end = index(name, " ")
-      if (icon_end > 0) {
-        icon = substr(name, 1, icon_end - 1)
-      } else {
-        icon = ""
-      }
-
       # Emit in reverse order (last child first) so fzf bottom-to-top
       # shows first child closest to parent
       for (j = pending_count; j >= 1; j--) {
         ci = pending[j]
         emitted[ci] = 1
-        branch = substr(session_name[ci], length(name) + 2)
+
+        # Extract session icon from child name (first word)
+        child_name = session_name[ci]
+        icon_end = index(child_name, " ")
+        if (icon_end > 0) {
+          icon = substr(child_name, 1, icon_end - 1)
+        } else {
+          icon = ""
+        }
+
+        # Extract child branch name from bare name (after the "/")
+        child_slash = index(bare[ci], "/")
+        branch = substr(bare[ci], child_slash + 1)
 
         if (j == 1) {
           tree = "\342\224\224\342\224\200\342\224\200 "

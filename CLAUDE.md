@@ -43,11 +43,13 @@ New worktree branches always get the `feature/` prefix. `wt new auth` creates br
 
 ### Session naming
 
-Worktree sessions use the `󰀜` (Nerd Font git-branch) icon prefix. The `wt_session_name()` function in `wt/wt-helpers.sh` produces:
+The `wt_session_name()` function in `wt/wt-helpers.sh` produces:
 
-- `󰀜 project` — default branch worktree
-- `󰀜 feature/name` — feature branch worktree (project implied by sesh picker ordering)
-- `󰀜 project/branch` — non-prefixed branch (legacy)
+- `󱁤 project` — default branch worktree (top-level project icon)
+- `󰀜 project/feature/name` — feature branch worktree
+- `󰀜 project/branch` — non-prefixed branch
+
+The sesh tree picker groups `󰀜 project/…` under `󱁤 project` using icon-agnostic bare-name matching in `sesh/sesh_tree_list.sh`.
 
 ### Tmux session layout
 
