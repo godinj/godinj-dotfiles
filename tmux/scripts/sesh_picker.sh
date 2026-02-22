@@ -24,6 +24,9 @@ if [ -n "$SESH_COLOR" ]; then
 fi
 
 TREE_LIST="$DOTFILES_DIR/sesh/sesh_tree_list.sh"
+TOGGLE_FOLD="$DOTFILES_DIR/sesh/sesh_toggle_fold.sh"
+EXPAND_ALL="$DOTFILES_DIR/sesh/sesh_expand_all.sh"
+export SESH_FOLD_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/sesh/fold_state"
 
 SELECTED="$(
   sesh list -t -c -z --icons | "$TREE_LIST" | fzf \
@@ -31,7 +34,7 @@ SELECTED="$(
     --no-sort --ansi --border-label "$SESH_BORDER_LABEL" --prompt "$SESH_PROMPT" \
     --delimiter='\t' --with-nth=2 --accept-nth=1 \
     $COLOR_FLAG \
-    --header '  ^a all ^t tmux ^g configs ^x zoxide ^w worktrees ^d tmux kill ^f find' \
+    --header '  ^a all ^t tmux ^g configs ^x zoxide ^w worktrees ^d tmux kill ^f find ^e fold M-e unfold' \
     --bind 'tab:down,btab:up' \
     --bind "ctrl-a:change-prompt($SESH_PROMPT)+reload(sesh list -t -c -z --icons | $TREE_LIST)" \
     --bind "ctrl-t:change-prompt(🪟  )+reload(sesh list -t --icons | $TREE_LIST)" \
@@ -40,6 +43,8 @@ SELECTED="$(
     --bind "ctrl-w:change-prompt(  )+reload(sesh list -t --icons | grep ' ' | $TREE_LIST)" \
     --bind "ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~ | $TREE_LIST)" \
     --bind "ctrl-d:execute(bash -c 'tmux kill-session -t \"\${1#* }\"' _ {1})+change-prompt($SESH_PROMPT)+reload(sesh list --icons | $TREE_LIST)" \
+    --bind "ctrl-e:execute-silent(bash $TOGGLE_FOLD {1})+change-prompt($SESH_PROMPT)+reload(sesh list -t -c -z --icons | $TREE_LIST)" \
+    --bind "alt-e:execute-silent(bash $EXPAND_ALL)+change-prompt($SESH_PROMPT)+reload(sesh list -t -c -z --icons | $TREE_LIST)" \
     --preview-window "$SESH_PREVIEW_WINDOW" \
     --preview 'sesh preview {1}'
 )"

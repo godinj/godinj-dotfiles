@@ -13,6 +13,17 @@
 # Output: ORIGINAL<TAB>DISPLAY per line
 
 exec awk '
+BEGIN {
+  fold_file = ENVIRON["SESH_FOLD_FILE"]
+  has_fold_file = (fold_file != "")
+  if (has_fold_file) {
+    while ((getline fline < fold_file) > 0) {
+      gsub(/^[ \t]+|[ \t]+$/, "", fline)
+      if (fline != "") folded[fline] = 1
+    }
+    close(fold_file)
+  }
+}
 {
   total++
   lines[total] = $0
@@ -80,37 +91,54 @@ END {
         }
       }
 
-      # Emit in reverse order (last child first) so fzf bottom-to-top
-      # shows first child closest to parent
-      for (j = pending_count; j >= 1; j--) {
-        ci = pending[j]
-        emitted[ci] = 1
+      parent_is_folded = (has_fold_file && (bare[i] in folded))
 
-        # Extract session icon from child name (first word)
-        child_name = session_name[ci]
-        icon_end = index(child_name, " ")
-        if (icon_end > 0) {
-          icon = substr(child_name, 1, icon_end - 1)
-        } else {
-          icon = ""
+      if (parent_is_folded) {
+        # Collapsed: skip children, emit parent with ▸ and child count
+        for (j = 1; j <= pending_count; j++) {
+          emitted[pending[j]] = 1
+        }
+        emitted[i] = 1
+        printf "%s\t\xe2\x96\xb8 %s [%d]\n", lines[i], lines[i], pending_count
+      } else {
+        # Expanded: emit children with tree chars
+        for (j = pending_count; j >= 1; j--) {
+          ci = pending[j]
+          emitted[ci] = 1
+
+          # Extract session icon from child name (first word)
+          child_name = session_name[ci]
+          icon_end = index(child_name, " ")
+          if (icon_end > 0) {
+            icon = substr(child_name, 1, icon_end - 1)
+          } else {
+            icon = ""
+          }
+
+          # Extract child branch name from bare name (after the "/")
+          child_slash = index(bare[ci], "/")
+          branch = substr(bare[ci], child_slash + 1)
+
+          if (j == 1) {
+            tree = "\342\224\224\342\224\200\342\224\200 "
+          } else {
+            tree = "\342\224\234\342\224\200\342\224\200 "
+          }
+
+          printf "%s\t   %s%s %s\n", lines[ci], tree, icon, branch
         }
 
-        # Extract child branch name from bare name (after the "/")
-        child_slash = index(bare[ci], "/")
-        branch = substr(bare[ci], child_slash + 1)
-
-        if (j == 1) {
-          tree = "\342\224\224\342\224\200\342\224\200 "
+        emitted[i] = 1
+        if (has_fold_file) {
+          printf "%s\t\xe2\x96\xbe %s\n", lines[i], lines[i]
         } else {
-          tree = "\342\224\234\342\224\200\342\224\200 "
+          printf "%s\t%s\n", lines[i], lines[i]
         }
-
-        printf "%s\t   %s%s %s\n", lines[ci], tree, icon, branch
       }
+    } else {
+      emitted[i] = 1
+      printf "%s\t%s\n", lines[i], lines[i]
     }
-
-    emitted[i] = 1
-    printf "%s\t%s\n", lines[i], lines[i]
   }
 }
 '
