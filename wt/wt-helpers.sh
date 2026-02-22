@@ -5,7 +5,6 @@ WT_ICON="󰀜"
 WT_PROJECT_ICON="󱁤"
 WT_BRANCH_PREFIX="feature/"
 WT_GIT_BASE="$HOME/git"
-WT_AGENT_CMD="${WT_AGENT_CMD:-cld}"
 WT_DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 source "$WT_DOTFILES_DIR/machine.sh"
 WT_WORKTREES_TOML="$MACHINE_DIR/sesh/sessions/worktrees.toml"
@@ -92,3 +91,13 @@ wt_count_agents() {
 wt_default_branch() {
   git symbolic-ref --short HEAD 2>/dev/null || echo "main"
 }
+
+# Project-level config: source .wt.env from the bare repo root.
+# Precedence: environment variable > project .wt.env > default ("cld").
+_wt_saved_agent_cmd="${WT_AGENT_CMD:-}"
+_wt_bare="$(wt_find_bare_root 2>/dev/null)" || true
+if [ -n "$_wt_bare" ] && [ -f "$_wt_bare/.wt.env" ]; then
+  source "$_wt_bare/.wt.env"
+fi
+WT_AGENT_CMD="${_wt_saved_agent_cmd:-${WT_AGENT_CMD:-cld}}"
+unset _wt_saved_agent_cmd _wt_bare
