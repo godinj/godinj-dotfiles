@@ -5,7 +5,7 @@ startup_command = "dd"
 
 [[session]]
 name = " drem-ninja"
-path = "~/git/drem-ninja/"
+path = "~/git/drem-ninja.git/main/"
 startup_command = "nvim"
 
 [[session]]
@@ -15,7 +15,7 @@ startup_command = "nvim"
 
 [[session]]
 name = " BibInc"
-path = "~/git/BibleIncrementer"
+path = "~/git/BibleIncrementer.git/main/"
 startup_command = "nvim pom.xml"
 preview_command = "bat --color=always ~/Dropbox/Bible Stuff/BibleIncrementer/pom.xml"
 
@@ -32,7 +32,7 @@ preview_command = "bat --color=always ~/dev/ardour_dev/.devcontainer.json"
 
 [[session]]
 name = " python"
-path = "~/git/python/"
+path = "~/git/python.git/main/"
 startup_command = "nvim"
 
 [[session]]
@@ -42,5 +42,5 @@ startup_command = "cld"
 
 [[session]]
 name = " drem-canvas"
-path = "~/git/drem-canvas/"
+path = "~/git/drem-canvas.git/main/"
 startup_command = "cld"

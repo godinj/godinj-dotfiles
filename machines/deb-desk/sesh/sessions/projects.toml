@@ -1,21 +1,21 @@
 [[session]]
 name = " drem-ninja"
-path = "~/git/drem-ninja/"
+path = "~/git/drem-ninja.git/main/"
 startup_command = "nvim"
 
 [[session]]
 name = " bib incr"
-path = "~/git/BibleIncrementer"
+path = "~/git/BibleIncrementer.git/main/"
 startup_command = "nvim"
 
 [[session]]
 name = " bib incr use"
-path = "~/git/BibIncrUse"
+path = "~/git/BibIncrUse.git/main/"
 startup_command = "mvn exec:java"
 
 [[session]]
 name = " bib incr ion"
-path = "~/git/BibleIncrementerIon"
+path = "~/git/BibleIncrementerIon.git/main/"
 startup_command = "nvim"
 
 [[session]]
@@ -30,7 +30,7 @@ startup_command = "ollama ps"
 
 [[session]]
 name = "󰇥 ai-fundamentals-simple"
-path = "~/git/ai-fundamentals-simple"
+path = "~/git/ai-fundamentals-simple.git/main/"
 
 [[session]]
 name = "󰇥 model comparison"
@@ -54,25 +54,25 @@ startup_command = "nvim"
 
 [[session]]
 name = " drem-catalog"
-path = "~/git/drem-catalog/"
+path = "~/git/drem-catalog.git/main/"
 startup_command = "nvim"
 
 [[session]]
 name = " drem-echo"
-path = "~/git/drem-echo/"
+path = "~/git/drem-echo.git/main/"
 startup_command = "nvim"
 
 [[session]]
 name = " golden-agents"
-path = "~/git/golden-agents/"
+path = "~/git/golden-agents.git/main/"
 startup_command = "nvim"
 
 [[session]]
 name = " drem-canvas"
-path = "~/git/drem-canvas/"
+path = "~/git/drem-canvas.git/main/"
 startup_command = "cld"
 
 [[session]]
 name = " agent-notify"
-path = "~/git/agent-notify/"
+path = "~/git/agent-notify.git/main/"
 startup_command = "nvim"

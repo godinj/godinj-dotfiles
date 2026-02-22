@@ -5,7 +5,7 @@ startup_command = "dd"
 
 [[session]]
 name = " drem-ninja"
-path = "~/git/drem-ninja/"
+path = "~/git/drem-ninja.git/main/"
 startup_command = "nvim"
 
 [[session]]
@@ -40,8 +40,8 @@ startup_command = "nvim ~/.mozilla/firefox/dorzuxaz.default-esr/chrome/userChrom
 
 [[session]]
 name = " ardour editor"
-path = "~/git/ardour"
-startup_command = "nvim ~/git/ardour"
+path = "~/git/ardour.git/main/"
+startup_command = "nvim ~/git/ardour.git/main/"
 
 [[session]]
 name = " sources"
@@ -50,7 +50,7 @@ startup_command = "sudo nvim /etc/apt/sources.list"
 
 [[session]]
 name = " ardour git"
-path = "~/git/ardour"
+path = "~/git/ardour.git/main/"
 
 [[session]]
 name = " downloads"
