@@ -272,6 +272,8 @@ rtp:prepend(lazypath)
 --  To update plugins you can run
 --    :Lazy update
 --
+vim.opt.termguicolors = true
+
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
@@ -1049,7 +1051,6 @@ require('lazy').setup({
   },
 })
 
-vim.opt.termguicolors = true
 require('bufferline').setup {}
 
 -- The line beneath this is called `modeline`. See `:help modeline`
