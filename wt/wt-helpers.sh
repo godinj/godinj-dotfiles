@@ -107,12 +107,71 @@ wt_default_branch() {
   git symbolic-ref --short HEAD 2>/dev/null || echo "main"
 }
 
+# Set up panes for a worktree session's code window.
+# Usage: wt_setup_panes <session> <workdir> [new|connect]
+#   new     — session already exists detached; target panes by session name
+#   connect — running inside the current pane (sesh startup_command)
+wt_setup_panes() {
+  local session="$1"
+  local workdir="$2"
+  local mode="${3:-new}"
+
+  # Collect WT_PANE_* specs
+  local panes=()
+  local i=0
+  while true; do
+    local var="WT_PANE_$i"
+    local val="${!var:-}"
+    [ -z "$val" ] && break
+    panes+=("$val")
+    ((i++))
+  done
+
+  # Default: nvim + agent
+  if [ ${#panes[@]} -eq 0 ]; then
+    panes=("nvim" "${WT_AGENT_CMD:-cld}:20%")
+  fi
+
+  local first_cmd="${panes[0]%%:*}"
+
+  # Create additional panes right-to-left so they end up in order.
+  # Always split from pane 0; tmux sizes are window percentages.
+  for ((i=${#panes[@]}-1; i>=1; i--)); do
+    local spec="${panes[$i]}"
+    local cmd="${spec%%:*}"
+    local size="${spec#*:}"
+    [ "$size" = "$spec" ] && size="20%"
+
+    if [ "$mode" = "new" ]; then
+      tmux split-window -t "=$session:code.0" -h -l "$size" -c "$workdir" "$cmd"
+    else
+      tmux split-window -h -l "$size" "$cmd"
+    fi
+  done
+
+  # Focus pane 0 and launch its command
+  if [ "$mode" = "new" ]; then
+    tmux select-pane -t "=$session:code.0"
+    tmux send-keys -t "=$session:code.0" "$first_cmd" Enter
+  else
+    tmux select-pane -t :.0
+    exec $first_cmd
+  fi
+}
+
 # Project-level config: source .wt.env from the bare repo root.
-# Precedence: environment variable > project .wt.env > default ("cld").
 _wt_saved_agent_cmd="${WT_AGENT_CMD:-}"
 _wt_bare="$(wt_find_bare_root 2>/dev/null)" || true
 if [ -n "$_wt_bare" ] && [ -f "$_wt_bare/.wt.env" ]; then
   source "$_wt_bare/.wt.env"
 fi
-WT_AGENT_CMD="${_wt_saved_agent_cmd:-${WT_AGENT_CMD:-cld}}"
+# Env WT_AGENT_CMD beats .wt.env value
+[ -n "$_wt_saved_agent_cmd" ] && WT_AGENT_CMD="$_wt_saved_agent_cmd"
+# Default WT_AGENT_CMD: derive from WT_PANE_1, fall back to "cld"
+if [ -z "${WT_AGENT_CMD:-}" ]; then
+  _wt_pane1="${WT_PANE_1:-}"
+  WT_AGENT_CMD="${_wt_pane1%%:*}"
+  WT_AGENT_CMD="${WT_AGENT_CMD:-cld}"
+  unset _wt_pane1
+fi
 unset _wt_saved_agent_cmd _wt_bare

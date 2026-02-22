@@ -43,11 +43,7 @@ session_name="$(wt_session_name "$name")"
 echo "Creating session '$session_name'..."
 tmux new-session -d -s "$session_name" -c "$worktree_dir"
 tmux rename-window -t "=$session_name:0" "code"
-# Split right pane (20%) for Claude agent
-tmux split-window -t "=$session_name:code" -h -l '20%' -c "$worktree_dir" "$WT_AGENT_CMD"
-# Select left pane and launch editor
-tmux select-pane -t "=$session_name:code.0"
-tmux send-keys -t "=$session_name:code.0" "nvim" Enter
+wt_setup_panes "$session_name" "$worktree_dir" new
 
 # Switch to the new session
 if [ -n "${TMUX:-}" ]; then
