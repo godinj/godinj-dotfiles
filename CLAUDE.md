@@ -69,6 +69,26 @@ Additional agents can be spawned into an `agents` window via `wt agent spawn`.
 
 The `wt/` directory contains all worktree management scripts. Promoted worktree sessions are stored in `$MACHINE_DIR/sesh/sessions/worktrees.toml` (gitignored, machine-local) with bare names (no icon prefix) and included during `build_sesh_config.sh`. The `wt_bare_name()` helper returns the icon-free name for TOML storage; `wt_session_name()` returns the icon-prefixed name for tmux operations.
 
+## Unit tests (bats-core)
+
+**Framework:** [bats-core](https://github.com/bats-core/bats-core) with bats-support, bats-assert, and bats-file helpers, pinned as git submodules under `tests/libs/`.
+
+**Running tests:**
+```bash
+./run_tests.sh                                              # all tests
+./tests/libs/bats-core/bin/bats tests/wt/wt-helpers.bats   # single file
+./run_tests.sh --verbose-run                                # verbose output
+```
+
+**Conventions:**
+- Test files use `.bats` extension and mirror the source directory structure under `tests/`.
+- All test files load `tests/test_helper.bash` which sets `DOTFILES_DIR` and loads bats helpers.
+- Tests cover **pure functions only** — no tmux, no git operations, no network calls.
+- Scripts with top-level side effects (e.g. `build_sesh_config.sh` with `set -euo pipefail` and `mkdir`) have their functions extracted via `sed` pattern matching on column-0 function definitions, after sourcing `icons.sh` separately.
+- `wt-helpers.sh` is sourced with `2>/dev/null || true` to suppress the `machine.sh` fallback warning.
+- Test data uses inline heredocs, not fixture files.
+- After submodule clone, run `git submodule update --init --recursive` if `tests/libs/` is empty.
+
 ## Clipboard & file transfer tunnel architecture
 
 ```
