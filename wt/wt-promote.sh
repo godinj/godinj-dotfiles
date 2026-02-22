@@ -4,20 +4,30 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/wt-helpers.sh"
 
-# Must be run from inside a worktree
+# Must be run from inside a worktree or bare repo
 bare_root="$(wt_find_bare_root)" || {
   echo "Error: not inside a git worktree or bare repo" >&2
   exit 1
 }
 
 project="$(wt_project_name "$bare_root")"
+default_branch="$(git -C "$bare_root" symbolic-ref --short HEAD 2>/dev/null || echo main)"
 
-# Get current working directory as the worktree path
-wt_path="$(pwd)"
-branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+if [ $# -ge 1 ]; then
+  # Argument given: resolve branch and worktree path
+  branch="$(wt_ensure_prefix "$1")"
+  wt_path="$bare_root/$branch"
+  if [ ! -d "$wt_path" ]; then
+    echo "Error: worktree not found at $wt_path" >&2
+    exit 1
+  fi
+else
+  # No argument: use current directory
+  wt_path="$(pwd)"
+  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+fi
 
 # Determine session name
-default_branch="$(git -C "$bare_root" symbolic-ref --short HEAD 2>/dev/null || echo main)"
 if [ "$branch" = "$default_branch" ]; then
   session_name="$(wt_session_name "$project")"
 else
