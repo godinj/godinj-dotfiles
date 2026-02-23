@@ -24,4 +24,4 @@ bindkey -M vicmd '^T' run-inv-widget
 bindkey -M viins '^T' run-inv-widget
 
 source <(fzf --zsh)
-bindkey -r '\ec'  # free Alt-c for tmux sesh picker
+bindkey -r '\ec'  # free Alt-c for tmux drem-sx picker

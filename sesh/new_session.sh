@@ -49,14 +49,9 @@ startup_command = "${startup_command}"
 EOF
 } >> "$PROJECTS_FILE"
 
-echo "Added session to $PROJECTS_FILE"
-
-# Rebuild sesh config
-"$SCRIPT_DIR/build_sesh_config.sh"
-
 echo ""
 echo "Session created:"
 echo "  name:    ${name}"
 echo "  path:    ${path}"
 echo "  command: ${startup_command}"
-echo "sesh.toml rebuilt."
+echo "Added to $PROJECTS_FILE"

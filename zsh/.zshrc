@@ -126,11 +126,10 @@ alias dd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} godin
 alias cl="claude"
 alias cld="claude --dangerously-skip-permissions"
 alias tk="tmux kill-server"
-alias t="sesh connect -c 'fastfetch' '${ICON_TOOL} fastfetch'"
+alias t="drem-sx connect -c fastfetch fastfetch"
 alias src="source ~/.zshrc"
 alias vrc="nvim ~/.zshrc"
 alias cns="$DOTFILES_DIR/sesh/new_session.sh"
-alias bsc="$DOTFILES_DIR/sesh/build_sesh_config.sh"
 alias wt="wt.sh"
 
 # Copy stdin or file contents to the clipboard.
@@ -166,5 +165,5 @@ test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_int
 if [ -z "$TMUX" ]
  then
     clear
-    sesh connect -c "fastfetch" "${ICON_TOOL} fastfetch"
+    drem-sx connect -c fastfetch fastfetch
 fi

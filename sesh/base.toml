@@ -1,6 +1,0 @@
-sort_order = [
-    "tmux", # show first
-    "tmuxinator",
-    "config",
-    "zoxide", # show last
-]

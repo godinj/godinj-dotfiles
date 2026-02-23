@@ -61,7 +61,3 @@ EOF
 } >> "$WT_WORKTREES_TOML"
 
 echo "Promoted '$session_name' to worktrees.toml"
-
-# Rebuild sesh config
-"$WT_DOTFILES_DIR/sesh/build_sesh_config.sh"
-echo "Sesh config rebuilt."

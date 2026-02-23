@@ -139,8 +139,7 @@ else
 fi
 cp "$MACHINE_DIR/nvim/theme.lua" "$DOTFILES_DIR/nvim/lua/custom/plugins/machine_theme.lua"
 ok "Copied nvim machine_theme.lua"
-bash "$DOTFILES_DIR/sesh/build_sesh_config.sh"
-ok "Built sesh.toml from modular configs"
+ok "Machine profile deployed"
 
 # Darwin-specific: clipboard listener LaunchAgent
 if [ "$OS" = "Darwin" ]; then
@@ -321,12 +320,13 @@ fi
 
 install_pkg go golang
 
-# sesh (via Go)
-if command -v sesh &>/dev/null; then
-  ok "sesh already installed"
+# drem-sx (session picker)
+if command -v drem-sx &>/dev/null; then
+  ok "drem-sx already installed"
 else
-  info "Installing sesh via Go..."
-  go install github.com/joshmedeski/sesh@latest
+  info "Building drem-sx..."
+  (cd "$DOTFILES_DIR/drem-sx" && go build -o "$HOME/go/bin/drem-sx" .)
+  ok "drem-sx installed"
 fi
 
 # lazygit (via Go)
