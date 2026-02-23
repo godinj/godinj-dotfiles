@@ -3,15 +3,7 @@ package cmd
 import (
 	"drem-sx/internal/colorscheme"
 	"drem-sx/internal/config"
-	"drem-sx/internal/tmuxctl"
 )
-
-// tmuxAdapter implements session.TmuxChecker using tmuxctl.
-type tmuxAdapter struct{}
-
-func (tmuxAdapter) Exists(name string) bool {
-	return tmuxctl.SessionExists(name)
-}
 
 // resolveContentColors returns content colors from the machine's color scheme,
 // falling back to defaults.

@@ -3,6 +3,7 @@ package fold
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -75,6 +76,16 @@ func TestExpandAll(t *testing.T) {
 	data, _ := os.ReadFile(path)
 	if len(data) != 0 {
 		t.Errorf("fold file should be empty, got %q", string(data))
+	}
+}
+
+func TestCachePath(t *testing.T) {
+	path := CachePath()
+	if path == "" {
+		t.Fatal("CachePath should not be empty")
+	}
+	if !strings.HasSuffix(path, filepath.Join("drem-sx", "tree_cache")) {
+		t.Errorf("CachePath should end with drem-sx/tree_cache, got %q", path)
 	}
 }
 

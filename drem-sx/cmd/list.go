@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"sync"
 
 	"drem-sx/internal/config"
 	"drem-sx/internal/fold"
@@ -66,34 +67,35 @@ func List(args []string) error {
 		}
 	}
 
+	// Fetch tmux/zoxide/find concurrently
+	var wg sync.WaitGroup
 	if useTmux {
-		var err error
-		tmuxEntries, err = session.ListTmux()
-		if err != nil {
-			return err
-		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			tmuxEntries, _ = session.ListTmux()
+		}()
 	}
-
 	if useZoxide {
-		var err error
-		zoxideEntries, err = session.ListZoxide()
-		if err != nil {
-			return err
-		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			zoxideEntries, _ = session.ListZoxide()
+		}()
 	}
-
 	if useFind {
-		var err error
-		findEntries, err = session.ListFind()
-		if err != nil {
-			return err
-		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			findEntries, _ = session.ListFind()
+		}()
 	}
+	wg.Wait()
 
 	entries := session.Merge(configSessions, tmuxEntries, zoxideEntries, findEntries)
 
 	// Annotate worktree entries with dirty/inactive status
-	session.Annotate(entries, gitstatus.GitChecker{}, tmuxAdapter{})
+	session.Annotate(entries, gitstatus.GitChecker{}, session.NewCachedTmuxChecker(tmuxEntries))
 
 	if showWorktree {
 		entries = session.FilterWorktrees(entries)

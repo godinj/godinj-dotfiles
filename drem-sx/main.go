@@ -29,6 +29,8 @@ func main() {
 		err = cmd.FoldTransform(os.Args[2:])
 	case "unfold-all":
 		err = cmd.UnfoldAll()
+	case "unfold-all-transform":
+		err = cmd.UnfoldAllTransform()
 	case "kill":
 		err = cmd.Kill(os.Args[2:])
 	case "promote":

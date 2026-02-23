@@ -3,10 +3,13 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
+	"sync"
 
 	"drem-sx/internal/config"
 	"drem-sx/internal/fold"
+	"drem-sx/internal/gitstatus"
 	"drem-sx/internal/icons"
 	"drem-sx/internal/session"
 	"drem-sx/internal/tree"
@@ -14,7 +17,7 @@ import (
 
 // FoldTransform implements `drem-sx fold-transform <name>`.
 // Used as an fzf transform action: toggles fold state, then outputs fzf
-// actions to reload the list and position the cursor on the parent project.
+// actions to reload from cache and position the cursor on the parent project.
 func FoldTransform(args []string) error {
 	if len(args) < 1 {
 		return fmt.Errorf("usage: drem-sx fold-transform <name>")
@@ -41,11 +44,6 @@ func FoldTransform(args []string) error {
 		return err
 	}
 
-	self, err := os.Executable()
-	if err != nil {
-		return fmt.Errorf("resolve executable: %w", err)
-	}
-
 	// Load picker config to get the prompt
 	dotfilesDir, err := config.DotfilesDir()
 	if err != nil {
@@ -54,27 +52,68 @@ func FoldTransform(args []string) error {
 	machineName := config.MachineName(dotfilesDir)
 	pickerCfg := config.LoadPickerConfig(dotfilesDir, machineName)
 
-	// Load sessions and format tree to find parent position
-	configSessions, err := config.Load(dotfilesDir, machineName)
+	lines, err := buildAndCacheTree(dotfilesDir, machineName, foldPath)
 	if err != nil {
 		return err
 	}
-	tmuxEntries, _ := session.ListTmux()
-	zoxideEntries, _ := session.ListZoxide()
-	entries := session.Merge(configSessions, tmuxEntries, zoxideEntries, nil)
-
-	// Re-read fold state (we just wrote it)
-	state = fold.Load(foldPath)
-	lines := tree.Format(entries, state, nil)
 
 	pos := tree.FindPos(lines, parent)
+	cachePath := fold.CachePath()
 
-	reloadCmd := fmt.Sprintf("%s list -t -c -z --tree", self)
 	if pos > 0 {
-		fmt.Printf("reload-sync(%s)+change-prompt(%s)+pos(%d)", reloadCmd, pickerCfg.Prompt, pos)
+		fmt.Printf("reload-sync(cat %s)+change-prompt(%s)+pos(%d)", cachePath, pickerCfg.Prompt, pos)
 	} else {
-		fmt.Printf("reload(%s)+change-prompt(%s)", reloadCmd, pickerCfg.Prompt)
+		fmt.Printf("reload(cat %s)+change-prompt(%s)", cachePath, pickerCfg.Prompt)
 	}
 
 	return nil
+}
+
+// buildAndCacheTree loads sessions concurrently, annotates, formats as tree,
+// writes the output to the cache file, and returns the tree lines.
+func buildAndCacheTree(dotfilesDir, machineName, foldPath string) ([]tree.Line, error) {
+	configSessions, err := config.Load(dotfilesDir, machineName)
+	if err != nil {
+		return nil, err
+	}
+
+	var tmuxEntries, zoxideEntries []session.Entry
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		tmuxEntries, _ = session.ListTmux()
+	}()
+	go func() {
+		defer wg.Done()
+		zoxideEntries, _ = session.ListZoxide()
+	}()
+	wg.Wait()
+
+	entries := session.Merge(configSessions, tmuxEntries, zoxideEntries, nil)
+
+	// Annotate with cached tmux checker (no per-entry subprocess)
+	session.Annotate(entries, gitstatus.GitChecker{}, session.NewCachedTmuxChecker(tmuxEntries))
+
+	// Resolve content colors
+	colors := resolveContentColors(dotfilesDir, machineName)
+
+	// Re-read fold state (caller may have just written it)
+	state := fold.Load(foldPath)
+	lines := tree.Format(entries, state, colors)
+
+	// Write cache
+	cachePath := fold.CachePath()
+	if err := os.MkdirAll(filepath.Dir(cachePath), 0o755); err != nil {
+		return nil, err
+	}
+	output := tree.FormatString(lines)
+	if len(lines) > 0 {
+		output += "\n"
+	}
+	if err := os.WriteFile(cachePath, []byte(output), 0o644); err != nil {
+		return nil, err
+	}
+
+	return lines, nil
 }

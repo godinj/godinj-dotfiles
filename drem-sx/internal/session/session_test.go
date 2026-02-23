@@ -89,6 +89,31 @@ func TestFilterWorktrees(t *testing.T) {
 	}
 }
 
+func TestCachedTmuxCheckerExists(t *testing.T) {
+	entries := []Entry{
+		{DisplayName: icons.WorktreeProject + " proj"},
+		{DisplayName: icons.Worktree + " proj/feature/a"},
+	}
+	checker := NewCachedTmuxChecker(entries)
+
+	if !checker.Exists(icons.WorktreeProject + " proj") {
+		t.Error("expected proj to exist")
+	}
+	if !checker.Exists(icons.Worktree + " proj/feature/a") {
+		t.Error("expected proj/feature/a to exist")
+	}
+	if checker.Exists("nonexistent") {
+		t.Error("expected nonexistent to not exist")
+	}
+}
+
+func TestCachedTmuxCheckerEmpty(t *testing.T) {
+	checker := NewCachedTmuxChecker(nil)
+	if checker.Exists("anything") {
+		t.Error("empty checker should return false for any name")
+	}
+}
+
 func TestAnnotateDirtyChildPropagatesToParent(t *testing.T) {
 	entries := []Entry{
 		{DisplayName: icons.WorktreeProject + " proj", BareName: "proj", Source: SourceConfig},

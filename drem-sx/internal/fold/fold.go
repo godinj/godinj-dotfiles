@@ -16,6 +16,15 @@ func DefaultPath() string {
 	return filepath.Join(cache, "drem-sx", "fold_state")
 }
 
+// CachePath returns the path for the tree output cache file.
+func CachePath() string {
+	cache := os.Getenv("XDG_CACHE_HOME")
+	if cache == "" {
+		cache = filepath.Join(os.Getenv("HOME"), ".cache")
+	}
+	return filepath.Join(cache, "drem-sx", "tree_cache")
+}
+
 // State holds the set of folded parent names.
 type State struct {
 	path   string

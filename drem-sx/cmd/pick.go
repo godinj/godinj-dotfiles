@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"drem-sx/internal/config"
 	"drem-sx/internal/fold"
@@ -29,12 +30,22 @@ func Pick() error {
 	if err != nil {
 		return err
 	}
-	tmuxEntries, _ := session.ListTmux()
-	zoxideEntries, _ := session.ListZoxide()
+	var tmuxEntries, zoxideEntries []session.Entry
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		tmuxEntries, _ = session.ListTmux()
+	}()
+	go func() {
+		defer wg.Done()
+		zoxideEntries, _ = session.ListZoxide()
+	}()
+	wg.Wait()
 	entries := session.Merge(configSessions, tmuxEntries, zoxideEntries, nil)
 
 	// Annotate worktree entries with dirty/inactive status
-	session.Annotate(entries, gitstatus.GitChecker{}, tmuxAdapter{})
+	session.Annotate(entries, gitstatus.GitChecker{}, session.NewCachedTmuxChecker(tmuxEntries))
 
 	// Resolve content colors
 	colors := resolveContentColors(dotfilesDir, machineName)

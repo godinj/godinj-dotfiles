@@ -4,6 +4,7 @@ import (
 	"drem-sx/internal/config"
 	"drem-sx/internal/gitstatus"
 	"strings"
+	"sync"
 )
 
 // Source identifies where a session entry came from.
@@ -115,6 +116,26 @@ func FilterWorktrees(entries []Entry) []Entry {
 	return result
 }
 
+// CachedTmuxChecker implements TmuxChecker using a pre-fetched set of session names.
+// This avoids spawning a `tmux has-session` subprocess per entry.
+type CachedTmuxChecker struct {
+	names map[string]bool
+}
+
+// NewCachedTmuxChecker builds a checker from tmux Entry results (e.g. from ListTmux).
+func NewCachedTmuxChecker(tmuxEntries []Entry) *CachedTmuxChecker {
+	names := make(map[string]bool, len(tmuxEntries))
+	for _, e := range tmuxEntries {
+		names[e.DisplayName] = true
+	}
+	return &CachedTmuxChecker{names: names}
+}
+
+// Exists returns whether the given session name is in the cached set.
+func (c *CachedTmuxChecker) Exists(name string) bool {
+	return c.names[name]
+}
+
 // Annotate sets the Status field on worktree entries based on git dirty state
 // and tmux session existence. Dirty takes priority over inactive.
 // Non-worktree entries and entries without a parent are left as StatusNone.
@@ -146,13 +167,30 @@ func Annotate(entries []Entry, git gitstatus.Checker, tmux TmuxChecker) {
 		}
 	}
 
-	// Annotate children
+	// Phase 1: Run git dirty checks concurrently
+	var wg sync.WaitGroup
 	for _, pi := range parents {
 		for _, ci := range pi.children {
 			child := &entries[ci]
-			if child.Path != "" && git.IsDirty(child.Path) {
-				child.Status = StatusDirty
-			} else if child.Source == SourceConfig && !tmux.Exists(child.DisplayName) {
+			if child.Path == "" {
+				continue
+			}
+			wg.Add(1)
+			go func(e *Entry, path string) {
+				defer wg.Done()
+				if git.IsDirty(path) {
+					e.Status = StatusDirty
+				}
+			}(child, child.Path)
+		}
+	}
+	wg.Wait()
+
+	// Phase 2: Set inactive on non-dirty config entries (cheap map lookups)
+	for _, pi := range parents {
+		for _, ci := range pi.children {
+			child := &entries[ci]
+			if child.Status == StatusNone && child.Source == SourceConfig && !tmux.Exists(child.DisplayName) {
 				child.Status = StatusInactive
 			}
 		}
