@@ -127,6 +127,13 @@ create_link "$DOTFILES_DIR/tmux/.tmux.conf"    "$HOME/.tmux.conf"
 create_link "$DOTFILES_DIR/.env.template"      "$HOME/.env.template"
 create_link "$DOTFILES_DIR/claude/commands"    "$HOME/.claude/commands"
 
+# Git hooks (auto-rebuild drem-sx on merge, etc.)
+info "Installing git hooks..."
+for hook in "$DOTFILES_DIR"/hooks/*; do
+  [ -f "$hook" ] || continue
+  create_link "$hook" "$DOTFILES_DIR/.git/hooks/$(basename "$hook")"
+done
+
 # Deploy machine-specific files
 info "Deploying machine profile: $MACHINE_NAME"
 ln -sf "$MACHINE_DIR/tmux/machine.conf" "$DOTFILES_DIR/tmux/machine.conf"

@@ -76,3 +76,8 @@ startup_command = "cld"
 name = "agent-notify"
 path = "~/git/agent-notify.git/main/"
 startup_command = "nvim"
+
+[[session]]
+name = "drem-canvas"
+path = "~/git/drem-canvas/"
+startup_command = "clear && cld"
