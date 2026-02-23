@@ -32,11 +32,15 @@ wt_find_bare_root() {
     return 0
   fi
 
-  # git-common-dir returns the path to the .git of the bare repo
-  # For a bare repo, this IS the bare repo directory
-  # Resolve to absolute path and strip trailing /worktrees/<name> if present
+  # Resolve to absolute path
   local abs_path
   abs_path="$(cd "$git_common_dir" && pwd)"
+
+  # Non-bare repo: git-common-dir points to .git/, go up to working tree
+  if [ "$(git -C "$abs_path" rev-parse --is-bare-repository 2>/dev/null)" = "false" ]; then
+    abs_path="$(dirname "$abs_path")"
+  fi
+
   echo "$abs_path"
 }
 
