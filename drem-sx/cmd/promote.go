@@ -33,6 +33,10 @@ func Promote(args []string) error {
 	// Extract project name (basename without .git)
 	projectName := filepath.Base(bareRoot)
 	projectName = strings.TrimSuffix(projectName, ".git")
+	// Regular repo: git-common-dir is /path/to/repo/.git → basename is ".git"
+	if projectName == ".git" {
+		projectName = filepath.Base(filepath.Dir(bareRoot))
+	}
 
 	// Determine branch
 	var branch string

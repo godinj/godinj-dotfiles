@@ -52,6 +52,12 @@ setup() {
   assert_output "myproject"
 }
 
+@test "wt_project_name handles regular repo .git dir" {
+  run wt_project_name "/home/user/git/godinj-dotfiles/.git"
+  assert_success
+  assert_output "godinj-dotfiles"
+}
+
 # --- wt_session_name ---
 
 @test "wt_session_name with branch returns icon + project/branch" {

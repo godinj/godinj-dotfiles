@@ -1,14 +1,35 @@
 # Agent Guidelines
 
-## Sesh session icons
+## drem-sx session picker
 
-Session names in source TOML files (`sesh/sessions/*.toml`, `machines/*/sesh/sessions/*.toml`) are stored **without** icon prefixes. Icons are defined centrally in `sesh/icons.sh` and prepended at build time by `build_sesh_config.sh`.
+`drem-sx` is the Go CLI that replaces the old `sesh` + bash scripts. Source is in `drem-sx/`, installed to `~/go/bin/drem-sx`.
 
-When editing source TOML session entries, write bare names (e.g. `name = "fastfetch"`, not `name = "fastfetch"` with an icon). The build script maps each file to its icon category:
-- `tools.toml` → `ICON_TOOL`
-- `config.toml` → `ICON_CONFIG`
-- `worktrees.toml` → `ICON_WORKTREE` or `ICON_WORKTREE_PROJECT` based on `/` in name
-- All other files → `ICON_PROJECT`
+### Session icons
+
+Session names in source TOML files (`sesh/sessions/*.toml`, `machines/*/sesh/sessions/*.toml`) are stored **without** icon prefixes. Icons are applied at runtime by `drem-sx/internal/config/config.go` using icon constants from `drem-sx/internal/icons/icons.go`.
+
+When editing source TOML session entries, write bare names (e.g. `name = "fastfetch"`, not `name = "fastfetch"` with an icon). The config loader maps each TOML filename to its icon category:
+- `tools.toml` → Tool icon
+- `config.toml` → Config icon
+- `worktrees.toml` → Worktree or WorktreeProject based on `/` in name
+- All other files → Project icon
+
+### DOTFILES_DIR resolution
+
+`drem-sx` resolves the dotfiles directory via `config.DotfilesDir()` with fallback chain:
+
+1. `$DOTFILES_DIR` env var — **validated** by checking for `machine.sh` marker
+2. `~/tmux-config` symlink — follows to `$DOTFILES_DIR/tmux`, takes parent
+3. Walk up from executable looking for `machine.sh`
+
+The `~/tmux-config` symlink (created by `install.sh`) is the critical fallback. It makes the picker immune to stale `$DOTFILES_DIR` values in the tmux server environment (e.g. from pruned worktrees that set `DOTFILES_DIR` before being deleted).
+
+### Go tests
+
+```bash
+cd drem-sx && go test ./...    # all Go tests
+go test ./internal/config/...  # single package
+```
 
 ## nvim-treesitter: new API only
 
@@ -55,7 +76,7 @@ The `wt_session_name()` function in `wt/wt-helpers.sh` produces:
 - `󰀜 project/feature/name` — feature branch worktree
 - `󰀜 project/branch` — non-prefixed branch
 
-The sesh tree picker groups `󰀜 project/…` under `󱁤 project` using icon-agnostic bare-name matching in `sesh/sesh_tree_list.sh`.
+The drem-sx tree picker groups `󰀜 project/…` under `󱁤 project` using icon-agnostic bare-name matching in `drem-sx/internal/tree/tree.go`.
 
 ### Tmux session layout
 
@@ -67,9 +88,11 @@ Additional agents can be spawned into an `agents` window via `wt agent spawn`.
 
 ### Scripts and config
 
-The `wt/` directory contains all worktree management scripts. Promoted worktree sessions are stored in `$MACHINE_DIR/sesh/sessions/worktrees.toml` (gitignored, machine-local) with bare names (no icon prefix) and included during `build_sesh_config.sh`. The `wt_bare_name()` helper returns the icon-free name for TOML storage; `wt_session_name()` returns the icon-prefixed name for tmux operations.
+The `wt/` directory contains all worktree management scripts. Promoted worktree sessions are stored in `$MACHINE_DIR/sesh/sessions/worktrees.toml` (gitignored, machine-local) with bare names (no icon prefix) and loaded at runtime by `drem-sx`. The `wt_bare_name()` helper returns the icon-free name for TOML storage; `wt_session_name()` returns the icon-prefixed name for tmux operations.
 
-## Unit tests (bats-core)
+## Unit tests
+
+### Shell tests (bats-core)
 
 **Framework:** [bats-core](https://github.com/bats-core/bats-core) with bats-support, bats-assert, and bats-file helpers, pinned as git submodules under `tests/libs/`.
 
@@ -84,10 +107,17 @@ The `wt/` directory contains all worktree management scripts. Promoted worktree 
 - Test files use `.bats` extension and mirror the source directory structure under `tests/`.
 - All test files load `tests/test_helper.bash` which sets `DOTFILES_DIR` and loads bats helpers.
 - Tests cover **pure functions only** — no tmux, no git operations, no network calls.
-- Scripts with top-level side effects (e.g. `build_sesh_config.sh` with `set -euo pipefail` and `mkdir`) have their functions extracted via `sed` pattern matching on column-0 function definitions, after sourcing `icons.sh` separately.
 - `wt-helpers.sh` is sourced with `2>/dev/null || true` to suppress the `machine.sh` fallback warning.
 - Test data uses inline heredocs, not fixture files.
 - After submodule clone, run `git submodule update --init --recursive` if `tests/libs/` is empty.
+
+### Go tests (drem-sx)
+
+```bash
+cd drem-sx && go test ./...
+```
+
+Tests cover config loading, icon mapping, session merging, tree formatting, fold state, and DOTFILES_DIR resolution.
 
 ## Clipboard & file transfer tunnel architecture
 

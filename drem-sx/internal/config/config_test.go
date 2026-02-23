@@ -130,6 +130,60 @@ func TestExpandHome(t *testing.T) {
 	}
 }
 
+func TestDotfilesDirValidatesEnvVar(t *testing.T) {
+	// When DOTFILES_DIR points to a non-existent path (stale worktree),
+	// DotfilesDir should NOT return it.
+	tmp := t.TempDir()
+	stale := filepath.Join(tmp, "stale-worktree")
+	t.Setenv("DOTFILES_DIR", stale)
+	t.Setenv("HOME", tmp) // no tmux-config symlink here
+
+	_, err := DotfilesDir()
+	if err == nil {
+		t.Error("DotfilesDir() should error when env var path has no machine.sh and no fallbacks exist")
+	}
+}
+
+func TestDotfilesDirUsesValidEnvVar(t *testing.T) {
+	tmp := t.TempDir()
+	// Create marker file
+	writeFile(t, filepath.Join(tmp, "machine.sh"), "")
+	t.Setenv("DOTFILES_DIR", tmp)
+
+	got, err := DotfilesDir()
+	if err != nil {
+		t.Fatalf("DotfilesDir() error: %v", err)
+	}
+	if got != tmp {
+		t.Errorf("DotfilesDir() = %q, want %q", got, tmp)
+	}
+}
+
+func TestDotfilesDirFollowsSymlink(t *testing.T) {
+	tmp := t.TempDir()
+	// Simulate dotfiles dir with machine.sh marker
+	dotfiles := filepath.Join(tmp, "dotfiles")
+	os.MkdirAll(filepath.Join(dotfiles, "tmux"), 0o755)
+	writeFile(t, filepath.Join(dotfiles, "machine.sh"), "")
+
+	// Create ~/tmux-config symlink → dotfiles/tmux
+	home := filepath.Join(tmp, "home")
+	os.MkdirAll(home, 0o755)
+	os.Symlink(filepath.Join(dotfiles, "tmux"), filepath.Join(home, "tmux-config"))
+
+	// Stale DOTFILES_DIR
+	t.Setenv("DOTFILES_DIR", filepath.Join(tmp, "stale"))
+	t.Setenv("HOME", home)
+
+	got, err := DotfilesDir()
+	if err != nil {
+		t.Fatalf("DotfilesDir() error: %v", err)
+	}
+	if got != dotfiles {
+		t.Errorf("DotfilesDir() = %q, want %q", got, dotfiles)
+	}
+}
+
 func writeFile(t *testing.T, path, content string) {
 	t.Helper()
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {

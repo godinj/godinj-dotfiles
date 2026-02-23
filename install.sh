@@ -321,13 +321,18 @@ fi
 install_pkg go golang
 
 # drem-sx (session picker)
-if command -v drem-sx &>/dev/null; then
-  ok "drem-sx already installed"
-else
-  info "Building drem-sx..."
-  (cd "$DOTFILES_DIR/drem-sx" && go build -o "$HOME/go/bin/drem-sx" .)
-  ok "drem-sx installed"
-fi
+info "Building drem-sx..."
+(cd "$DOTFILES_DIR/drem-sx" && go build -o "$HOME/go/bin/drem-sx" .)
+ok "drem-sx installed"
+
+# Verify drem-sx runtime dependencies
+for dep in fzf tmux zoxide; do
+  if command -v "$dep" &>/dev/null; then
+    ok "drem-sx dep: $dep"
+  else
+    warn "drem-sx dep missing: $dep (session picker may not work fully)"
+  fi
+done
 
 # lazygit (via Go)
 if command -v lazygit &>/dev/null; then

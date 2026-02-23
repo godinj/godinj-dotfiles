@@ -43,7 +43,14 @@ wt_find_bare_root() {
 # Extract project name from bare repo path (foo.git -> foo).
 wt_project_name() {
   local bare_root="${1:-$(wt_find_bare_root)}"
-  basename "$bare_root" .git
+  local name
+  name="$(basename "$bare_root" .git)"
+  # Regular repo: git-common-dir is /path/to/repo/.git → basename is ".git"
+  # Go up one level to get the actual project name.
+  if [ "$name" = ".git" ]; then
+    name="$(basename "$(dirname "$bare_root")")"
+  fi
+  echo "$name"
 }
 
 # Generate session name:

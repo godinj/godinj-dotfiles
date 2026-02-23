@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
@@ -166,16 +167,36 @@ func fileExists(path string) bool {
 }
 
 // DotfilesDir resolves the dotfiles directory.
-// Checks $DOTFILES_DIR env var first, then walks up from the executable location.
+// Validates the path contains machine.sh as a marker file.
+// Tries: $DOTFILES_DIR env var → ~/tmux-config symlink → walk up from executable.
 func DotfilesDir() (string, error) {
+	// 1. Check $DOTFILES_DIR env var (validate it still exists)
 	if d := os.Getenv("DOTFILES_DIR"); d != "" {
-		return d, nil
+		if fileExists(filepath.Join(d, "machine.sh")) {
+			return d, nil
+		}
 	}
+
+	// 2. Follow ~/tmux-config symlink (points to $DOTFILES_DIR/tmux)
+	home := os.Getenv("HOME")
+	if home != "" {
+		tmuxLink := filepath.Join(home, "tmux-config")
+		if target, err := os.Readlink(tmuxLink); err == nil {
+			if !filepath.IsAbs(target) {
+				target = filepath.Join(filepath.Dir(tmuxLink), target)
+			}
+			candidate := filepath.Dir(target)
+			if fileExists(filepath.Join(candidate, "machine.sh")) {
+				return candidate, nil
+			}
+		}
+	}
+
+	// 3. Walk up from executable location
 	exe, err := os.Executable()
 	if err != nil {
 		return "", err
 	}
-	// Walk up from exe dir looking for machine.sh as a marker
 	dir := filepath.Dir(exe)
 	for i := 0; i < 5; i++ {
 		if fileExists(filepath.Join(dir, "machine.sh")) {
@@ -183,6 +204,6 @@ func DotfilesDir() (string, error) {
 		}
 		dir = filepath.Dir(dir)
 	}
-	// Fallback: assume exe is in drem-sx/ subdir of dotfiles
-	return filepath.Dir(filepath.Dir(exe)), nil
+
+	return "", fmt.Errorf("cannot find dotfiles directory (no machine.sh marker found)")
 }
