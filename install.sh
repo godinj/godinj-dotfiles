@@ -426,12 +426,21 @@ for dep in fzf tmux zoxide; do
   fi
 done
 
-# lazygit (via Go)
+# lazygit (via GitHub release binary)
 if command -v lazygit &>/dev/null; then
   ok "lazygit already installed"
 else
-  info "Installing lazygit via Go..."
-  go install github.com/jesseduffield/lazygit@latest
+  info "Installing lazygit from GitHub release..."
+  LAZYGIT_VERSION=$(curl -fsSL "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" \
+    | sed -n 's/.*"tag_name": "v\([^"]*\)".*/\1/p')
+  case "$(uname -m)" in
+    x86_64)        LG_ARCH="x86_64" ;;
+    aarch64|arm64) LG_ARCH="arm64" ;;
+  esac
+  mkdir -p "$HOME/go/bin"
+  curl -fsSL "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_${OS}_${LG_ARCH}.tar.gz" \
+    | tar xzf - -C "$HOME/go/bin" lazygit
+  ok "lazygit $LAZYGIT_VERSION installed"
 fi
 
 # JetBrainsMono Nerd Font
