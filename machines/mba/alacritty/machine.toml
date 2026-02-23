@@ -1,0 +1,10 @@
+[window]
+decorations = "Buttonless"
+option_as_alt = "Both"
+opacity = 0.85
+
+[font]
+size = 13.0
+
+[colors]
+transparent_background_colors = true

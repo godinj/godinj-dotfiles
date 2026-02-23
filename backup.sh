@@ -34,6 +34,7 @@ backup_item "$HOME/.config/nvim"         "nvim"
 backup_item "$HOME/tmux-config"          "tmux-config"
 backup_item "$HOME/.tmux.conf"           "tmux.conf"
 backup_item "$HOME/.config/sesh/sesh.toml" "sesh.toml"
+backup_item "$HOME/.config/alacritty"   "alacritty"
 backup_item "$HOME/.env"                 "env"
 
 # Firefox profile

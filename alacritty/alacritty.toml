@@ -1,0 +1,5 @@
+import = ["./machine.toml"]
+
+[font.normal]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Regular"
