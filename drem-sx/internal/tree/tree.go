@@ -174,6 +174,17 @@ func Format(entries []session.Entry, foldState *fold.State, colors *colorscheme.
 	return lines
 }
 
+// FindPos returns the 1-indexed position (for fzf pos()) of the entry
+// whose bare name matches the given name. Returns 0 if not found.
+func FindPos(lines []Line, bareName string) int {
+	for i, l := range lines {
+		if icons.StripIcon(l.Original) == bareName {
+			return i + 1
+		}
+	}
+	return 0
+}
+
 // FormatString renders tree lines as tab-delimited ORIGINAL\tDISPLAY output.
 func FormatString(lines []Line) string {
 	var sb strings.Builder

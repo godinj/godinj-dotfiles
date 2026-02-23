@@ -25,6 +25,8 @@ func main() {
 		err = cmd.Preview(os.Args[2:])
 	case "fold":
 		err = cmd.Fold(os.Args[2:])
+	case "fold-transform":
+		err = cmd.FoldTransform(os.Args[2:])
 	case "unfold-all":
 		err = cmd.UnfoldAll()
 	case "kill":
