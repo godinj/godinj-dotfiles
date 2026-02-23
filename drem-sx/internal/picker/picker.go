@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"drem-sx/internal/colorscheme"
 	"drem-sx/internal/config"
 )
 
@@ -48,8 +49,8 @@ func Run(initialInput string, cfg config.PickerConfig) (string, error) {
 		"--preview", fmt.Sprintf("%s preview {1}", self),
 	}
 
-	if cfg.Color != "" {
-		args = append(args, "--color="+cfg.Color)
+	if c := resolveColor(cfg); c != "" {
+		args = append(args, "--color="+c)
 	}
 
 	cmd := exec.Command("fzf", args...)
@@ -70,4 +71,18 @@ func Run(initialInput string, cfg config.PickerConfig) (string, error) {
 	}
 
 	return strings.TrimSpace(string(out)), nil
+}
+
+// resolveColor returns the fzf --color value string.
+// Priority: raw SESH_COLOR > named SESH_COLOR_SCHEME > empty.
+func resolveColor(cfg config.PickerConfig) string {
+	if cfg.Color != "" {
+		return cfg.Color
+	}
+	if cfg.ColorScheme != "" {
+		if s := colorscheme.Lookup(cfg.ColorScheme); s != nil {
+			return s.FzfColorString()
+		}
+	}
+	return ""
 }

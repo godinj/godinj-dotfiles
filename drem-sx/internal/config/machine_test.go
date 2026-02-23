@@ -70,6 +70,23 @@ func TestLoadPickerConfigDefaults(t *testing.T) {
 	}
 }
 
+func TestLoadPickerConfigColorScheme(t *testing.T) {
+	tmp := t.TempDir()
+	pickerDir := filepath.Join(tmp, "machines", "test", "sesh")
+	os.MkdirAll(pickerDir, 0o755)
+
+	writeFile(t, filepath.Join(pickerDir, "picker.sh"), `SESH_COLOR_SCHEME="gruvbox"
+`)
+
+	cfg := LoadPickerConfig(tmp, "test")
+	if cfg.ColorScheme != "gruvbox" {
+		t.Errorf("ColorScheme = %q, want %q", cfg.ColorScheme, "gruvbox")
+	}
+	if cfg.Color != "" {
+		t.Errorf("Color = %q, want empty", cfg.Color)
+	}
+}
+
 func TestParseShellAssignment(t *testing.T) {
 	tests := []struct {
 		line    string
