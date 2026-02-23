@@ -62,7 +62,8 @@ source "$DOTFILES_DIR/machine.sh"
 
 if [ -f "$MACHINE_FILE" ]; then
   info "Current machine profile: $MACHINE_NAME"
-  read -rp "Keep this profile? [Y/n] " keep_yn
+  printf "Keep this profile? [Y/n] "
+  read -r keep_yn
   if [[ "$keep_yn" =~ ^[Nn]$ ]]; then
     rm -f "$MACHINE_FILE"
   fi
@@ -79,7 +80,8 @@ if [ ! -f "$MACHINE_FILE" ]; then
     echo "  $((i+1))) ${profiles[$i]}"
   done
   while true; do
-    read -rp "Select profile [1-${#profiles[@]}]: " choice
+    printf "Select profile [1-${#profiles[@]}]: "
+    read -r choice
     if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#profiles[@]}" ]; then
       MACHINE_NAME="${profiles[$((choice-1))]}"
       break
