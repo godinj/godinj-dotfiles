@@ -40,11 +40,10 @@ func List(args []string) error {
 		}
 	}
 
-	// Default: -t -c -z if no source flags given
+	// Default: -t -c if no source flags given (zoxide hidden by default)
 	if !useTmux && !useConfig && !useZoxide && !useFind {
 		useTmux = true
 		useConfig = true
-		useZoxide = true
 	}
 
 	var configSessions []config.ResolvedSession

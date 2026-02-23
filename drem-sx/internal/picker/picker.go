@@ -34,7 +34,7 @@ func Run(initialInput string, cfg config.PickerConfig) (string, error) {
 		"--delimiter", "\t",
 		"--with-nth", "2",
 		"--accept-nth", "1",
-		"--header", "  ^a all ^t tmux ^g configs ^x zoxide ^w worktrees ^d tmux kill ^f find ^e fold M-e unfold",
+		"--header", "  ^a all(+zoxide) ^t tmux ^g configs ^x zoxide ^w worktrees ^d tmux kill ^f find ^e fold M-e unfold",
 		"--bind", "tab:down,btab:up",
 		"--bind", fmt.Sprintf("ctrl-a:change-prompt(%s)+reload(%s)", cfg.Prompt, reloadAll),
 		"--bind", fmt.Sprintf("ctrl-t:change-prompt(🪟  )+reload(%s)", reloadTmux),
