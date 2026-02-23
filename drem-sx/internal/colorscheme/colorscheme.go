@@ -6,10 +6,22 @@ import (
 	"strings"
 )
 
+// ContentColors holds hex color values for per-line status coloring.
+type ContentColors struct {
+	Dirty    string // hex color for dirty worktrees
+	Inactive string // hex color for inactive promoted sessions
+}
+
+// DefaultContentColors returns fallback content colors when no scheme is configured.
+func DefaultContentColors() ContentColors {
+	return ContentColors{Dirty: "#e5c07b", Inactive: "#5c6370"}
+}
+
 // Scheme holds an fzf color scheme mapping slot names to hex values.
 type Scheme struct {
 	Name   string
 	Colors map[string]string
+	Content ContentColors
 }
 
 // FzfColorString renders the scheme as an fzf --color value string
@@ -41,6 +53,7 @@ var registry = map[string]*Scheme{
 			"info":       "#b8bb26",
 			"preview-bg": "#1d2021",
 		},
+		Content: ContentColors{Dirty: "#fabd2f", Inactive: "#928374"},
 	},
 	"tokyonight": {
 		Name: "tokyonight",
@@ -51,6 +64,7 @@ var registry = map[string]*Scheme{
 			"pointer": "#f7768e",
 			"info":    "#9ece6a",
 		},
+		Content: ContentColors{Dirty: "#e0af68", Inactive: "#565f89"},
 	},
 	"kanagawa": {
 		Name: "kanagawa",
@@ -63,6 +77,7 @@ var registry = map[string]*Scheme{
 			"pointer": "#FF5D62",
 			"info":    "#98BB6C",
 		},
+		Content: ContentColors{Dirty: "#FFAA44", Inactive: "#727169"},
 	},
 	"rosepine": {
 		Name: "rosepine",
@@ -75,6 +90,7 @@ var registry = map[string]*Scheme{
 			"pointer": "#eb6f92",
 			"info":    "#9ccfd8",
 		},
+		Content: ContentColors{Dirty: "#f6c177", Inactive: "#6e6a86"},
 	},
 }
 

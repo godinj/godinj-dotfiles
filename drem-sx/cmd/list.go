@@ -6,6 +6,7 @@ import (
 
 	"drem-sx/internal/config"
 	"drem-sx/internal/fold"
+	"drem-sx/internal/gitstatus"
 	"drem-sx/internal/session"
 	"drem-sx/internal/tree"
 )
@@ -47,13 +48,15 @@ func List(args []string) error {
 
 	var configSessions []config.ResolvedSession
 	var tmuxEntries, zoxideEntries, findEntries []session.Entry
+	var dotfilesDir, machineName string
 
 	if useConfig || useTmux {
-		dotfilesDir, err := config.DotfilesDir()
+		var err error
+		dotfilesDir, err = config.DotfilesDir()
 		if err != nil {
 			return err
 		}
-		machineName := config.MachineName(dotfilesDir)
+		machineName = config.MachineName(dotfilesDir)
 		sessions, err := config.Load(dotfilesDir, machineName)
 		if err != nil {
 			return err
@@ -89,14 +92,20 @@ func List(args []string) error {
 
 	entries := session.Merge(configSessions, tmuxEntries, zoxideEntries, findEntries)
 
+	// Annotate worktree entries with dirty/inactive status
+	session.Annotate(entries, gitstatus.GitChecker{}, tmuxAdapter{})
+
 	if showWorktree {
 		entries = session.FilterWorktrees(entries)
 	}
 
+	// Resolve content colors
+	colors := resolveContentColors(dotfilesDir, machineName)
+
 	if showTree {
 		foldPath := fold.DefaultPath()
 		state := fold.Load(foldPath)
-		lines := tree.Format(entries, state)
+		lines := tree.Format(entries, state, colors)
 		fmt.Print(tree.FormatString(lines))
 		if len(lines) > 0 {
 			fmt.Println()

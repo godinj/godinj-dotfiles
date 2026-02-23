@@ -7,6 +7,7 @@ import (
 
 	"drem-sx/internal/config"
 	"drem-sx/internal/fold"
+	"drem-sx/internal/gitstatus"
 	"drem-sx/internal/icons"
 	"drem-sx/internal/picker"
 	"drem-sx/internal/session"
@@ -32,9 +33,15 @@ func Pick() error {
 	zoxideEntries, _ := session.ListZoxide()
 	entries := session.Merge(configSessions, tmuxEntries, zoxideEntries, nil)
 
+	// Annotate worktree entries with dirty/inactive status
+	session.Annotate(entries, gitstatus.GitChecker{}, tmuxAdapter{})
+
+	// Resolve content colors
+	colors := resolveContentColors(dotfilesDir, machineName)
+
 	foldPath := fold.DefaultPath()
 	state := fold.Load(foldPath)
-	lines := tree.Format(entries, state)
+	lines := tree.Format(entries, state, colors)
 	initialInput := tree.FormatString(lines)
 	if len(lines) > 0 {
 		initialInput += "\n"

@@ -1,6 +1,7 @@
 package tree
 
 import (
+	"drem-sx/internal/colorscheme"
 	"drem-sx/internal/fold"
 	"drem-sx/internal/icons"
 	"drem-sx/internal/session"
@@ -22,7 +23,7 @@ func makeEntry(displayName string) session.Entry {
 
 func TestStandalonePassthrough(t *testing.T) {
 	entries := []session.Entry{makeEntry(icons.Tool + " fastfetch")}
-	lines := Format(entries, nil)
+	lines := Format(entries, nil, nil)
 
 	if len(lines) != 1 {
 		t.Fatalf("expected 1 line, got %d", len(lines))
@@ -40,7 +41,7 @@ func TestChildGroupsUnderParent(t *testing.T) {
 		makeEntry(icons.WorktreeProject + " myproject"),
 		makeEntry(icons.Worktree + " myproject/feature/auth"),
 	}
-	lines := Format(entries, nil)
+	lines := Format(entries, nil, nil)
 
 	if len(lines) != 2 {
 		t.Fatalf("expected 2 lines, got %d", len(lines))
@@ -63,7 +64,7 @@ func TestMultipleChildrenTreeChars(t *testing.T) {
 		makeEntry(icons.Worktree + " proj/feature/a"),
 		makeEntry(icons.Worktree + " proj/feature/b"),
 	}
-	lines := Format(entries, nil)
+	lines := Format(entries, nil, nil)
 
 	if len(lines) != 3 {
 		t.Fatalf("expected 3 lines, got %d", len(lines))
@@ -84,7 +85,7 @@ func TestOrphanChildPassthrough(t *testing.T) {
 	entries := []session.Entry{
 		makeEntry(icons.Worktree + " orphan/feature/x"),
 	}
-	lines := Format(entries, nil)
+	lines := Format(entries, nil, nil)
 
 	if len(lines) != 1 {
 		t.Fatalf("expected 1 line, got %d", len(lines))
@@ -106,7 +107,7 @@ func TestFoldedParentHidesChildren(t *testing.T) {
 		makeEntry(icons.Worktree + " proj/feature/a"),
 		makeEntry(icons.Worktree + " proj/feature/b"),
 	}
-	lines := Format(entries, state)
+	lines := Format(entries, state, nil)
 
 	if len(lines) != 1 {
 		t.Fatalf("expected 1 line (folded), got %d", len(lines))
@@ -129,7 +130,7 @@ func TestExpandedParentWithFoldFile(t *testing.T) {
 		makeEntry(icons.WorktreeProject + " proj"),
 		makeEntry(icons.Worktree + " proj/feature/a"),
 	}
-	lines := Format(entries, state)
+	lines := Format(entries, state, nil)
 
 	if len(lines) != 2 {
 		t.Fatalf("expected 2 lines, got %d", len(lines))
@@ -156,7 +157,7 @@ func TestMixedFoldState(t *testing.T) {
 		makeEntry(icons.WorktreeProject + " beta"),
 		makeEntry(icons.Worktree + " beta/feature/y"),
 	}
-	lines := Format(entries, state)
+	lines := Format(entries, state, nil)
 
 	// alpha is folded: 1 line
 	// beta is expanded: 2 lines (child + parent)
@@ -185,7 +186,7 @@ func TestStandaloneWithFoldFile(t *testing.T) {
 	state := fold.Load(foldPath)
 
 	entries := []session.Entry{makeEntry(icons.Tool + " fastfetch")}
-	lines := Format(entries, state)
+	lines := Format(entries, state, nil)
 
 	if len(lines) != 1 {
 		t.Fatalf("expected 1 line, got %d", len(lines))
@@ -205,7 +206,7 @@ func TestMissingFoldFileTreatedAsExpanded(t *testing.T) {
 		makeEntry(icons.WorktreeProject + " proj"),
 		makeEntry(icons.Worktree + " proj/feature/a"),
 	}
-	lines := Format(entries, state)
+	lines := Format(entries, state, nil)
 
 	if len(lines) != 2 {
 		t.Fatalf("expected 2 lines, got %d", len(lines))
@@ -229,7 +230,7 @@ func TestOriginalColumnUnchangedForFolded(t *testing.T) {
 		makeEntry(icons.WorktreeProject + " proj"),
 		makeEntry(icons.Worktree + " proj/feature/a"),
 	}
-	lines := Format(entries, state)
+	lines := Format(entries, state, nil)
 
 	if len(lines) != 1 {
 		t.Fatalf("expected 1 line, got %d", len(lines))
@@ -248,5 +249,91 @@ func TestFormatString(t *testing.T) {
 	want := "orig1\tdisp1\norig2\tdisp2"
 	if got != want {
 		t.Errorf("FormatString = %q, want %q", got, want)
+	}
+}
+
+func TestColorDirtyChild(t *testing.T) {
+	colors := &colorscheme.ContentColors{Dirty: "#fabd2f", Inactive: "#928374"}
+	entries := []session.Entry{
+		{DisplayName: icons.WorktreeProject + " proj", BareName: "proj", Source: session.SourceConfig, Status: session.StatusDirty},
+		{DisplayName: icons.Worktree + " proj/feature/a", BareName: "proj/feature/a", Source: session.SourceTmux, Status: session.StatusDirty},
+	}
+	lines := Format(entries, nil, colors)
+
+	if len(lines) != 2 {
+		t.Fatalf("expected 2 lines, got %d", len(lines))
+	}
+	// Child display should contain ANSI escape
+	if !strings.Contains(lines[0].Display, "\033[38;2;") {
+		t.Errorf("dirty child should have ANSI color, got %q", lines[0].Display)
+	}
+	// Parent display should contain ANSI escape
+	if !strings.Contains(lines[1].Display, "\033[38;2;") {
+		t.Errorf("dirty parent should have ANSI color, got %q", lines[1].Display)
+	}
+	// Original must never have ANSI
+	if strings.Contains(lines[0].Original, "\033") {
+		t.Errorf("Original should not have ANSI codes, got %q", lines[0].Original)
+	}
+	if strings.Contains(lines[1].Original, "\033") {
+		t.Errorf("Original should not have ANSI codes, got %q", lines[1].Original)
+	}
+}
+
+func TestColorInactiveChild(t *testing.T) {
+	colors := &colorscheme.ContentColors{Dirty: "#fabd2f", Inactive: "#928374"}
+	entries := []session.Entry{
+		{DisplayName: icons.WorktreeProject + " proj", BareName: "proj", Source: session.SourceConfig, Status: session.StatusInactive},
+		{DisplayName: icons.Worktree + " proj/feature/a", BareName: "proj/feature/a", Source: session.SourceConfig, Status: session.StatusInactive},
+	}
+	lines := Format(entries, nil, colors)
+
+	if len(lines) != 2 {
+		t.Fatalf("expected 2 lines, got %d", len(lines))
+	}
+	// Both lines should have inactive ANSI color (146, 131, 116 = #928374)
+	if !strings.Contains(lines[0].Display, "\033[38;2;146;131;116m") {
+		t.Errorf("inactive child should have inactive color, got %q", lines[0].Display)
+	}
+	if !strings.Contains(lines[1].Display, "\033[38;2;146;131;116m") {
+		t.Errorf("inactive parent should have inactive color, got %q", lines[1].Display)
+	}
+}
+
+func TestColorNilColorsNoAnsi(t *testing.T) {
+	entries := []session.Entry{
+		{DisplayName: icons.WorktreeProject + " proj", BareName: "proj", Source: session.SourceConfig, Status: session.StatusDirty},
+		{DisplayName: icons.Worktree + " proj/feature/a", BareName: "proj/feature/a", Source: session.SourceTmux, Status: session.StatusDirty},
+	}
+	lines := Format(entries, nil, nil)
+
+	for _, l := range lines {
+		if strings.Contains(l.Display, "\033") {
+			t.Errorf("nil colors should produce no ANSI, got Display %q", l.Display)
+		}
+	}
+}
+
+func TestColorFoldedDirtyParent(t *testing.T) {
+	tmp := t.TempDir()
+	foldPath := filepath.Join(tmp, "fold_state")
+	os.WriteFile(foldPath, []byte("proj\n"), 0o644)
+	state := fold.Load(foldPath)
+
+	colors := &colorscheme.ContentColors{Dirty: "#fabd2f", Inactive: "#928374"}
+	entries := []session.Entry{
+		{DisplayName: icons.WorktreeProject + " proj", BareName: "proj", Source: session.SourceConfig, Status: session.StatusDirty},
+		{DisplayName: icons.Worktree + " proj/feature/a", BareName: "proj/feature/a", Source: session.SourceTmux, Status: session.StatusDirty},
+	}
+	lines := Format(entries, state, colors)
+
+	if len(lines) != 1 {
+		t.Fatalf("expected 1 folded line, got %d", len(lines))
+	}
+	if !strings.Contains(lines[0].Display, "\033[38;2;") {
+		t.Errorf("folded dirty parent should have ANSI color, got %q", lines[0].Display)
+	}
+	if strings.Contains(lines[0].Original, "\033") {
+		t.Errorf("Original should not have ANSI codes, got %q", lines[0].Original)
 	}
 }

@@ -78,3 +78,28 @@ func TestNames(t *testing.T) {
 		}
 	}
 }
+
+func TestContentColorSlots(t *testing.T) {
+	for _, name := range Names() {
+		s := Lookup(name)
+		if s == nil {
+			t.Fatalf("Lookup(%q) returned nil", name)
+		}
+		if s.Content.Dirty == "" {
+			t.Errorf("scheme %q has empty Content.Dirty", name)
+		}
+		if s.Content.Inactive == "" {
+			t.Errorf("scheme %q has empty Content.Inactive", name)
+		}
+	}
+}
+
+func TestDefaultContentColors(t *testing.T) {
+	c := DefaultContentColors()
+	if c.Dirty == "" {
+		t.Error("DefaultContentColors().Dirty is empty")
+	}
+	if c.Inactive == "" {
+		t.Error("DefaultContentColors().Inactive is empty")
+	}
+}

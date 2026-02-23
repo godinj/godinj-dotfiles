@@ -1,6 +1,8 @@
 package tree
 
 import (
+	"drem-sx/internal/ansi"
+	"drem-sx/internal/colorscheme"
 	"drem-sx/internal/fold"
 	"drem-sx/internal/icons"
 	"drem-sx/internal/session"
@@ -21,12 +23,28 @@ type Line struct {
 	Display  string
 }
 
+// colorize wraps display text in ANSI color based on entry status.
+func colorize(display string, status session.Status, colors *colorscheme.ContentColors) string {
+	if colors == nil {
+		return display
+	}
+	switch status {
+	case session.StatusDirty:
+		return ansi.Fg(display, colors.Dirty)
+	case session.StatusInactive:
+		return ansi.Fg(display, colors.Inactive)
+	default:
+		return display
+	}
+}
+
 // Format transforms a list of session entries into tree-structured lines.
 // The output matches the AWK pipeline in sesh_tree_list.sh:
 // - Children are emitted BEFORE their parent (fzf bottom-to-top)
 // - Tree chars: └── for first/last child, ├── for middle children
 // - Fold: collapsed parents show ▸ name [N], expanded show ▾ name
-func Format(entries []session.Entry, foldState *fold.State) []Line {
+// colors may be nil to skip ANSI coloring.
+func Format(entries []session.Entry, foldState *fold.State, colors *colorscheme.ContentColors) []Line {
 	// Build index: bare name → entry index
 	bareToIdx := make(map[string]int)
 	for i, e := range entries {
@@ -92,7 +110,7 @@ func Format(entries []session.Entry, foldState *fold.State) []Line {
 				display := fmt.Sprintf("%s %s [%d]", foldedChar, e.DisplayName, len(pending))
 				lines = append(lines, Line{
 					Original: e.DisplayName,
-					Display:  display,
+					Display:  colorize(display, e.Status, colors),
 				})
 			} else {
 				// Expanded: emit children with tree chars (reversed order for fzf)
@@ -126,7 +144,7 @@ func Format(entries []session.Entry, foldState *fold.State) []Line {
 					display := fmt.Sprintf("   %s%s %s", tree, childIcon, branch)
 					lines = append(lines, Line{
 						Original: child.DisplayName,
-						Display:  display,
+						Display:  colorize(display, child.Status, colors),
 					})
 				}
 
@@ -140,7 +158,7 @@ func Format(entries []session.Entry, foldState *fold.State) []Line {
 				}
 				lines = append(lines, Line{
 					Original: e.DisplayName,
-					Display:  display,
+					Display:  colorize(display, e.Status, colors),
 				})
 			}
 		} else {
@@ -148,7 +166,7 @@ func Format(entries []session.Entry, foldState *fold.State) []Line {
 			emitted[i] = true
 			lines = append(lines, Line{
 				Original: e.DisplayName,
-				Display:  e.DisplayName,
+				Display:  colorize(e.DisplayName, e.Status, colors),
 			})
 		}
 	}
