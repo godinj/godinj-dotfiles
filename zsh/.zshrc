@@ -146,6 +146,8 @@ clip() {
     printf '\033]52;c;%s\a' "$data"
   fi
 }
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
 export NVM_DIR="$HOME/.nvm"
 if command -v brew &>/dev/null; then
   [ -s "$(brew --prefix nvm)/nvm.sh" ] && \. "$(brew --prefix nvm)/nvm.sh"
