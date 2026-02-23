@@ -7,6 +7,7 @@
 .machine
 tmux/machine.conf
 tmux/local.conf
+alacritty/machine.toml
 sesh/sessions/local.toml
 machines/*/sesh/sessions/worktrees.toml
 nvim/lua/custom/plugins/machine_theme.lua

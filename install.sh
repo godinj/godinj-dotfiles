@@ -122,6 +122,7 @@ info "Creating symlinks..."
 create_link "$DOTFILES_DIR/zsh/.zshrc"        "$HOME/.zshrc"
 create_link "$DOTFILES_DIR/git/.gitconfig"     "$HOME/.gitconfig"
 create_link "$DOTFILES_DIR/nvim"               "$HOME/.config/nvim"
+create_link "$DOTFILES_DIR/alacritty"          "$HOME/.config/alacritty"
 create_link "$DOTFILES_DIR/tmux"               "$HOME/tmux-config"
 create_link "$DOTFILES_DIR/tmux/.tmux.conf"    "$HOME/.tmux.conf"
 create_link "$DOTFILES_DIR/.env.template"      "$HOME/.env.template"
@@ -138,6 +139,12 @@ done
 info "Deploying machine profile: $MACHINE_NAME"
 ln -sf "$MACHINE_DIR/tmux/machine.conf" "$DOTFILES_DIR/tmux/machine.conf"
 ok "Symlinked tmux/machine.conf → $MACHINE_NAME"
+if [ -f "$MACHINE_DIR/alacritty/machine.toml" ]; then
+  ln -sf "$MACHINE_DIR/alacritty/machine.toml" "$DOTFILES_DIR/alacritty/machine.toml"
+  ok "Symlinked alacritty/machine.toml → $MACHINE_NAME"
+else
+  rm -f "$DOTFILES_DIR/alacritty/machine.toml"
+fi
 if [ -f "$MACHINE_DIR/zsh/machine.zsh" ]; then
   ln -sf "$MACHINE_DIR/zsh/machine.zsh" "$DOTFILES_DIR/zsh/machine.zsh"
   ok "Symlinked zsh/machine.zsh → $MACHINE_NAME"
@@ -484,6 +491,20 @@ elif [ "$PKG" != "termux" ]; then
       done
       ok "JetBrainsMono fonts installed and registered on Windows"
     fi
+  fi
+fi
+
+# Alacritty — skip on Termux and WSL
+if [ "$PKG" != "termux" ] && ! grep -qi microsoft /proc/version 2>/dev/null; then
+  if command -v alacritty &>/dev/null; then
+    ok "alacritty already installed"
+  else
+    info "Installing alacritty..."
+    case "$PKG" in
+      brew) brew install --cask alacritty ;;
+      apt)  sudo apt-get install -y alacritty ;;
+      dnf)  sudo dnf install -y alacritty ;;
+    esac
   fi
 fi
 
