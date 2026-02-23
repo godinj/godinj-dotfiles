@@ -31,12 +31,12 @@ func Connect(args []string) error {
 	}
 	machineName := config.MachineName(dotfilesDir)
 
-	// 1. If tmux session exists → switch to it
+	// 1. If tmux session exists by exact name → switch to it
 	if tmuxctl.SessionExists(name) {
 		return tmuxctl.SwitchTo(name)
 	}
 
-	// 2. Look up by display name in config
+	// 2. Look up by display name or bare name in config
 	sessions, err := config.Load(dotfilesDir, machineName)
 	if err != nil {
 		return err
@@ -44,37 +44,15 @@ func Connect(args []string) error {
 
 	for _, s := range sessions {
 		if s.DisplayName == name || s.BareName == name {
-			sessionName := s.DisplayName
-			if err := tmuxctl.NewSession(sessionName, s.Path); err != nil {
-				return err
-			}
-			cmd := s.StartupCommand
-			if *cmdFlag != "" {
-				cmd = *cmdFlag
-			}
-			if cmd != "" {
-				tmuxctl.SendKeys(sessionName, cmd)
-			}
-			return tmuxctl.SwitchTo(sessionName)
+			return connectSession(s, *cmdFlag)
 		}
 	}
 
-	// 3. Try matching with icon prefix applied
+	// 3. Try matching with icon prefix stripped
 	bareName := icons.StripIcon(name)
 	for _, s := range sessions {
 		if s.BareName == bareName {
-			sessionName := s.DisplayName
-			if err := tmuxctl.NewSession(sessionName, s.Path); err != nil {
-				return err
-			}
-			cmd := s.StartupCommand
-			if *cmdFlag != "" {
-				cmd = *cmdFlag
-			}
-			if cmd != "" {
-				tmuxctl.SendKeys(sessionName, cmd)
-			}
-			return tmuxctl.SwitchTo(sessionName)
+			return connectSession(s, *cmdFlag)
 		}
 	}
 
@@ -89,6 +67,28 @@ func Connect(args []string) error {
 	}
 	if *cmdFlag != "" {
 		tmuxctl.SendKeys(sessionName, *cmdFlag)
+	}
+	return tmuxctl.SwitchTo(sessionName)
+}
+
+// connectSession switches to an existing session or creates a new one from config.
+func connectSession(s config.ResolvedSession, cmdOverride string) error {
+	sessionName := s.DisplayName
+
+	// If the session already exists (e.g. icon-prefixed name), just switch to it
+	if tmuxctl.SessionExists(sessionName) {
+		return tmuxctl.SwitchTo(sessionName)
+	}
+
+	if err := tmuxctl.NewSession(sessionName, s.Path); err != nil {
+		return err
+	}
+	cmd := s.StartupCommand
+	if cmdOverride != "" {
+		cmd = cmdOverride
+	}
+	if cmd != "" {
+		tmuxctl.SendKeys(sessionName, cmd)
 	}
 	return tmuxctl.SwitchTo(sessionName)
 }

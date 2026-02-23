@@ -1,6 +1,7 @@
 package tmuxctl
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 )
@@ -16,7 +17,11 @@ func NewSession(name, dir string) error {
 	if dir != "" {
 		args = append(args, "-c", dir)
 	}
-	return exec.Command("tmux", args...).Run()
+	cmd := exec.Command("tmux", args...)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("new-session %q: %s", name, trimOutput(out, err))
+	}
+	return nil
 }
 
 // SwitchTo switches to or attaches to the named tmux session.
@@ -33,12 +38,20 @@ func SwitchTo(name string) error {
 
 // SendKeys sends keys to the named tmux session.
 func SendKeys(session, keys string) error {
-	return exec.Command("tmux", "send-keys", "-t", "="+session, keys, "Enter").Run()
+	cmd := exec.Command("tmux", "send-keys", "-t", "="+session, keys, "Enter")
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("send-keys %q: %s", session, trimOutput(out, err))
+	}
+	return nil
 }
 
 // KillSession kills the named tmux session.
 func KillSession(name string) error {
-	return exec.Command("tmux", "kill-session", "-t", "="+name).Run()
+	cmd := exec.Command("tmux", "kill-session", "-t", "="+name)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("kill-session %q: %s", name, trimOutput(out, err))
+	}
+	return nil
 }
 
 // IsInsideTmux checks whether we're running inside a tmux session.
@@ -50,7 +63,20 @@ func IsInsideTmux() bool {
 func CapturePane(session string) (string, error) {
 	out, err := exec.Command("tmux", "capture-pane", "-t", "="+session, "-p", "-e").Output()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("capture-pane %q: %w", session, err)
 	}
 	return string(out), nil
+}
+
+// trimOutput returns the tmux stderr/stdout message, falling back to the error string.
+func trimOutput(out []byte, err error) string {
+	s := string(out)
+	if len(s) > 0 {
+		// Remove trailing newline from tmux output
+		if s[len(s)-1] == '\n' {
+			s = s[:len(s)-1]
+		}
+		return s
+	}
+	return err.Error()
 }
