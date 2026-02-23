@@ -239,6 +239,93 @@ func TestOriginalColumnUnchangedForFolded(t *testing.T) {
 	}
 }
 
+func TestFindPosParent(t *testing.T) {
+	entries := []session.Entry{
+		makeEntry(icons.WorktreeProject + " proj"),
+		makeEntry(icons.Worktree + " proj/feature/a"),
+		makeEntry(icons.Worktree + " proj/feature/b"),
+	}
+	lines := Format(entries, nil)
+
+	pos := FindPos(lines, "proj")
+	// Parent is the last line (after children), so pos = len(lines)
+	if pos != len(lines) {
+		t.Errorf("FindPos(proj) = %d, want %d", pos, len(lines))
+	}
+}
+
+func TestFindPosParentFolded(t *testing.T) {
+	tmp := t.TempDir()
+	foldPath := filepath.Join(tmp, "fold_state")
+	os.WriteFile(foldPath, []byte("proj\n"), 0o644)
+	state := fold.Load(foldPath)
+
+	entries := []session.Entry{
+		makeEntry(icons.WorktreeProject + " proj"),
+		makeEntry(icons.Worktree + " proj/feature/a"),
+		makeEntry(icons.Worktree + " proj/feature/b"),
+	}
+	lines := Format(entries, state)
+
+	pos := FindPos(lines, "proj")
+	if pos != 1 {
+		t.Errorf("FindPos(proj) folded = %d, want 1", pos)
+	}
+}
+
+func TestFindPosMixed(t *testing.T) {
+	tmp := t.TempDir()
+	foldPath := filepath.Join(tmp, "fold_state")
+	os.WriteFile(foldPath, []byte("alpha\n"), 0o644)
+	state := fold.Load(foldPath)
+
+	entries := []session.Entry{
+		makeEntry(icons.WorktreeProject + " alpha"),
+		makeEntry(icons.Worktree + " alpha/feature/x"),
+		makeEntry(icons.WorktreeProject + " beta"),
+		makeEntry(icons.Worktree + " beta/feature/y"),
+	}
+	lines := Format(entries, state)
+
+	// alpha is folded: line 0 → pos 1
+	alphaPos := FindPos(lines, "alpha")
+	if alphaPos != 1 {
+		t.Errorf("FindPos(alpha) = %d, want 1", alphaPos)
+	}
+
+	// beta is expanded: child at line 1, parent at line 2 → pos 3
+	betaPos := FindPos(lines, "beta")
+	if betaPos != 3 {
+		t.Errorf("FindPos(beta) = %d, want 3", betaPos)
+	}
+}
+
+func TestFindPosNotFound(t *testing.T) {
+	entries := []session.Entry{
+		makeEntry(icons.Tool + " fastfetch"),
+	}
+	lines := Format(entries, nil)
+
+	pos := FindPos(lines, "nonexistent")
+	if pos != 0 {
+		t.Errorf("FindPos(nonexistent) = %d, want 0", pos)
+	}
+}
+
+func TestFindPosStandalone(t *testing.T) {
+	entries := []session.Entry{
+		makeEntry(icons.Tool + " fastfetch"),
+		makeEntry(icons.WorktreeProject + " proj"),
+		makeEntry(icons.Worktree + " proj/feature/a"),
+	}
+	lines := Format(entries, nil)
+
+	pos := FindPos(lines, "fastfetch")
+	if pos != 1 {
+		t.Errorf("FindPos(fastfetch) = %d, want 1", pos)
+	}
+}
+
 func TestFormatString(t *testing.T) {
 	lines := []Line{
 		{Original: "orig1", Display: "disp1"},

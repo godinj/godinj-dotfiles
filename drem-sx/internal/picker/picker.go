@@ -43,7 +43,7 @@ func Run(initialInput string, cfg config.PickerConfig) (string, error) {
 		"--bind", fmt.Sprintf("ctrl-w:change-prompt(  )+reload(%s)", reloadWorktrees),
 		"--bind", fmt.Sprintf("ctrl-f:change-prompt(🔎  )+reload(%s)", reloadFind),
 		"--bind", fmt.Sprintf("ctrl-d:execute(%s kill {1})+change-prompt(%s)+reload(%s)", self, cfg.Prompt, reloadAll),
-		"--bind", fmt.Sprintf("ctrl-e:execute-silent(%s fold {1})+change-prompt(%s)+reload(%s)", self, cfg.Prompt, reloadAll),
+		"--bind", fmt.Sprintf("ctrl-e:transform(%s fold-transform {1})", self),
 		"--bind", fmt.Sprintf("alt-e:execute-silent(%s unfold-all)+change-prompt(%s)+reload(%s)", self, cfg.Prompt, reloadAll),
 		"--preview-window", cfg.PreviewWindow,
 		"--preview", fmt.Sprintf("%s preview {1}", self),
