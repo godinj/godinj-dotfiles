@@ -6,7 +6,7 @@ DOTFILES_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 if git diff-tree -r --name-only ORIG_HEAD HEAD | grep -q '^drem-sx/'; then
   if command -v go &>/dev/null; then
     printf "\033[1;34m::\033[0m Rebuilding drem-sx (source changed)...\n"
-    (cd "$DOTFILES_DIR/drem-sx" && go build -o "$HOME/go/bin/drem-sx" .) && \
+    (cd "$DOTFILES_DIR/drem-sx" && go build -mod=vendor -o "$HOME/go/bin/drem-sx" .) && \
       printf "\033[1;32m✓\033[0m  drem-sx rebuilt\n" || \
       printf "\033[1;31m✗\033[0m  drem-sx build failed\n"
   fi

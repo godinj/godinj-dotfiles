@@ -31,7 +31,7 @@ render_template() {
   local src="$1" dest="$2"
   mkdir -p "$(dirname "$dest")"
   rm -f "$dest"
-  envsubst < "$src" > "$dest"
+  sed -e "s|\${HOME}|$HOME|g" -e "s|\${MACHINE_RECEIVE_DIR}|${MACHINE_RECEIVE_DIR:-}|g" "$src" > "$dest"
   ok "Rendered $(basename "$dest")"
 }
 
@@ -414,7 +414,7 @@ install_pkg go golang
 
 # drem-sx (session picker)
 info "Building drem-sx..."
-(cd "$DOTFILES_DIR/drem-sx" && go build -o "$HOME/go/bin/drem-sx" .)
+(cd "$DOTFILES_DIR/drem-sx" && go build -mod=vendor -o "$HOME/go/bin/drem-sx" .)
 ok "drem-sx installed"
 
 # Verify drem-sx runtime dependencies
