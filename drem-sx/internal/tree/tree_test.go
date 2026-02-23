@@ -246,7 +246,7 @@ func TestFindPosParent(t *testing.T) {
 		makeEntry(icons.Worktree + " proj/feature/a"),
 		makeEntry(icons.Worktree + " proj/feature/b"),
 	}
-	lines := Format(entries, nil)
+	lines := Format(entries, nil, nil)
 
 	pos := FindPos(lines, "proj")
 	// Parent is the last line (after children), so pos = len(lines)
@@ -266,7 +266,7 @@ func TestFindPosParentFolded(t *testing.T) {
 		makeEntry(icons.Worktree + " proj/feature/a"),
 		makeEntry(icons.Worktree + " proj/feature/b"),
 	}
-	lines := Format(entries, state)
+	lines := Format(entries, state, nil)
 
 	pos := FindPos(lines, "proj")
 	if pos != 1 {
@@ -286,7 +286,7 @@ func TestFindPosMixed(t *testing.T) {
 		makeEntry(icons.WorktreeProject + " beta"),
 		makeEntry(icons.Worktree + " beta/feature/y"),
 	}
-	lines := Format(entries, state)
+	lines := Format(entries, state, nil)
 
 	// alpha is folded: line 0 → pos 1
 	alphaPos := FindPos(lines, "alpha")
@@ -305,7 +305,7 @@ func TestFindPosNotFound(t *testing.T) {
 	entries := []session.Entry{
 		makeEntry(icons.Tool + " fastfetch"),
 	}
-	lines := Format(entries, nil)
+	lines := Format(entries, nil, nil)
 
 	pos := FindPos(lines, "nonexistent")
 	if pos != 0 {
@@ -319,7 +319,7 @@ func TestFindPosStandalone(t *testing.T) {
 		makeEntry(icons.WorktreeProject + " proj"),
 		makeEntry(icons.Worktree + " proj/feature/a"),
 	}
-	lines := Format(entries, nil)
+	lines := Format(entries, nil, nil)
 
 	pos := FindPos(lines, "fastfetch")
 	if pos != 1 {

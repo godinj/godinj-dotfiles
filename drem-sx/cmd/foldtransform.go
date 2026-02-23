@@ -65,7 +65,7 @@ func FoldTransform(args []string) error {
 
 	// Re-read fold state (we just wrote it)
 	state = fold.Load(foldPath)
-	lines := tree.Format(entries, state)
+	lines := tree.Format(entries, state, nil)
 
 	pos := tree.FindPos(lines, parent)
 
