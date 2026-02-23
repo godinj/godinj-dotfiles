@@ -86,6 +86,18 @@ Every worktree session has a `code` window with two panes:
 
 Additional agents can be spawned into an `agents` window via `wt agent spawn`.
 
+### Migrating existing repos
+
+Conventional repos (non-bare, with a `.git/` directory) should be converted to the bare-repo layout using `wt migrate`. This preserves all local branches, stashes, and hooks by promoting the `.git/` directory in place rather than re-cloning.
+
+```bash
+wt migrate ~/git/myproject                          # basic migration
+wt migrate ~/git/myproject --copy-untracked          # also copy untracked files
+wt migrate ~/git/myproject --copy-untracked --remove  # and remove old dir
+```
+
+**Do NOT** manually rearrange `.git/` directories or use `git clone --bare` for migration — that loses local branches, stashes, and hooks. Always use `wt migrate`.
+
 ### Scripts and config
 
 The `wt/` directory contains all worktree management scripts. Promoted worktree sessions are stored in `$MACHINE_DIR/sesh/sessions/worktrees.toml` (gitignored, machine-local) with bare names (no icon prefix) and loaded at runtime by `drem-sx`. The `wt_bare_name()` helper returns the icon-free name for TOML storage; `wt_session_name()` returns the icon-prefixed name for tmux operations.
