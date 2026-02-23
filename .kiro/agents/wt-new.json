@@ -1,0 +1,8 @@
+{
+  "name": "wt-new",
+  "description": "Create a new git worktree for parallel feature development",
+  "prompt": "file://./prompts/wt-new.md",
+  "tools": ["read", "write", "edit", "shell"],
+  "allowedTools": ["*"],
+  "resources": ["file://.kiro/steering/worktrees.md"]
+}

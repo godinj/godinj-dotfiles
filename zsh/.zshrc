@@ -13,7 +13,7 @@ export PATH=/opt/homebrew/bin:$PATH
 export PATH=/opt/local/bin:$PATH
 export PATH=/usr/local/lib:$PATH
 export PATH="$HOME/tmux-config/scripts:$PATH"
-export PATH="$HOME/git/godinj-dotfiles/sesh:$PATH"
+export PATH="$DOTFILES_DIR/sesh:$PATH"
 export PATH="$DOTFILES_DIR/wt:$PATH"
 
 # Path to your Oh My Zsh installation.

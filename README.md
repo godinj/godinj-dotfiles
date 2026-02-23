@@ -5,12 +5,23 @@ Personal development environment configuration for macOS, Linux, Termux/Android,
 ## Quick Start
 
 ```bash
-git clone git@github.com:godinj/godinj-dotfiles.git ~/git/godinj-dotfiles
-cd ~/git/godinj-dotfiles
-bash install.sh
+# One-liner (clones as bare repo + worktrees, then runs install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/godinj/godinj-dotfiles/master/bootstrap.sh)
+
+# Or step by step
+git clone --bare git@github.com:godinj/godinj-dotfiles.git ~/git/godinj-dotfiles.git
+bash ~/git/godinj-dotfiles.git/master/bootstrap.sh
 ```
 
-The installer is idempotent — safe to re-run at any time.
+This follows the bare-repo-with-worktrees convention used by `wt` for all projects:
+
+```
+~/git/godinj-dotfiles.git/              # bare repo
+~/git/godinj-dotfiles.git/master/       # default branch worktree
+~/git/godinj-dotfiles.git/feature/foo/  # feature branch worktree
+```
+
+The bootstrap script and installer are both idempotent — safe to re-run at any time.
 
 ## Scripts
 

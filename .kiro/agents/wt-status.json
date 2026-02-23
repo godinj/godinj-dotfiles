@@ -1,0 +1,8 @@
+{
+  "name": "wt-status",
+  "description": "Show the status of all git worktrees and feature branches",
+  "prompt": "file://./prompts/wt-status.md",
+  "tools": ["read", "shell"],
+  "allowedTools": ["*"],
+  "resources": ["file://.kiro/steering/worktrees.md"]
+}

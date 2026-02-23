@@ -1,0 +1,8 @@
+{
+  "name": "wt-sync",
+  "description": "Sync all feature worktrees by rebasing them onto the default branch",
+  "prompt": "file://./prompts/wt-sync.md",
+  "tools": ["read", "write", "edit", "shell"],
+  "allowedTools": ["*"],
+  "resources": ["file://.kiro/steering/worktrees.md"]
+}

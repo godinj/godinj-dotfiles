@@ -186,6 +186,84 @@ if [ "$OS" = "Darwin" ]; then
   ok "File-receive listener LaunchAgent loaded"
 fi
 
+# Firefox profile symlink
+setup_firefox_profile() {
+  info "Setting up Firefox profile symlink..."
+
+  # Locate profiles.ini
+  local ff_dir
+  case "$OS" in
+    Darwin) ff_dir="$HOME/Library/Application Support/Firefox" ;;
+    Linux)  ff_dir="$HOME/.mozilla/firefox" ;;
+  esac
+
+  local profiles_ini="$ff_dir/profiles.ini"
+  if [ ! -f "$profiles_ini" ]; then
+    warn "Firefox profiles.ini not found — skipping (Firefox not installed or never launched)"
+    return
+  fi
+
+  # Parse default profile path from [Install*] section, fall back to first [Profile*]
+  local profile_rel
+  profile_rel="$(awk '
+    /^\[Install/ { in_install=1; next }
+    /^\[/        { in_install=0 }
+    in_install && /^Default=/ { sub(/^Default=/, ""); print; exit }
+  ' "$profiles_ini")"
+
+  if [ -z "$profile_rel" ]; then
+    profile_rel="$(awk '
+      /^\[Profile/ { in_profile=1; is_rel=0; path=""; next }
+      /^\[/        { if (in_profile && is_rel && path != "") { print path; exit }; in_profile=0 }
+      in_profile && /^IsRelative=1/ { is_rel=1 }
+      in_profile && /^Path=/ { sub(/^Path=/, ""); path=$0 }
+      END { if (in_profile && is_rel && path != "") print path }
+    ' "$profiles_ini")"
+  fi
+
+  if [ -z "$profile_rel" ]; then
+    warn "Could not determine default Firefox profile — skipping"
+    return
+  fi
+
+  local profile_dir="$ff_dir/$profile_rel"
+
+  # Check if Firefox is running (lock files present)
+  if [ -e "$profile_dir/lock" ] || [ -e "$profile_dir/.parentlock" ]; then
+    warn "Firefox appears to be running (lock file found) — close it first, then re-run install.sh"
+    return
+  fi
+
+  local repo_profile="$DOTFILES_DIR/firefox/profile"
+
+  # Idempotent check
+  if [ -L "$profile_dir" ] && [ "$(readlink "$profile_dir")" = "$repo_profile" ]; then
+    ok "Firefox profile already linked"
+    return
+  fi
+
+  # First-run seed: copy tracked files from live profile into repo if empty
+  if [ ! -d "$repo_profile/chrome" ] && [ -d "$profile_dir/chrome" ]; then
+    info "Seeding repo with existing Firefox profile files..."
+    for item in chrome user.js handlers.json containers.json search.json.mozlz4 \
+                extensions.json extension-preferences.json extensions; do
+      [ -e "$profile_dir/$item" ] && cp -R "$profile_dir/$item" "$repo_profile/$item"
+    done
+    ok "Seeded firefox/profile from live profile"
+  fi
+
+  # Back up existing profile
+  local ff_backup="${BACKUP_DIR:-$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)}/firefox-profile"
+  mkdir -p "$(dirname "$ff_backup")"
+  cp -R "$profile_dir" "$ff_backup"
+  ok "Backed up Firefox profile to $ff_backup"
+
+  # Replace with symlink
+  rm -rf "$profile_dir"
+  ln -sf "$repo_profile" "$profile_dir"
+  ok "Linked $profile_dir -> $repo_profile"
+}
+setup_firefox_profile
 
 echo ""
 

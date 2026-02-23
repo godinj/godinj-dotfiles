@@ -1,0 +1,26 @@
+# Deny everything by default — Firefox profiles contain caches, databases,
+# lock files, and sensitive credential stores that must not be committed.
+*
+
+# Allow this gitignore itself
+!.gitignore
+
+# user.js — intentional about:config overrides (read by Firefox on startup)
+!user.js
+
+# Custom chrome (userChrome.css / userContent.css)
+!chrome/
+!chrome/**
+
+# Handler associations and container tabs
+!handlers.json
+!containers.json
+
+# Search engine configuration
+!search.json.mozlz4
+
+# Extensions metadata and installed extensions
+!extensions.json
+!extension-preferences.json
+!extensions/
+!extensions/**

@@ -1,0 +1,8 @@
+{
+  "name": "wt-condense",
+  "description": "Condense post-merge history into a clean linear sequence",
+  "prompt": "file://./prompts/wt-condense.md",
+  "tools": ["read", "write", "edit", "shell"],
+  "allowedTools": ["*"],
+  "resources": ["file://.kiro/steering/worktrees.md"]
+}

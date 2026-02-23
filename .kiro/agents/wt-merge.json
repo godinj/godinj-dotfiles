@@ -1,0 +1,8 @@
+{
+  "name": "wt-merge",
+  "description": "Merge a feature branch back into the current branch",
+  "prompt": "file://./prompts/wt-merge.md",
+  "tools": ["read", "write", "edit", "shell"],
+  "allowedTools": ["*"],
+  "resources": ["file://.kiro/steering/worktrees.md"]
+}
