@@ -14,6 +14,7 @@ type PickerConfig struct {
 	PopupSize     string
 	PreviewWindow string
 	Color         string
+	ColorScheme   string
 }
 
 // DefaultPickerConfig returns the default picker settings.
@@ -85,6 +86,8 @@ func LoadPickerConfig(dotfilesDir, machineName string) PickerConfig {
 			cfg.PreviewWindow = val
 		case "SESH_COLOR":
 			cfg.Color = val
+		case "SESH_COLOR_SCHEME":
+			cfg.ColorScheme = val
 		}
 	}
 	return cfg
