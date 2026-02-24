@@ -38,7 +38,7 @@ func SwitchTo(name string) error {
 
 // SendKeys sends keys to the named tmux session.
 func SendKeys(session, keys string) error {
-	cmd := exec.Command("tmux", "send-keys", "-t", "="+session, keys, "Enter")
+	cmd := exec.Command("tmux", "send-keys", "-t", session+":0", keys, "Enter")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("send-keys %q: %s", session, trimOutput(out, err))
 	}
