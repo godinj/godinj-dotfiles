@@ -124,7 +124,9 @@ source $ZSH/oh-my-zsh.sh
 # alias vim="nvim"
 alias dd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} godinj@script.dremhome.org -p 21337"
 alias cl="claude"
+alias kl="kiro-cli chat"
 alias cld="claude --dangerously-skip-permissions"
+alias kld="kiro-cli chat -a"
 alias tk="tmux kill-server"
 alias t="drem-sx connect -c fastfetch fastfetch"
 alias src="source ~/.zshrc"
@@ -169,3 +171,5 @@ if [ -z "$TMUX" ]
     clear
     drem-sx connect -c fastfetch fastfetch
 fi
+
+export PATH=$HOME/.toolbox/bin:$PATH

@@ -1,5 +1,9 @@
-import = ["./machine.toml"]
+[window]
+opacity = 0.6 # Example value for 80% opacity
 
 [font.normal]
 family = "JetBrainsMono Nerd Font Mono"
 style = "Regular"
+
+[general]
+import = ["./machine.toml"]
