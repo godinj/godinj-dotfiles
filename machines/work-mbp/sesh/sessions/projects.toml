@@ -1,0 +1,9 @@
+[[session]]
+name = "dev-desk"
+path = "~"
+startup_command = "echo dd"
+
+[[session]]
+name = "notes"
+path = "~/Documents/notes/"
+startup_command = "nvim"

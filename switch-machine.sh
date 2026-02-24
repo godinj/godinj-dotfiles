@@ -62,7 +62,4 @@ ok "Symlinked tmux/machine.conf → $MACHINE_NAME"
 cp "$MACHINE_DIR/nvim/theme.lua" "$DOTFILES_DIR/nvim/lua/custom/plugins/machine_theme.lua"
 ok "Copied nvim machine_theme.lua"
 
-bash "$DOTFILES_DIR/sesh/build_sesh_config.sh"
-ok "Rebuilt sesh.toml"
-
 info "Done! Reload tmux (prefix + r) and restart nvim to pick up changes."

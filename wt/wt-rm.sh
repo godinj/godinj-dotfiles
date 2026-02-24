@@ -76,10 +76,7 @@ if [ -f "$WT_WORKTREES_TOML" ]; then
       !skip { print }
     ' "$WT_WORKTREES_TOML" > "$WT_WORKTREES_TOML.tmp"
     mv "$WT_WORKTREES_TOML.tmp" "$WT_WORKTREES_TOML"
-
-    # Rebuild sesh config
-    "$WT_DOTFILES_DIR/sesh/build_sesh_config.sh"
-    echo "Sesh config rebuilt."
+    echo "Removed from sesh config."
   fi
 fi
 
