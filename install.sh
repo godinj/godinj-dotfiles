@@ -395,6 +395,7 @@ install_pkg zoxide
 install_pkg git
 install_pkg make
 install_pkg curl
+install_pkg btop
 # fastfetch — not in default apt repos
 if command -v fastfetch &>/dev/null; then
   ok "fastfetch already installed"
