@@ -1,4 +1,6 @@
 [window]
+decorations = "None"
+startup_mode = "Fullscreen"
 opacity = 0.6 # Example value for 80% opacity
 
 [font.normal]
