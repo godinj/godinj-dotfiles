@@ -132,9 +132,11 @@ create_link "$DOTFILES_DIR/claude/commands"    "$HOME/.claude/commands"
 
 # Git hooks (auto-rebuild drem-sx on merge, etc.)
 info "Installing git hooks..."
+git_hooks_dir="$(git -C "$DOTFILES_DIR" rev-parse --git-dir)/hooks"
+mkdir -p "$git_hooks_dir"
 for hook in "$DOTFILES_DIR"/hooks/*; do
   [ -f "$hook" ] || continue
-  create_link "$hook" "$DOTFILES_DIR/.git/hooks/$(basename "$hook")"
+  create_link "$hook" "$git_hooks_dir/$(basename "$hook")"
 done
 
 # Deploy machine-specific files
