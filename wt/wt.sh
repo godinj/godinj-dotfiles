@@ -17,6 +17,7 @@ Commands:
   rm <branch>            Remove worktree, kill session, clean config
   agent [spawn|kill|list] Manage Claude agent panes
   promote                Promote current session to persistent sesh config
+  doctor                 Check bare repo layout and sesh config health
   help                   Show this help
 
 Examples:
@@ -38,6 +39,7 @@ case "$cmd" in
   rm)      exec "$SCRIPT_DIR/wt-rm.sh" "$@" ;;
   agent)   exec "$SCRIPT_DIR/wt-agent.sh" "$@" ;;
   promote) exec "$SCRIPT_DIR/wt-promote.sh" "$@" ;;
+  doctor)  exec "$SCRIPT_DIR/wt-doctor.sh" "$@" ;;
   help|-h|--help) usage ;;
   *)
     echo "Unknown command: $cmd" >&2
