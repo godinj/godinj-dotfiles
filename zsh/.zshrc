@@ -123,6 +123,7 @@ source $ZSH/oh-my-zsh.sh
 # alias v="nvim"
 # alias vim="nvim"
 alias dd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} godinj@script.dremhome.org -p 21337"
+alias dd2="ssh -i /data/data/com.termux/files/home/.ssh/npllm2 godinj@script.dremhome.org -p 21337"
 alias cl="claude"
 alias kl="kiro-cli chat"
 alias cld="claude --dangerously-skip-permissions"

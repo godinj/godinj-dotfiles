@@ -21,6 +21,7 @@ name = "btop"
 path = "~"
 startup_command = "btop"
 
+
 [[session]]
 name = "drem-soundscape"
 path = "~/dev/drem-soundscape/"

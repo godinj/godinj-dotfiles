@@ -50,6 +50,20 @@ case "$OS" in
 esac
 info "Detected $OS with package manager: $PKG"
 
+# ── Termux early setup ──────────────────────────────────────────────────────
+
+if [ "$PKG" = "termux" ]; then
+  info "Updating Termux package index..."
+  pkg update -y
+
+  if [ ! -d "$HOME/storage" ]; then
+    info "Setting up Termux storage access..."
+    termux-setup-storage
+  else
+    ok "Termux storage already configured"
+  fi
+fi
+
 # ── Step 1: Backup existing configs ─────────────────────────────────────────
 
 info "Running backup..."
@@ -158,6 +172,19 @@ fi
 cp "$MACHINE_DIR/nvim/theme.lua" "$DOTFILES_DIR/nvim/lua/custom/plugins/machine_theme.lua"
 ok "Copied nvim machine_theme.lua"
 ok "Machine profile deployed"
+
+# Termux-specific: deploy ~/.termux/ config (properties, colors, etc.)
+if [ "$PKG" = "termux" ]; then
+  if [ -d "$MACHINE_DIR/termux" ]; then
+    mkdir -p "$HOME/.termux"
+    for f in "$MACHINE_DIR"/termux/*; do
+      [ -f "$f" ] || continue
+      cp "$f" "$HOME/.termux/$(basename "$f")"
+      ok "Deployed ~/.termux/$(basename "$f")"
+    done
+    termux-reload-settings 2>/dev/null || true
+  fi
+fi
 
 # Darwin-specific: clipboard listener LaunchAgent
 if [ "$OS" = "Darwin" ]; then
@@ -286,34 +313,39 @@ install_pkg zsh
 install_pkg unzip
 
 # NVM + Node (needed before Neovim for plugin ecosystem)
-if [ -d "$HOME/.nvm" ] || (command -v brew &>/dev/null && brew list nvm &>/dev/null 2>&1); then
-  ok "NVM already installed"
+# Termux: use pkg for Node (more reliable than NVM on Android/arm64)
+if [ "$PKG" = "termux" ]; then
+  install_pkg node nodejs
 else
-  info "Installing NVM..."
-  case "$PKG" in
-    brew) brew install nvm && mkdir -p "$HOME/.nvm" ;;
-    apt|dnf|termux)
-      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-      ;;
-  esac
-fi
-
-# Source NVM for current shell
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-if [ "$PKG" = "brew" ]; then
-  [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && . "$(brew --prefix)/opt/nvm/nvm.sh"
-fi
-
-if command -v node &>/dev/null; then
-  ok "node already installed ($(node --version))"
-else
-  if command -v nvm &>/dev/null; then
-    info "Installing Node LTS via NVM..."
-    nvm install --lts
-    ok "Node installed ($(node --version))"
+  if [ -d "$HOME/.nvm" ] || (command -v brew &>/dev/null && brew list nvm &>/dev/null 2>&1); then
+    ok "NVM already installed"
   else
-    warn "NVM not available — install Node manually before opening Neovim"
+    info "Installing NVM..."
+    case "$PKG" in
+      brew) brew install nvm && mkdir -p "$HOME/.nvm" ;;
+      apt|dnf)
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+        ;;
+    esac
+  fi
+
+  # Source NVM for current shell
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+  if [ "$PKG" = "brew" ]; then
+    [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && . "$(brew --prefix)/opt/nvm/nvm.sh"
+  fi
+
+  if command -v node &>/dev/null; then
+    ok "node already installed ($(node --version))"
+  else
+    if command -v nvm &>/dev/null; then
+      info "Installing Node LTS via NVM..."
+      nvm install --lts
+      ok "Node installed ($(node --version))"
+    else
+      warn "NVM not available — install Node manually before opening Neovim"
+    fi
   fi
 fi
 
@@ -417,6 +449,21 @@ fi
 
 install_pkg go golang
 
+# Termux-specific packages
+if [ "$PKG" = "termux" ]; then
+  install_pkg ssh openssh
+  install_pkg htop
+  install_pkg termux-api
+fi
+
+# sesh (via Go)
+if command -v sesh &>/dev/null; then
+  ok "sesh already installed"
+else
+  info "Installing sesh via Go..."
+  go install github.com/joshmedeski/sesh@latest
+fi
+
 # drem-sx (session picker)
 info "Building drem-sx..."
 (cd "$DOTFILES_DIR/drem-sx" && go build -mod=vendor -o "$HOME/go/bin/drem-sx" .)
@@ -460,7 +507,7 @@ if [ "$PKG" = "termux" ]; then
     termux-reload-settings
     ok "JetBrainsMono Nerd Font installed (restart Termux if needed)"
   fi
-elif [ "$PKG" != "termux" ]; then
+else
   if fc-list 2>/dev/null | grep -qi "JetBrainsMono" || ([ "$PKG" = "brew" ] && brew list --cask font-jetbrains-mono-nerd-font &>/dev/null 2>&1); then
     ok "JetBrainsMono Nerd Font already installed"
   else
@@ -561,4 +608,7 @@ echo "  2. Open tmux and press prefix + I to install tmux plugins"
 echo "  3. Open nvim — plugins auto-install via lazy.nvim"
 echo "  4. Edit ~/.env to add your API keys"
 echo "  5. Run 'wt doctor' to check bare repo and sesh config health"
+if [ "$PKG" = "termux" ]; then
+  echo "  6. Restart Termux to apply font and property changes"
+fi
 echo ""
