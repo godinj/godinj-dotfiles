@@ -68,11 +68,6 @@ path = "~/git/golden-agents.git/main/"
 startup_command = "nvim"
 
 [[session]]
-name = "drem-canvas"
-path = "~/git/drem-canvas.git/main/"
-startup_command = "cld"
-
-[[session]]
 name = "agent-notify"
 path = "~/git/agent-notify.git/main/"
 startup_command = "nvim"
@@ -80,4 +75,14 @@ startup_command = "nvim"
 [[session]]
 name = "drem-canvas"
 path = "~/git/drem-canvas/"
+startup_command = "clear && cld"
+
+[[session]]
+name = "sunshine"
+path = "~/sunshine/"
+startup_command = "clear && cld"
+
+[[session]]
+name = "transcript-rag"
+path = "~/git/transcript-rag/"
 startup_command = "clear && cld"
