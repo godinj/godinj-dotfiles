@@ -25,8 +25,17 @@ func Run(initialInput string, cfg config.PickerConfig) (string, error) {
 	reloadZoxide := fmt.Sprintf("%s list -z --tree", self)
 	reloadWorktrees := fmt.Sprintf("%s list -t --tree --worktrees", self)
 	reloadFind := fmt.Sprintf("%s list -f --tree", self)
+	reloadDefault := fmt.Sprintf("%s list -t -c --tree", self)
+
+	// Background script to reset border label after a delay via fzf's HTTP API.
+	// $FZF_PORT is set by fzf when --listen is used.
+	resetLabel := fmt.Sprintf(
+		`sh -c 'sleep 2 && curl -s -XPOST localhost:$FZF_PORT -d "change-border-label(%s)" &'`,
+		cfg.BorderLabel,
+	)
 
 	args := []string{
+		"--listen",
 		"--tmux", fmt.Sprintf("center,%s", cfg.PopupSize),
 		"--no-sort", "--ansi",
 		"--border-label", cfg.BorderLabel,
@@ -34,15 +43,16 @@ func Run(initialInput string, cfg config.PickerConfig) (string, error) {
 		"--delimiter", "\t",
 		"--with-nth", "2",
 		"--accept-nth", "1",
-		"--header", "  ^a all(+zoxide) ^t tmux ^g configs ^x zoxide ^w worktrees ^d tmux kill ^f find ^e fold M-e unfold",
+		"--header", "  ^r refresh ^a all(+zoxide) ^t tmux ^g configs ^x zoxide ^w worktrees ^d tmux kill ^f find ^e fold M-e unfold",
 		"--bind", "tab:down,btab:up",
-		"--bind", fmt.Sprintf("ctrl-a:change-prompt(%s)+reload(%s)", cfg.Prompt, reloadAll),
-		"--bind", fmt.Sprintf("ctrl-t:change-prompt(🪟  )+reload(%s)", reloadTmux),
-		"--bind", fmt.Sprintf("ctrl-g:change-prompt(⚙️  )+reload(%s)", reloadConfig),
-		"--bind", fmt.Sprintf("ctrl-x:change-prompt(📁  )+reload(%s)", reloadZoxide),
-		"--bind", fmt.Sprintf("ctrl-w:change-prompt(  )+reload(%s)", reloadWorktrees),
-		"--bind", fmt.Sprintf("ctrl-f:change-prompt(🔎  )+reload(%s)", reloadFind),
-		"--bind", fmt.Sprintf("ctrl-d:execute(%s kill {1})+change-prompt(%s)+reload(%s)", self, cfg.Prompt, reloadAll),
+		"--bind", fmt.Sprintf("ctrl-r:change-prompt(%s)+reload(%s)+change-border-label( ↻ Refreshed )+execute-silent[%s]", cfg.Prompt, reloadDefault, resetLabel),
+		"--bind", fmt.Sprintf("ctrl-a:change-prompt(%s)+reload(%s)+change-border-label(%s)", cfg.Prompt, reloadAll, cfg.BorderLabel),
+		"--bind", fmt.Sprintf("ctrl-t:change-prompt(🪟  )+reload(%s)+change-border-label(%s)", reloadTmux, cfg.BorderLabel),
+		"--bind", fmt.Sprintf("ctrl-g:change-prompt(⚙️  )+reload(%s)+change-border-label(%s)", reloadConfig, cfg.BorderLabel),
+		"--bind", fmt.Sprintf("ctrl-x:change-prompt(📁  )+reload(%s)+change-border-label(%s)", reloadZoxide, cfg.BorderLabel),
+		"--bind", fmt.Sprintf("ctrl-w:change-prompt(  )+reload(%s)+change-border-label(%s)", reloadWorktrees, cfg.BorderLabel),
+		"--bind", fmt.Sprintf("ctrl-f:change-prompt(🔎  )+reload(%s)+change-border-label(%s)", reloadFind, cfg.BorderLabel),
+		"--bind", fmt.Sprintf("ctrl-d:execute(%s kill {1})+change-prompt(%s)+reload(%s)+change-border-label(%s)", self, cfg.Prompt, reloadAll, cfg.BorderLabel),
 		"--bind", fmt.Sprintf("ctrl-e:transform(%s fold-transform {1})", self),
 		"--bind", fmt.Sprintf("alt-e:transform(%s unfold-all-transform)", self),
 		"--preview-window", cfg.PreviewWindow,
