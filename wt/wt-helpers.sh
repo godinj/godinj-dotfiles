@@ -138,9 +138,9 @@ wt_setup_panes() {
     ((i++))
   done
 
-  # Default: nvim + agent
+  # Default: clear && cld + agent
   if [ ${#panes[@]} -eq 0 ]; then
-    panes=("nvim" "${WT_AGENT_CMD:-cld}:20%")
+    panes=("clear && cld" "${WT_AGENT_CMD:-cld}:20%")
   fi
 
   local first_cmd="${panes[0]%%:*}"

@@ -74,7 +74,7 @@ startup_command = "nvim"
 
 [[session]]
 name = "drem-canvas"
-path = "~/git/drem-canvas/"
+path = "~/git/drem-canvas.git/"
 startup_command = "clear && cld"
 
 [[session]]
