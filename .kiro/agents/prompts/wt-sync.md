@@ -13,5 +13,9 @@ Steps:
       - For each conflict, read the file and resolve it, preserving the feature branch's intent while incorporating the default branch's changes.
       - For CLAUDE.md conflicts, keep the feature branch's version (it has feature-specific instructions).
       - Stage resolved files and `git rebase --continue`.
+   d2. If `libs/JUCE` is in the conflict list (submodule hash mismatch), accept
+       the default branch's version (`--theirs` for the submodule entry), then
+       verify `libs/JUCE/CMakeLists.txt` exists. If missing, run `scripts/bootstrap.sh`
+       in that worktree.
    e. Report success or failure for each branch.
 5. Present a summary table: branch name, status (rebased / already up-to-date / failed), commits rebased.

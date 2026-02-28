@@ -10,6 +10,10 @@ Steps:
    - Prefer keeping both sides' changes when they don't logically conflict
    - For CLAUDE.md conflicts, keep the current branch's version but incorporate any useful info from the feature branch
    - Stage resolved files and complete the merge commit
+4b. If `libs/JUCE` appears in the conflict list (submodule conflict), accept the
+    version from the branch being merged IN (the feature branch), since it likely
+    has more recent patches. After resolving, verify the submodule is initialized:
+    if `libs/JUCE/CMakeLists.txt` is missing, run `scripts/bootstrap.sh`.
 5. Detect the build system and verify the merge compiles:
    - `Makefile` -> `make`
    - `CMakeLists.txt` -> `cmake --build build`

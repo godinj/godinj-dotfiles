@@ -4,6 +4,9 @@ Steps:
 1. Detect the bare repo root using `git rev-parse --git-common-dir`. If not inside a bare repo worktree, tell the user and stop.
 2. Create the worktree: `wt new $ARGUMENTS`
    - If `wt` is not available, fall back to: `git worktree add ../$ARGUMENTS -b $ARGUMENTS`
+2b. Initialize submodules and dependencies: if the project has a `scripts/bootstrap.sh`,
+    run it. This handles JUCE submodule patches, Skia shared cache, and CMake configuration.
+    If bootstrap.sh doesn't exist, run `git submodule update --init` manually.
 3. Read any existing PRD.md, README.md, or project docs to understand the project scope
 4. Ask the user what the worktree's mission should be if it's not obvious from the branch name
 5. Create a CLAUDE.md in the new worktree with:
