@@ -43,9 +43,57 @@ if wt_session_exists "$session_name"; then
   tmux kill-session -t "=$session_name"
 fi
 
+# Deinit submodules if present (git refuses to remove worktrees with submodules)
+if [ -f "$worktree_dir/.gitmodules" ]; then
+  echo "Deinitializing submodules..."
+  git -C "$worktree_dir" submodule deinit --all -f
+fi
+
+# Clean up per-worktree submodule git dirs (worktrees/<name>/modules/)
+wt_entry_name="$(basename "$worktree_dir")"
+wt_modules_dir="$bare_root/worktrees/$wt_entry_name/modules"
+if [ -d "$wt_modules_dir" ]; then
+  echo "Cleaning up submodule metadata ($wt_entry_name/modules/)..."
+  rm -rf "$wt_modules_dir"
+fi
+
+# Warn if this is the last worktree with the patched JUCE commit
+if [ -d "$worktree_dir/libs/JUCE" ]; then
+  juce_patched_commit=""
+  # Read JUCE_PATCHED_COMMIT from bootstrap.sh if it exists
+  if [ -f "$worktree_dir/scripts/bootstrap.sh" ]; then
+    juce_patched_commit="$(grep -oP 'JUCE_PATCHED_COMMIT="\K[^"]+' "$worktree_dir/scripts/bootstrap.sh" 2>/dev/null || true)"
+  fi
+
+  if [ -n "$juce_patched_commit" ] && \
+     git -C "$worktree_dir/libs/JUCE" cat-file -e "$juce_patched_commit" 2>/dev/null; then
+    # This worktree has the patched commit — check if any sibling also has it
+    has_sibling=false
+    for sibling in "$bare_root"/*/libs/JUCE; do
+      [ -d "$sibling" ] || continue
+      [ "$sibling" = "$worktree_dir/libs/JUCE" ] && continue
+      if git -C "$sibling" cat-file -e "$juce_patched_commit" 2>/dev/null; then
+        has_sibling=true
+        break
+      fi
+    done
+
+    if [ "$has_sibling" = false ]; then
+      echo ""
+      echo "Warning: this is the last worktree with the patched JUCE commit ($juce_patched_commit)."
+      echo "Other worktrees will need to apply patches from scripts/juce-patches/ on next bootstrap."
+      echo ""
+    fi
+  fi
+fi
+
 # Remove worktree
 echo "Removing worktree '$branch'..."
-git -C "$bare_root" worktree remove "$worktree_dir"
+if ! git -C "$bare_root" worktree remove "$worktree_dir" 2>/dev/null; then
+  # Fallback: manual removal + prune (handles stubborn submodule metadata)
+  rm -rf "$worktree_dir"
+  git -C "$bare_root" worktree prune
+fi
 
 # Clean worktrees.toml if entry exists
 if [ -f "$WT_WORKTREES_TOML" ]; then
