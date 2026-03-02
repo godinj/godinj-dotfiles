@@ -1,5 +1,5 @@
 SESH_BORDER_LABEL=" dd sesh "
 SESH_PROMPT="⚡  "
-SESH_POPUP_SIZE="50%,60%"
+SESH_POPUP_SIZE="80%,70%"
 SESH_PREVIEW_WINDOW="right:75%"
 SESH_COLOR="bg:#691c1b,border:#638a58,preview-bg:#a6403f,bg+:#638a58"
