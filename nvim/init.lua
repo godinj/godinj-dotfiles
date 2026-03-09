@@ -113,18 +113,18 @@ vim.o.showmode = false
 -- Sync clipboard between OS and Neovim.
 --  See `:help 'clipboard'`
 vim.schedule(function()
-  if os.getenv('SSH_TTY') then
-    local osc52 = require('vim.ui.clipboard.osc52')
+  if os.getenv 'SSH_TTY' then
+    local osc52 = require 'vim.ui.clipboard.osc52'
     vim.g.clipboard = {
       name = 'OSC 52',
       copy = {
-        ['+'] = osc52.copy('+'),
-        ['*'] = osc52.copy('*'),
+        ['+'] = osc52.copy '+',
+        ['*'] = osc52.copy '*',
       },
       paste = {
         ['+'] = function()
-          if os.getenv('TMUX') then
-            local out = vim.fn.system({ 'tmux', 'save-buffer', '-' })
+          if os.getenv 'TMUX' then
+            local out = vim.fn.system { 'tmux', 'save-buffer', '-' }
             if vim.v.shell_error == 0 then
               return vim.split(out, '\n')
             end
@@ -132,8 +132,8 @@ vim.schedule(function()
           return {}
         end,
         ['*'] = function()
-          if os.getenv('TMUX') then
-            local out = vim.fn.system({ 'tmux', 'save-buffer', '-' })
+          if os.getenv 'TMUX' then
+            local out = vim.fn.system { 'tmux', 'save-buffer', '-' }
             if vim.v.shell_error == 0 then
               return vim.split(out, '\n')
             end
@@ -977,9 +977,21 @@ require('lazy').setup({
       -- nvim-treesitter main branch only handles parser installation.
       -- Neovim 0.12+ auto-starts treesitter highlighting for installed parsers.
       require('nvim-treesitter').install {
-        'bash', 'c', 'diff', 'go', 'html', 'java', 'json',
-        'lua', 'luadoc', 'markdown', 'markdown_inline',
-        'python', 'query', 'vim', 'vimdoc',
+        'bash',
+        'c',
+        'diff',
+        'go',
+        'html',
+        'java',
+        'json',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'python',
+        'query',
+        'vim',
+        'vimdoc',
       }
     end,
   },
