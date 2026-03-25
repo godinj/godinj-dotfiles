@@ -10,7 +10,7 @@ startup_command = "nvim"
 
 [[session]]
 name = "bib incr use"
-path = "~/git/BibIncrUse.git/main/"
+path = "~/git/BibIncrUse/"
 startup_command = "mvn exec:java"
 
 [[session]]
@@ -86,3 +86,18 @@ startup_command = "clear && cld"
 name = "transcript-rag"
 path = "~/git/transcript-rag/"
 startup_command = "clear && cld"
+
+[[session]]
+name = "drem-orchestrator"
+path = "~/git/drem-orchestrator.git/"
+startup_command = "nvim"
+
+[[session]]
+name = "sshlog"
+path = "~/git/sshlog/"
+startup_command = "clear && cld"
+
+[[session]]
+name = "notes"
+path = "~/Documents/notes"
+startup_command = "nvim"
