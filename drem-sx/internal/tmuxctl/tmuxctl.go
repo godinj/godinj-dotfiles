@@ -6,9 +6,25 @@ import (
 	"os/exec"
 )
 
+// Socket is the tmux socket name (-L flag). When empty, tmux uses its default.
+var Socket string
+
+// tmuxCmd builds an exec.Cmd with the socket flag prepended when set.
+func tmuxCmd(args ...string) *exec.Cmd {
+	if Socket != "" {
+		args = append([]string{"-L", Socket}, args...)
+	}
+	return exec.Command("tmux", args...)
+}
+
+// ListSessions returns the raw output of tmux list-sessions.
+func ListSessions() ([]byte, error) {
+	return tmuxCmd("list-sessions", "-F", "#{session_name}").Output()
+}
+
 // SessionExists checks if a tmux session with the given name exists.
 func SessionExists(name string) bool {
-	return exec.Command("tmux", "has-session", "-t", "="+name).Run() == nil
+	return tmuxCmd("has-session", "-t", "="+name).Run() == nil
 }
 
 // NewSession creates a new detached tmux session.
@@ -17,7 +33,7 @@ func NewSession(name, dir string) error {
 	if dir != "" {
 		args = append(args, "-c", dir)
 	}
-	cmd := exec.Command("tmux", args...)
+	cmd := tmuxCmd(args...)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("new-session %q: %s", name, trimOutput(out, err))
 	}
@@ -27,9 +43,9 @@ func NewSession(name, dir string) error {
 // SwitchTo switches to or attaches to the named tmux session.
 func SwitchTo(name string) error {
 	if IsInsideTmux() {
-		return exec.Command("tmux", "switch-client", "-t", "="+name).Run()
+		return tmuxCmd("switch-client", "-t", "="+name).Run()
 	}
-	cmd := exec.Command("tmux", "attach-session", "-t", "="+name)
+	cmd := tmuxCmd("attach-session", "-t", "="+name)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -38,7 +54,7 @@ func SwitchTo(name string) error {
 
 // SendKeys sends keys to the named tmux session.
 func SendKeys(session, keys string) error {
-	cmd := exec.Command("tmux", "send-keys", "-t", session+":0", keys, "Enter")
+	cmd := tmuxCmd("send-keys", "-t", session+":0", keys, "Enter")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("send-keys %q: %s", session, trimOutput(out, err))
 	}
@@ -47,7 +63,7 @@ func SendKeys(session, keys string) error {
 
 // KillSession kills the named tmux session.
 func KillSession(name string) error {
-	cmd := exec.Command("tmux", "kill-session", "-t", "="+name)
+	cmd := tmuxCmd("kill-session", "-t", "="+name)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("kill-session %q: %s", name, trimOutput(out, err))
 	}
@@ -61,7 +77,7 @@ func IsInsideTmux() bool {
 
 // CapturePane captures the visible content of a tmux pane.
 func CapturePane(session string) (string, error) {
-	out, err := exec.Command("tmux", "capture-pane", "-t", "="+session, "-p", "-e").Output()
+	out, err := tmuxCmd("capture-pane", "-t", "="+session, "-p", "-e").Output()
 	if err != nil {
 		return "", fmt.Errorf("capture-pane %q: %w", session, err)
 	}

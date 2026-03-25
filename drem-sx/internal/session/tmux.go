@@ -2,13 +2,13 @@ package session
 
 import (
 	"drem-sx/internal/icons"
-	"os/exec"
+	"drem-sx/internal/tmuxctl"
 	"strings"
 )
 
 // ListTmux returns active tmux session names as entries.
 func ListTmux() ([]Entry, error) {
-	out, err := exec.Command("tmux", "list-sessions", "-F", "#{session_name}").Output()
+	out, err := tmuxctl.ListSessions()
 	if err != nil {
 		// tmux not running or no sessions is not a fatal error
 		return nil, nil

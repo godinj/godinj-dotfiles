@@ -54,11 +54,24 @@ func MachineName(dotfilesDir string) string {
 }
 
 // LoadPickerConfig reads machine-specific picker settings from picker.sh.
+// When socketName is non-empty, it first tries picker-<socket>.sh.
 // The file is parsed as simple KEY=VALUE (shell variable assignments).
-func LoadPickerConfig(dotfilesDir, machineName string) PickerConfig {
+func LoadPickerConfig(dotfilesDir, machineName string, socketName ...string) PickerConfig {
 	cfg := DefaultPickerConfig()
 
-	pickerFile := filepath.Join(dotfilesDir, "machines", machineName, "sesh", "picker.sh")
+	seshDir := filepath.Join(dotfilesDir, "machines", machineName, "sesh")
+
+	// Try socket-specific config first (e.g. picker-drem.sh)
+	pickerFile := ""
+	if len(socketName) > 0 && socketName[0] != "" {
+		candidate := filepath.Join(seshDir, "picker-"+socketName[0]+".sh")
+		if fileExists(candidate) {
+			pickerFile = candidate
+		}
+	}
+	if pickerFile == "" {
+		pickerFile = filepath.Join(seshDir, "picker.sh")
+	}
 	f, err := os.Open(pickerFile)
 	if err != nil {
 		return cfg

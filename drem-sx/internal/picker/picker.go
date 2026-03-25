@@ -8,6 +8,7 @@ import (
 
 	"drem-sx/internal/colorscheme"
 	"drem-sx/internal/config"
+	"drem-sx/internal/tmuxctl"
 )
 
 // Run launches fzf with the given initial input and picker config.
@@ -18,14 +19,20 @@ func Run(initialInput string, cfg config.PickerConfig) (string, error) {
 		return "", fmt.Errorf("resolve executable: %w", err)
 	}
 
+	// Propagate -L flag to all self-referencing subcommands
+	selfPrefix := self
+	if tmuxctl.Socket != "" {
+		selfPrefix = fmt.Sprintf("%s -L %s", self, tmuxctl.Socket)
+	}
+
 	// Build reload commands using self-referencing binary
-	reloadAll := fmt.Sprintf("%s list -t -c -z --tree", self)
-	reloadTmux := fmt.Sprintf("%s list -t --tree", self)
-	reloadConfig := fmt.Sprintf("%s list -c --tree", self)
-	reloadZoxide := fmt.Sprintf("%s list -z --tree", self)
-	reloadWorktrees := fmt.Sprintf("%s list -t --tree --worktrees", self)
-	reloadFind := fmt.Sprintf("%s list -f --tree", self)
-	reloadDefault := fmt.Sprintf("%s list -t -c --tree", self)
+	reloadAll := fmt.Sprintf("%s list -t -c -z --tree", selfPrefix)
+	reloadTmux := fmt.Sprintf("%s list -t --tree", selfPrefix)
+	reloadConfig := fmt.Sprintf("%s list -c --tree", selfPrefix)
+	reloadZoxide := fmt.Sprintf("%s list -z --tree", selfPrefix)
+	reloadWorktrees := fmt.Sprintf("%s list -t --tree --worktrees", selfPrefix)
+	reloadFind := fmt.Sprintf("%s list -f --tree", selfPrefix)
+	reloadDefault := fmt.Sprintf("%s list -t -c --tree", selfPrefix)
 
 	// Background script to reset border label after a delay via fzf's HTTP API.
 	// $FZF_PORT is set by fzf when --listen is used.
@@ -52,11 +59,11 @@ func Run(initialInput string, cfg config.PickerConfig) (string, error) {
 		"--bind", fmt.Sprintf("ctrl-x:change-prompt(📁  )+reload(%s)+change-border-label(%s)", reloadZoxide, cfg.BorderLabel),
 		"--bind", fmt.Sprintf("ctrl-w:change-prompt(  )+reload(%s)+change-border-label(%s)", reloadWorktrees, cfg.BorderLabel),
 		"--bind", fmt.Sprintf("ctrl-f:change-prompt(🔎  )+reload(%s)+change-border-label(%s)", reloadFind, cfg.BorderLabel),
-		"--bind", fmt.Sprintf("ctrl-d:execute(%s kill {1})+change-prompt(%s)+reload(%s)+change-border-label(%s)", self, cfg.Prompt, reloadAll, cfg.BorderLabel),
-		"--bind", fmt.Sprintf("ctrl-e:transform(%s fold-transform {1})", self),
-		"--bind", fmt.Sprintf("alt-e:transform(%s unfold-all-transform)", self),
+		"--bind", fmt.Sprintf("ctrl-d:execute(%s kill {1})+change-prompt(%s)+reload(%s)+change-border-label(%s)", selfPrefix, cfg.Prompt, reloadAll, cfg.BorderLabel),
+		"--bind", fmt.Sprintf("ctrl-e:transform(%s fold-transform {1})", selfPrefix),
+		"--bind", fmt.Sprintf("alt-e:transform(%s unfold-all-transform)", selfPrefix),
 		"--preview-window", cfg.PreviewWindow,
-		"--preview", fmt.Sprintf("%s preview {1}", self),
+		"--preview", fmt.Sprintf("%s preview {1}", selfPrefix),
 	}
 
 	if c := resolveColor(cfg); c != "" {

@@ -22,12 +22,15 @@ func Pick() error {
 		return err
 	}
 	machineName := config.MachineName(dotfilesDir)
-	pickerCfg := config.LoadPickerConfig(dotfilesDir, machineName)
+	pickerCfg := config.LoadPickerConfig(dotfilesDir, machineName, tmuxctl.Socket)
 
-	// Generate initial list
-	configSessions, err := config.Load(dotfilesDir, machineName)
-	if err != nil {
-		return err
+	// Generate initial list — when targeting a specific socket, show only live tmux sessions
+	var configSessions []config.ResolvedSession
+	if tmuxctl.Socket == "" {
+		configSessions, err = config.Load(dotfilesDir, machineName)
+		if err != nil {
+			return err
+		}
 	}
 	tmuxEntries, _ := session.ListTmux()
 	entries := session.Merge(configSessions, tmuxEntries, nil, nil)

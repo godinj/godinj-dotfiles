@@ -9,6 +9,7 @@ import (
 	"drem-sx/internal/fold"
 	"drem-sx/internal/gitstatus"
 	"drem-sx/internal/session"
+	"drem-sx/internal/tmuxctl"
 	"drem-sx/internal/tree"
 )
 
@@ -41,9 +42,12 @@ func List(args []string) error {
 	}
 
 	// Default: -t -c if no source flags given (zoxide hidden by default)
+	// When targeting a specific socket, only show live tmux sessions
 	if !useTmux && !useConfig && !useZoxide && !useFind {
 		useTmux = true
-		useConfig = true
+		if tmuxctl.Socket == "" {
+			useConfig = true
+		}
 	}
 
 	var configSessions []config.ResolvedSession
