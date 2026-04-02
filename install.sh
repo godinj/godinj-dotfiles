@@ -23,6 +23,7 @@ install_pkg() {
     brew)   brew install "$pkg_name" ;;
     apt)    sudo apt-get install -y "$pkg_name" ;;
     dnf)    sudo dnf install -y "$pkg_name" ;;
+    yum)    sudo yum install -y "$pkg_name" ;;
     termux) pkg install -y "$pkg_name" ;;
   esac
 }
@@ -44,7 +45,8 @@ case "$OS" in
     if [ -n "${TERMUX_VERSION:-}" ]; then PKG=termux
     elif command -v apt-get &>/dev/null; then PKG=apt
     elif command -v dnf &>/dev/null;    then PKG=dnf
-    else err "Unsupported Linux distro (no apt or dnf found)"; exit 1; fi
+    elif command -v yum &>/dev/null;    then PKG=yum
+    else err "Unsupported Linux distro (no apt, dnf, or yum found)"; exit 1; fi
     ;;
   *) err "Unsupported OS: $OS"; exit 1 ;;
 esac
@@ -292,7 +294,7 @@ else
   info "Installing NVM..."
   case "$PKG" in
     brew) brew install nvm && mkdir -p "$HOME/.nvm" ;;
-    apt|dnf|termux)
+    apt|dnf|yum|termux)
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
       ;;
   esac
@@ -305,12 +307,19 @@ if [ "$PKG" = "brew" ]; then
   [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && . "$(brew --prefix)/opt/nvm/nvm.sh"
 fi
 
-if command -v node &>/dev/null; then
+if command -v node &>/dev/null && node --version &>/dev/null; then
   ok "node already installed ($(node --version))"
 else
   if command -v nvm &>/dev/null; then
-    info "Installing Node LTS via NVM..."
-    nvm install --lts
+    # Amazon Linux 2 has glibc 2.26; Node 18+ requires 2.28+
+    GLIBC_VER=$(ldd --version 2>&1 | head -1 | grep -oP '[0-9]+\.[0-9]+$')
+    if [ "$(printf '%s\n' "2.28" "$GLIBC_VER" | sort -V | head -1)" = "2.28" ]; then
+      info "Installing Node LTS via NVM..."
+      nvm install --lts
+    else
+      warn "glibc $GLIBC_VER detected — Node 18+ requires 2.28+, installing Node 16"
+      nvm install 16
+    fi
     ok "Node installed ($(node --version))"
   else
     warn "NVM not available — install Node manually before opening Neovim"
@@ -342,6 +351,7 @@ else
     brew) brew install ninja cmake gettext curl ;;
     apt)  sudo apt-get install -y ninja-build gettext cmake curl build-essential ;;
     dnf)  sudo dnf install -y ninja-build cmake gcc make gettext curl glibc-gconv-extra ;;
+    yum)  sudo yum install -y ninja-build cmake3 gcc make gettext curl ;;
   esac
 
   if [ -d "$NEOVIM_SRC" ]; then
@@ -387,17 +397,60 @@ else
     ok "fzf-tmux installed"
   fi
 fi
-case "$PKG" in
-  apt) install_pkg fd fd-find ;;
-  *)   install_pkg fd ;;
-esac
-install_pkg bat
-install_pkg rg ripgrep
-install_pkg zoxide
 install_pkg git
 install_pkg make
 install_pkg curl
-install_pkg btop
+
+# fd, bat, ripgrep, zoxide, btop — not in Amazon Linux 2 yum repos, install from GitHub releases
+github_latest_version() {
+  curl -fsSL "https://api.github.com/repos/$1/releases/latest" \
+    | sed -n 's/.*"tag_name": *"\(.*\)".*/\1/p'
+}
+
+install_github_tar() {
+  local cmd="$1" repo="$2" url_pattern="$3" tar_flags="${4:-xzf}"
+  if command -v "$cmd" &>/dev/null; then
+    ok "$cmd already installed"; return
+  fi
+  local ver; ver=$(github_latest_version "$repo")
+  local url; url=$(echo "$url_pattern" | sed "s|{VER}|$ver|g; s|{VNUM}|${ver#v}|g")
+  info "Installing $cmd $ver from GitHub..."
+  local tmp; tmp=$(mktemp -d)
+  curl -fsSL "$url" | tar "$tar_flags" - -C "$tmp"
+  local bin; bin=$(find "$tmp" -name "$cmd" -type f | head -1)
+  [ -z "$bin" ] && bin=$(find "$tmp" -type f -executable | head -1)
+  sudo install -m 755 "$bin" /usr/local/bin/"$cmd"
+  rm -rf "$tmp"
+  ok "$cmd installed"
+}
+
+case "$PKG" in
+  apt) install_pkg fd fd-find ;;
+  yum)
+    install_github_tar fd sharkdp/fd \
+      "https://github.com/sharkdp/fd/releases/download/{VER}/fd-{VER}-x86_64-unknown-linux-musl.tar.gz"
+    install_github_tar bat sharkdp/bat \
+      "https://github.com/sharkdp/bat/releases/download/{VER}/bat-{VER}-x86_64-unknown-linux-musl.tar.gz"
+    install_github_tar rg BurntSushi/ripgrep \
+      "https://github.com/BurntSushi/ripgrep/releases/download/{VER}/ripgrep-{VER}-x86_64-unknown-linux-musl.tar.gz"
+    install_github_tar btop aristocratos/btop \
+      "https://github.com/aristocratos/btop/releases/download/{VER}/btop-x86_64-linux-musl.tbz" xjf
+    if command -v zoxide &>/dev/null; then
+      ok "zoxide already installed"
+    else
+      info "Installing zoxide..."
+      curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+      ok "zoxide installed"
+    fi
+    ;;
+  *)
+    install_pkg fd
+    install_pkg bat
+    install_pkg rg ripgrep
+    install_pkg zoxide
+    install_pkg btop
+    ;;
+esac
 # fastfetch — not in default apt repos
 if command -v fastfetch &>/dev/null; then
   ok "fastfetch already installed"
@@ -411,6 +464,12 @@ else
       sudo apt-get install -y fastfetch
       ;;
     dnf)    sudo dnf install -y fastfetch ;;
+    yum)
+      FF_VER=$(github_latest_version "fastfetch-cli/fastfetch")
+      curl -fsSL "https://github.com/fastfetch-cli/fastfetch/releases/download/${FF_VER}/fastfetch-linux-amd64-polyfilled.tar.gz" \
+        | tar xzf - -C /tmp
+      sudo install -m 755 /tmp/fastfetch-linux-amd64-polyfilled/usr/bin/fastfetch /usr/local/bin/fastfetch
+      ;;
     termux) pkg install -y fastfetch ;;
   esac
 fi
@@ -469,7 +528,7 @@ elif [ "$PKG" != "termux" ]; then
       brew)
         brew install --cask font-jetbrains-mono-nerd-font
         ;;
-      apt|dnf)
+      apt|dnf|yum)
         FONT_DIR="$HOME/.local/share/fonts/JetBrainsMono"
         mkdir -p "$FONT_DIR"
         FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz"
@@ -518,6 +577,7 @@ if [ "$PKG" != "termux" ] && ! grep -qi microsoft /proc/version 2>/dev/null; the
       brew) brew install --cask alacritty ;;
       apt)  sudo apt-get install -y alacritty ;;
       dnf)  sudo dnf install -y alacritty ;;
+      yum)  warn "alacritty not in yum repos — skipping" ;;
     esac
   fi
 fi

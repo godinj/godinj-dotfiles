@@ -31,9 +31,6 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="rkj-repos"
 export TERM="xterm-256color"
 
-# Machine-specific zsh overrides (theme, etc.)
-[ -f "$DOTFILES_DIR/zsh/machine.zsh" ] && source "$DOTFILES_DIR/zsh/machine.zsh"
-
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -97,6 +94,9 @@ export TERM="xterm-256color"
 plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
+
+# Machine-specific overrides (prompt colors, aliases) — must be after oh-my-zsh
+[ -f "$DOTFILES_DIR/zsh/machine.zsh" ] && source "$DOTFILES_DIR/zsh/machine.zsh"
 
 # User configuration
 
@@ -181,3 +181,10 @@ export PATH=$HOME/.toolbox/bin:$PATH
 
 # Kiro CLI post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
+autoload -Uz compinit && compinit
+
+# Set up mise for runtime management
+eval "$(/home/jggodin/.local/bin/mise activate zsh)"
+source ~/.local/share/mise/completions.zsh
+source /home/jggodin/.brazil_completion/zsh_completion
+alias finch='sudo HOME=/home/jggodin DOCKER_CONFIG=/home/jggodin/.docker finch'

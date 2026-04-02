@@ -1,0 +1,5 @@
+SESH_BORDER_LABEL=" drem "
+SESH_PROMPT="  "
+SESH_POPUP_SIZE="80%,70%"
+SESH_PREVIEW_WINDOW="right:75%"
+SESH_COLOR="bg:#1b3a69,border:#5888c7,preview-bg:#1b3a69,bg+:#5888c7"
