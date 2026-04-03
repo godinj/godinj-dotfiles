@@ -184,10 +184,8 @@ export PATH=$HOME/.toolbox/bin:$PATH
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
 autoload -Uz compinit && compinit
 
-# Set up mise for runtime management
-eval "$(/home/jggodin/.local/bin/mise activate zsh)"
-source ~/.local/share/mise/completions.zsh
-source /home/jggodin/.brazil_completion/zsh_completion
+# Set up brazil completion
+source /Users/jggodin/.brazil_completion/zsh_completion
 alias finch='sudo HOME=/home/jggodin DOCKER_CONFIG=/home/jggodin/.docker finch'
 eval "$(/opt/homebrew/bin/brew shellenv)"
 eval "$(mise activate zsh)"
