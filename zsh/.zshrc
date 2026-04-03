@@ -19,6 +19,7 @@ export PATH=/usr/local/lib:$PATH
 export PATH="$HOME/tmux-config/scripts:$PATH"
 export PATH="$DOTFILES_DIR/sesh:$PATH"
 export PATH="$DOTFILES_DIR/wt:$PATH"
+export PATH="$PATH:/Users/jggodin/Library/Python/3.9/bin"
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -188,3 +189,5 @@ eval "$(/home/jggodin/.local/bin/mise activate zsh)"
 source ~/.local/share/mise/completions.zsh
 source /home/jggodin/.brazil_completion/zsh_completion
 alias finch='sudo HOME=/home/jggodin DOCKER_CONFIG=/home/jggodin/.docker finch'
+eval "$(/opt/homebrew/bin/brew shellenv)"
+eval "$(mise activate zsh)"

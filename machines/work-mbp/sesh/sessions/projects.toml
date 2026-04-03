@@ -7,3 +7,33 @@ startup_command = "echo dd"
 name = "notes"
 path = "~/Documents/notes/"
 startup_command = "nvim"
+
+[[session]]
+name = "Kuiper-ACME-APS"
+path = "~/workplace/Kuiper-ACME-APS/"
+startup_command = "nvim"
+
+[[session]]
+name = "KuiperProvisioningCommon"
+path = "~/workplace/KuiperProvisioningCommon/"
+startup_command = "nvim"
+
+[[session]]
+name = "kminit"
+path = "~/"
+startup_command = "kinit -f && mwinit -f -o"
+
+[[session]]
+name = "srm-ver"
+path = "~/git/srm-ver/"
+startup_command = "nvim"
+
+[[session]]
+name = "conf-pull"
+path = "~/git/conf-pull/"
+startup_command = "kld"
+
+[[session]]
+name = "KuiperGroundProvisioningOrchestrationService"
+path = "/Volumes/workplace/KuiperGroundProvisioningOrchestrationService/"
+startup_command = "nvim"
