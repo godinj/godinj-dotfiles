@@ -17,7 +17,8 @@ case "$OS" in
     if [ -n "${TERMUX_VERSION:-}" ]; then PKG=termux
     elif command -v apt-get &>/dev/null; then PKG=apt
     elif command -v dnf &>/dev/null;    then PKG=dnf
-    else err "Unsupported Linux distro (no apt or dnf found)"; exit 1; fi
+    elif command -v yum &>/dev/null;    then PKG=yum
+    else err "Unsupported Linux distro (no apt, dnf, or yum found)"; exit 1; fi
     ;;
   *) err "Unsupported OS: $OS"; exit 1 ;;
 esac
@@ -107,6 +108,10 @@ else
       sudo apt-get install -y gh
       ;;
     dnf) sudo dnf install -y gh ;;
+    yum)
+      sudo yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+      sudo yum install -y gh
+      ;;
     termux) pkg install -y gh ;;
   esac
   ok "gh installed"
