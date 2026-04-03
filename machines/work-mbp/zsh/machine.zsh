@@ -1,4 +1,6 @@
-export MACHINE_SSH_KEY="$HOME/.ssh/npllm"
+export MACHINE_SSH_KEY=""
+export MACHINE_DD_USER="jggodin"
+export MACHINE_DD_HOST="dev-dsk-jggodin-2a-f83213c2.us-west-2.amazon.com"
 export MACHINE_DD_OPTS="-R 2224:127.0.0.1:2224"
 export MACHINE_RECEIVE_DIR="${MACHINE_RECEIVE_DIR:-$HOME/Downloads}"
 

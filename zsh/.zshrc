@@ -127,7 +127,7 @@ source $ZSH/oh-my-zsh.sh
 
 # alias v="nvim"
 # alias vim="nvim"
-alias dd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} godinj@script.dremhome.org -p 21337"
+alias dd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} ${MACHINE_DD_USER:-godinj}@${MACHINE_DD_HOST:-script.dremhome.org} ${MACHINE_DD_PORT:+-p $MACHINE_DD_PORT}"
 alias cl="claude"
 alias kl="kiro-cli chat"
 alias cld="claude --dangerously-skip-permissions"
