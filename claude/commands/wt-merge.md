@@ -1,3 +1,8 @@
+---
+name: wt-merge
+description: Merge a feature branch back into the current branch.
+---
+
 Merge a feature branch back into the current branch. The argument should be a branch name (e.g., "feature/auth").
 
 Steps:

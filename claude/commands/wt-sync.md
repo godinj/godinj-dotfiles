@@ -1,3 +1,8 @@
+---
+name: wt-sync
+description: Sync all feature worktrees by rebasing them onto the default branch.
+---
+
 Sync all feature worktrees by rebasing them onto the default branch. This pushes merged changes out to every active feature branch.
 
 Steps:

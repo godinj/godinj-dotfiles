@@ -1,3 +1,8 @@
+---
+name: swarm
+description: Orchestrate agent team execution of a prompts directory. Use when the user wants to run multiple prompt files in tiered parallel/sequential execution.
+---
+
 Orchestrate agent team execution of a prompts directory. Argument: path to a prompts directory (e.g., `docs/test-harness/prompts`).
 
 ## Overview

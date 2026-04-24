@@ -1,3 +1,8 @@
+---
+name: wt-status
+description: Show the status of all git worktrees and feature branches in the current bare repo.
+---
+
 Show the status of all git worktrees and feature branches in the current bare repo.
 
 Steps:

@@ -101,3 +101,28 @@ startup_command = "clear && cld"
 name = "notes"
 path = "~/Documents/notes"
 startup_command = "nvim"
+
+[[session]]
+name = "doc-puller"
+path = "~/git/doc-puller/"
+startup_command = "cld"
+
+[[session]]
+name = "ad-tracking"
+path = "~/git/ad-tracking/"
+startup_command = "cld"
+
+[[session]]
+name = "model-tuning"
+path = "~/git/model-tuning/"
+startup_command = "cld"
+
+[[session]]
+name = "caveman"
+path = "~/git/caveman/"
+startup_command = "cld"
+
+[[session]]
+name = "OB1"
+path = "~/git/OB1/"
+startup_command = "cld"

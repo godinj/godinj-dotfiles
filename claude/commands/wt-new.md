@@ -1,3 +1,8 @@
+---
+name: wt-new
+description: Create a new git worktree for parallel feature development.
+---
+
 Create a new git worktree for parallel feature development. The argument should be a branch name (e.g., "feature/auth", "fix/crash").
 
 Steps:

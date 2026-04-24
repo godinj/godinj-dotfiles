@@ -1,3 +1,8 @@
+---
+name: gen-prompts
+description: Generate agent prompts from design documentation. Use when creating tiered prompt files from doc directories.
+---
+
 Generate agent prompts from design documentation. The argument should be a path to a doc directory or specific doc file (e.g., "docs/sans-juce" or "docs/sans-juce/05-audio-io.md").
 
 ## Overview

@@ -1,3 +1,8 @@
+---
+name: wt-condense
+description: Condense post-merge git history into a clean linear sequence from a base commit.
+---
+
 Condense post-merge history into a clean linear sequence. The argument should be a base commit (hash, tag, or ref) — everything after it gets condensed.
 
 Steps:

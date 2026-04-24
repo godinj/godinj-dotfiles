@@ -1,3 +1,8 @@
+---
+name: repo-audit
+description: Run a full-repo quality audit covering constitution, tests, architecture, and documentation.
+---
+
 Run a full-repo quality audit covering constitution constraints, test coverage, ARCHITECTURE.md adherence, deep module interfaces, and human documentation coverage.
 
 Steps:

@@ -144,9 +144,12 @@ ddshot() { _shot_scp "${MACHINE_DD_HOST:-script.dremhome.org}"; }
 bdshot() { _shot_scp "${MACHINE_BD_HOST:-script.dremhome.org}"; }
 alias cl="claude"
 alias kl="kiro-cli chat"
-alias cld="claude --dangerously-skip-permissions"
+alias cld1='CLAUDE_CONFIG_DIR=~/.claude-1 claude --dangerously-skip-permissions'
+alias cld2='CLAUDE_CONFIG_DIR=~/.claude-2 claude --dangerously-skip-permissions'
+alias cld="cld2"
 alias kld="kiro-cli chat -a"
 alias tk="tmux kill-server"
+alias ta-drem="tmux -L drem -f '~/git/drem-orchestrator.git/master/.tmux.conf' attach"
 alias t="drem-sx connect -c fastfetch fastfetch"
 alias src="source ~/.zshrc"
 alias vrc="nvim ~/.zshrc"
@@ -193,6 +196,17 @@ fi
 
 export PATH=$HOME/.toolbox/bin:$PATH
 
+# Ensure docker group membership (interactive shells only)
+if [[ -o interactive ]] && command -v docker &>/dev/null; then
+  if ! id -Gn "$USER" | tr ' ' '\n' | grep -qx docker; then
+    echo "Adding $USER to docker group (sudo required)..."
+    sudo usermod -aG docker "$USER" && export _DOCKER_NEEDS_RELOAD=1
+  elif ! groups | tr ' ' '\n' | grep -qx docker && [ -z "$_DOCKER_GROUP_RELOADED" ]; then
+    export _DOCKER_GROUP_RELOADED=1
+    exec newgrp docker
+  fi
+fi
+
 
 # Kiro CLI post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
@@ -206,3 +220,6 @@ eval "$(mise activate zsh)"
 
 # Added by AIM CLI
 export PATH="$HOME/.aim/mcp-servers:$PATH"
+
+# opencode
+export PATH=/home/godinj/.opencode/bin:$PATH
