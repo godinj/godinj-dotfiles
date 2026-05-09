@@ -9,7 +9,7 @@ export DOTFILES_DIR="$(cd "$(dirname "$(readlink -f ~/.zshrc)" 2>/dev/null || re
 [ -f ~/.env ] && source ~/.env
 
 # Central icon definitions for sesh sessions
-source "$DOTFILES_DIR/sesh/icons.sh"
+[ -f "$DOTFILES_DIR/sesh/icons.sh" ] && source "$DOTFILES_DIR/sesh/icons.sh"
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:$HOME/go/bin:/usr/local/bin:$PATH
@@ -176,15 +176,6 @@ if [ -z "$TMUX" ]
     drem-sx connect -c fastfetch fastfetch
 fi
 
-export PATH=$HOME/.toolbox/bin:$PATH
-
-
 # Kiro CLI post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
 autoload -Uz compinit && compinit
-
-# Set up mise for runtime management
-eval "$(/home/jggodin/.local/bin/mise activate zsh)"
-source ~/.local/share/mise/completions.zsh
-source /home/jggodin/.brazil_completion/zsh_completion
-alias finch='sudo HOME=/home/jggodin DOCKER_CONFIG=/home/jggodin/.docker finch'

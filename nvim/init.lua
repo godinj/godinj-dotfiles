@@ -699,7 +699,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -977,7 +977,7 @@ require('lazy').setup({
       -- nvim-treesitter main branch only handles parser installation.
       -- Neovim 0.12+ auto-starts treesitter highlighting for installed parsers.
       require('nvim-treesitter').install {
-        'bash', 'c', 'diff', 'go', 'html', 'java', 'json',
+        'bash', 'c', 'cpp', 'diff', 'go', 'html', 'java', 'json',
         'lua', 'luadoc', 'markdown', 'markdown_inline',
         'python', 'query', 'vim', 'vimdoc',
       }

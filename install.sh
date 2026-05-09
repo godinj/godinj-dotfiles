@@ -161,6 +161,16 @@ cp "$MACHINE_DIR/nvim/theme.lua" "$DOTFILES_DIR/nvim/lua/custom/plugins/machine_
 ok "Copied nvim machine_theme.lua"
 ok "Machine profile deployed"
 
+# al-dev: mark all directories as safe for git (Brazil workspaces have mixed ownership)
+if [ "$MACHINE_NAME" = "al-dev" ]; then
+  if ! git config --global --get-all safe.directory | grep -qx '\*'; then
+    git config --global --add safe.directory '*'
+    ok "git safe.directory set to *"
+  else
+    ok "git safe.directory already configured"
+  fi
+fi
+
 # Darwin-specific: clipboard listener LaunchAgent
 if [ "$OS" = "Darwin" ]; then
   info "Setting up clipboard listener LaunchAgent..."
@@ -475,6 +485,25 @@ else
 fi
 
 install_pkg go golang
+
+# Rust (via rustup)
+if command -v rustup &>/dev/null; then
+  ok "Rust already installed ($(rustc --version))"
+else
+  info "Installing Rust via rustup..."
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  source "$HOME/.cargo/env"
+  ok "Rust installed ($(rustc --version))"
+fi
+
+# mise (runtime version manager)
+if command -v mise &>/dev/null; then
+  ok "mise already installed ($(mise --version))"
+else
+  info "Installing mise..."
+  curl https://mise.run | sh
+  ok "mise installed"
+fi
 
 # drem-sx (session picker)
 info "Building drem-sx..."
