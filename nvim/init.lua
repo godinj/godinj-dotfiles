@@ -146,8 +146,10 @@ vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
 
--- Enable break indent
+-- Wrap display lines at word boundaries
+vim.o.wrap = true
 vim.o.breakindent = true
+vim.o.linebreak = true
 
 -- Save undo history
 vim.o.undofile = true
