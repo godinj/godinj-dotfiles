@@ -2,6 +2,9 @@
 vim.opt.laststatus = 3
 
 vim.o.relativenumber = true
+vim.o.wrap = true
+vim.o.breakindent = true
+vim.o.linebreak = true
 vim.opt.foldmethod = 'indent'
 vim.opt.foldlevelstart = 99
 vim.opt.tabstop = 4
