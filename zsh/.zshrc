@@ -128,6 +128,20 @@ source $ZSH/oh-my-zsh.sh
 # alias v="nvim"
 # alias vim="nvim"
 alias dd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} ${MACHINE_DD_USER:-godinj}@${MACHINE_DD_HOST:-script.dremhome.org} ${MACHINE_DD_PORT:+-p $MACHINE_DD_PORT}"
+alias bd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} ${MACHINE_DD_USER:-godinj}@${MACHINE_BD_HOST:-script.dremhome.org} ${MACHINE_DD_PORT:+-p $MACHINE_DD_PORT}"
+
+# scp the most recent screenshot to a host (screenshot dir defaults to ~/Documents/screenshots)
+_shot_scp() {
+  local shot
+  shot=$(ls -t "${SCREENSHOT_DIR:-$HOME/Documents/screenshots}"/Screenshot* 2>/dev/null | head -1)
+  [[ -z "$shot" ]] && { echo "no screenshot found" >&2; return 1; }
+  local opts=()
+  [[ -n "$MACHINE_SSH_KEY" ]] && opts+=(-i "$MACHINE_SSH_KEY")
+  [[ -n "$MACHINE_DD_PORT" ]] && opts+=(-P "$MACHINE_DD_PORT")
+  scp "${opts[@]}" "$shot" "${MACHINE_DD_USER:-godinj}@$1:"
+}
+ddshot() { _shot_scp "${MACHINE_DD_HOST:-script.dremhome.org}"; }
+bdshot() { _shot_scp "${MACHINE_BD_HOST:-script.dremhome.org}"; }
 alias cl="claude"
 alias kl="kiro-cli chat"
 alias cld="claude --dangerously-skip-permissions"
@@ -189,3 +203,6 @@ source /Users/jggodin/.brazil_completion/zsh_completion
 alias finch='sudo HOME=/home/jggodin DOCKER_CONFIG=/home/jggodin/.docker finch'
 eval "$(/opt/homebrew/bin/brew shellenv)"
 eval "$(mise activate zsh)"
+
+# Added by AIM CLI
+export PATH="$HOME/.aim/mcp-servers:$PATH"
