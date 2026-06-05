@@ -132,6 +132,12 @@ create_link "$DOTFILES_DIR/tmux/.tmux.conf"    "$HOME/.tmux.conf"
 create_link "$DOTFILES_DIR/.env.template"      "$HOME/.env.template"
 create_link "$DOTFILES_DIR/claude/commands"    "$HOME/.claude/commands"
 
+# Machine-specific git email
+if [ -n "${MACHINE_GIT_EMAIL:-}" ]; then
+  git config --global user.email "$MACHINE_GIT_EMAIL"
+  ok "Set git user.email to $MACHINE_GIT_EMAIL"
+fi
+
 # Git hooks (auto-rebuild drem-sx on merge, etc.)
 info "Installing git hooks..."
 git_hooks_dir="$(git -C "$DOTFILES_DIR" rev-parse --git-dir)/hooks"
