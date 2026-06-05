@@ -1,7 +1,7 @@
 [[session]]
 name = "dev-desk"
 path = "~"
-startup_command = "echo dd"
+startup_command = "dd"
 
 [[session]]
 name = "notes"
@@ -37,3 +37,83 @@ startup_command = "kld"
 name = "KuiperGroundProvisioningOrchestrationService"
 path = "/Volumes/workplace/KuiperGroundProvisioningOrchestrationService/"
 startup_command = "nvim"
+
+[[session]]
+name = "docp"
+path = "~/git/docp/"
+startup_command = "nvim"
+
+[[session]]
+name = "ninja-dev-sync"
+path = "~/git/ninja-dev-sync/"
+startup_command = "ninja-dev-sync"
+
+[[session]]
+name = "KuiperAutopilotGroundAPIsLambdas"
+path = "/Volumes/workplace/KuiperAutopilotGroundAPIsLambdas/"
+startup_command = "nvim"
+
+[[session]]
+name = "KuiperLepEsecureLib"
+path = "~/workplace/KuiperLepEsecureLib/"
+startup_command = "kld"
+
+[[session]]
+name = "KuiperACMEOperation"
+path = "~/worklace/KuiperACMEOperation/"
+startup_command = "kld"
+
+[[session]]
+name = "dashboard-gen"
+path = "~/git/dashboard-gen/"
+startup_command = "kld"
+
+[[session]]
+name = "shepherd-risk"
+path = "~/git/shepherd-risk/"
+startup_command = "kld"
+
+[[session]]
+name = "KuiperEAR-libkuiperkey"
+path = "~/workplace/KuiperEAR-libkuiperkey/"
+startup_command = "kld"
+
+[[session]]
+name = "security-audit-sev2s"
+path = "~/git/security-audit-sev2s/"
+startup_command = "nvim"
+
+[[session]]
+name = "KuiperEAR-poky"
+path = "/Volumes/workplace/KuiperEAR-poky/"
+startup_command = "kld"
+
+[[session]]
+name = "KuiperEAR-mfg-configs"
+path = "/Volumes/workplace/KuiperEAR-mfg-configs/"
+startup_command = "kld"
+
+[[session]]
+name = "botctl"
+path = "~/workplace/botctl/"
+startup_command = "kld"
+
+[[session]]
+name = "browser-opt"
+path = "~/git/browser-opt/"
+startup_command = "kld"
+
+[[session]]
+name = "bitbake-desk"
+path = "~/"
+startup_command = "bd"
+
+[[session]]
+name = "log-check"
+path = "~/git/log-check/"
+startup_command = "kld"
+
+[[session]]
+name = "deprovisioning"
+path = "~/git/deprovisioning/"
+startup_command = "''"
