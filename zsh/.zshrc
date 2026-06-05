@@ -146,7 +146,7 @@ alias cl="claude"
 alias kl="kiro-cli chat"
 alias cld1='CLAUDE_CONFIG_DIR=~/.claude-1 claude --dangerously-skip-permissions'
 alias cld2='CLAUDE_CONFIG_DIR=~/.claude-2 claude --dangerously-skip-permissions'
-alias cld="cld2"
+alias cld="codex --dangerously-bypass-approvals-and-sandbox"
 alias kld="kiro-cli chat -a"
 alias tk="tmux kill-server"
 alias ta-drem="tmux -L drem -f '~/git/drem-orchestrator.git/master/.tmux.conf' attach"
@@ -223,3 +223,5 @@ export PATH="$HOME/.aim/mcp-servers:$PATH"
 
 # opencode
 export PATH=/home/godinj/.opencode/bin:$PATH
+export OPENCODE_MULTI_AUTH_CODEX_AUTH_FILE=/home/godinj/.codex/auth.json
+export OPENCODE_MULTI_AUTH_PREFER_CODEX_LATEST=1

@@ -126,3 +126,23 @@ startup_command = "cld"
 name = "OB1"
 path = "~/git/OB1/"
 startup_command = "cld"
+
+[[session]]
+name = "browser-opt"
+path = "~/git/browser-opt/"
+startup_command = "opencode"
+
+[[session]]
+name = "schedule-opt"
+path = "~/git/schedule-opt/"
+startup_command = "''"
+
+[[session]]
+name = "finance-opt"
+path = "~/git/finance-opt/"
+startup_command = "opencode"
+
+[[session]]
+name = "health-opt"
+path = "~/git/health-opt/"
+startup_command = "opencode"
