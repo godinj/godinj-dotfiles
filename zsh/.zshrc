@@ -186,7 +186,9 @@ source ~/tmux-config/scripts/fzf_init.zsh
 eval "$(zoxide init zsh)"
 
 
-test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_integration.zsh" || true
+if [ "$TERM_PROGRAM" = "iTerm.app" ] && [ -e "$HOME/.iterm2_shell_integration.zsh" ]; then
+  source "$HOME/.iterm2_shell_integration.zsh"
+fi
 
 if [ -z "$TMUX" ]
  then
@@ -213,10 +215,10 @@ fi
 autoload -Uz compinit && compinit
 
 # Set up brazil completion
-source /Users/jggodin/.brazil_completion/zsh_completion
+[ -f /Users/jggodin/.brazil_completion/zsh_completion ] && source /Users/jggodin/.brazil_completion/zsh_completion
 alias finch='sudo HOME=/home/jggodin DOCKER_CONFIG=/home/jggodin/.docker finch'
-eval "$(/opt/homebrew/bin/brew shellenv)"
-eval "$(mise activate zsh)"
+[ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
 
 # Added by AIM CLI
 export PATH="$HOME/.aim/mcp-servers:$PATH"

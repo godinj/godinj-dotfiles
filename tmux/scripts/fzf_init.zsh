@@ -18,10 +18,12 @@ function run-inv-widget {
   fi
 }
 
-zle     -N   run-inv-widget
-bindkey -M emacs '^T' run-inv-widget
-bindkey -M vicmd '^T' run-inv-widget
-bindkey -M viins '^T' run-inv-widget
+if [[ -o interactive ]]; then
+  zle     -N   run-inv-widget
+  bindkey -M emacs '^T' run-inv-widget
+  bindkey -M vicmd '^T' run-inv-widget
+  bindkey -M viins '^T' run-inv-widget
+fi
 
-source <(fzf --zsh)
-bindkey -r '\ec'  # free Alt-c for tmux drem-sx picker
+source <(fzf --zsh) 2>/dev/null
+[[ -o interactive ]] && bindkey -r '\ec'  # free Alt-c for tmux drem-sx picker
