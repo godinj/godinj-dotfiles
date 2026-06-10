@@ -7,3 +7,5 @@ alias gp="pc ~/tmux-config/scripts/git_pull.zsh"
 alias gr="pc ~/tmux-config/scripts/git_rebase.zsh"
 alias ssc="fp ~/tmux-config/scripts/ser_session_script.zsh"
 alias ssd="fp ~/tmux-config/scripts/setup_window_with_dirs.zsh"
+
+alias kc="ps aux | grep kte | grep -v grep"

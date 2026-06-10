@@ -179,6 +179,7 @@ elif [ -s "$NVM_DIR/nvm.sh" ]; then
 fi
 
 # source ~/tmux-config/.tmux_init_script
+source ~/tmux-config/scripts/aliases.zsh
 source ~/tmux-config/scripts/fzf_init.zsh
 eval "$(zoxide init zsh)"
 
