@@ -29,6 +29,8 @@ The bootstrap script and installer are both idempotent — safe to re-run at any
 
 Main entry point. Backs up existing configs, prompts for a machine profile, creates symlinks, deploys machine-specific overrides (tmux, nvim theme, sesh configs, LaunchAgents on macOS), and installs all dependencies. Detects OS and package manager automatically. Supports template rendering via `envsubst` for machine-specific plist files.
 
+OpenCode is configured from `opencode/opencode.json.tpl`, rendered to `~/.config/opencode/opencode.json` with `${HOME}` expanded. The config uses the pinned `@guard22/opencode-multi-auth-codex@1.4.3` plugin so OpenCode can use the operator's Codex subscription OAuth state. Run `codex login` on each machine; the auth file stays local at `~/.codex/auth.json` and is not stored in dotfiles.
+
 ```bash
 bash install.sh
 ```
