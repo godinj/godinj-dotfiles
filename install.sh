@@ -431,7 +431,10 @@ install_github_tar() {
 }
 
 case "$PKG" in
-  apt) install_pkg fd fd-find ;;
+  apt)
+    install_pkg fd fd-find
+    install_pkg gdu
+    ;;
   yum)
     install_github_tar fd sharkdp/fd \
       "https://github.com/sharkdp/fd/releases/download/{VER}/fd-{VER}-x86_64-unknown-linux-musl.tar.gz"
@@ -455,6 +458,7 @@ case "$PKG" in
     install_pkg rg ripgrep
     install_pkg zoxide
     install_pkg btop
+    install_pkg gdu
     ;;
 esac
 # fastfetch — not in default apt repos
