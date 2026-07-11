@@ -91,7 +91,25 @@
         "gpt-5.5-medium",
         "gpt-5.5-high",
         "gpt-5.5-xhigh",
-        "gpt-5.5-fast"
+        "gpt-5.5-fast",
+        "gpt-5.6-luna",
+        "gpt-5.6-luna-low",
+        "gpt-5.6-luna-medium",
+        "gpt-5.6-luna-high",
+        "gpt-5.6-luna-xhigh",
+        "gpt-5.6-luna-fast",
+        "gpt-5.6-terra",
+        "gpt-5.6-terra-low",
+        "gpt-5.6-terra-medium",
+        "gpt-5.6-terra-high",
+        "gpt-5.6-terra-xhigh",
+        "gpt-5.6-terra-fast",
+        "gpt-5.6-sol",
+        "gpt-5.6-sol-low",
+        "gpt-5.6-sol-medium",
+        "gpt-5.6-sol-high",
+        "gpt-5.6-sol-xhigh",
+        "gpt-5.6-sol-fast"
       ],
       "models": {
         "gpt-5.3-codex-spark": {
@@ -233,6 +251,111 @@
               "serviceTier": "priority"
             }
           }
+        },
+        "gpt-5.6-luna": {
+          "name": "GPT 5.6 Luna Codex Subscription",
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          },
+          "variants": {
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "fast": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium",
+              "serviceTier": "priority"
+            }
+          }
+        },
+        "gpt-5.6-terra": {
+          "name": "GPT 5.6 Terra Codex Subscription",
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          },
+          "variants": {
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "fast": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium",
+              "serviceTier": "priority"
+            }
+          }
+        },
+        "gpt-5.6-sol": {
+          "name": "GPT 5.6 Sol Codex Subscription",
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          },
+          "variants": {
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "fast": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium",
+              "serviceTier": "priority"
+            }
+          }
         }
       }
     }
@@ -288,6 +411,25 @@
         "@modelcontextprotocol/server-memory"
       ],
       "enabled": true
+    },
+    "playwright": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@playwright/mcp@0.0.78",
+        "--browser",
+        "chrome",
+        "--isolated",
+        "--viewport-size",
+        "1440x900",
+        "--caps",
+        "vision,pdf",
+        "--block-service-workers"
+      ],
+      "enabled": true,
+      "timeout": 30000,
+      "environment": {}
     }
   },
   "plugin": [
