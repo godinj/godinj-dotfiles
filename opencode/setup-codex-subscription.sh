@@ -11,6 +11,8 @@ RELAY_DEST="$HOME/.codex/skills/gpt-5-6-relay"
 MULTI_AUTH_STORE="$HOME/.config/opencode-multi-auth/accounts.json"
 OPENCODE_AUTH="$HOME/.local/share/opencode/auth.json"
 
+export PATH="$HOME/.opencode/bin:$PATH"
+
 info()  { printf "\033[1;34m::\033[0m %s\n" "$*"; }
 ok()    { printf "\033[1;32m✓\033[0m  %s\n" "$*"; }
 warn()  { printf "\033[1;33m!\033[0m  %s\n" "$*"; }
@@ -37,6 +39,23 @@ render_config() {
   mkdir -p "$(dirname "$DEST")"
   sed -e "s|\${HOME}|$HOME|g" -e "s|\${MACHINE_RECEIVE_DIR}|${MACHINE_RECEIVE_DIR:-}|g" "$TEMPLATE" > "$DEST"
   ok "Rendered $DEST"
+}
+
+install_opencode() {
+  if command -v opencode >/dev/null 2>&1; then
+    ok "opencode already installed ($(opencode --version 2>/dev/null || printf unknown))"
+    return
+  fi
+
+  info "Installing OpenCode..."
+  curl -fsSL https://opencode.ai/install | bash
+
+  if command -v opencode >/dev/null 2>&1; then
+    ok "OpenCode installed ($(opencode --version 2>/dev/null || printf unknown))"
+  else
+    warn "OpenCode installer finished, but opencode is not on PATH"
+    warn "Expected it under ~/.opencode/bin; open a new shell if needed"
+  fi
 }
 
 install_plugin() {
@@ -214,6 +233,7 @@ NODE
 
 main() {
   info "Configuring OpenCode to use Codex subscription auth"
+  install_opencode
   backup_existing_config
   render_config
   install_relay_skill

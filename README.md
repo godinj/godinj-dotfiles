@@ -33,9 +33,10 @@ Main entry point. Backs up existing configs, prompts for a machine profile, crea
 bash install.sh
 ```
 
-OpenCode is configured separately by `opencode/setup-codex-subscription.sh` so
-Codex subscription auth can be refreshed without running the full dotfiles
-installer.
+OpenCode is installed and configured by `install.sh` via
+`opencode/setup-codex-subscription.sh`. The OpenCode setup script can also be
+rerun separately to refresh Codex subscription auth without running the full
+dotfiles installer.
 
 ### opencode/setup-codex-subscription.sh
 

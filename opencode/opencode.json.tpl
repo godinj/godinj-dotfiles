@@ -361,6 +361,10 @@
     }
   },
   "agent": {
+    "build": {
+      "model": "openai/gpt-5.6-terra",
+      "variant": "high"
+    },
     "relay-sol": {
       "model": "openai/gpt-5.6-sol",
       "variant": "xhigh",
@@ -460,6 +464,6 @@
       "${HOME}/.codex/skills"
     ]
   },
-  "model": "openai/gpt-5.5",
-  "small_model": "openai/gpt-5.5"
+  "model": "openai/gpt-5.6-terra",
+  "small_model": "openai/gpt-5.6-terra"
 }

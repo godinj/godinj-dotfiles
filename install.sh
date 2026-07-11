@@ -622,6 +622,11 @@ else
   warn "Edit ~/.env to add your API keys"
 fi
 
+# ── Step 8: OpenCode ────────────────────────────────────────────────────────
+
+info "Installing and configuring OpenCode..."
+bash "$DOTFILES_DIR/opencode/setup-codex-subscription.sh"
+
 
 # ── Done ─────────────────────────────────────────────────────────────────────
 
@@ -630,5 +635,6 @@ echo "  1. Open a new terminal or run: source ~/.zshrc"
 echo "  2. Open tmux and press prefix + I to install tmux plugins"
 echo "  3. Open nvim — plugins auto-install via lazy.nvim"
 echo "  4. Edit ~/.env to add your API keys"
-echo "  5. Run 'wt doctor' to check bare repo and sesh config health"
+echo "  5. Restart opencode if it was already running"
+echo "  6. Run 'wt doctor' to check bare repo and sesh config health"
 echo ""
