@@ -170,7 +170,8 @@ _machine_ssh() {
   ssh "${base_opts[@]}" "${call_opts[@]}" "${MACHINE_DD_USER:-godinj}@$host" "${remote_cmd[@]}"
 }
 
-dd() { _machine_ssh "${MACHINE_DD_HOST:-script.dremhome.org}" "$@"; }
+unalias dd bd 2>/dev/null
+alias dd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} ${MACHINE_DD_USER:-godinj}@${MACHINE_DD_HOST:-script.dremhome.org} -p ${MACHINE_DD_PORT:-21337}"
 bd() { _machine_ssh "${MACHINE_BD_HOST:-script.dremhome.org}" "$@"; }
 
 # scp the most recent screenshot to a host (screenshot dir defaults to ~/Documents/screenshots)
@@ -252,18 +253,6 @@ if [ -z "$TMUX" ]
 fi
 
 export PATH=$HOME/.toolbox/bin:$PATH
-
-# Ensure docker group membership (interactive shells only)
-if [[ -o interactive ]] && command -v docker &>/dev/null; then
-  if ! id -Gn "$USER" | tr ' ' '\n' | grep -qx docker; then
-    echo "Adding $USER to docker group (sudo required)..."
-    sudo usermod -aG docker "$USER" && export _DOCKER_NEEDS_RELOAD=1
-  elif ! groups | tr ' ' '\n' | grep -qx docker && [ -z "$_DOCKER_GROUP_RELOADED" ]; then
-    export _DOCKER_GROUP_RELOADED=1
-    exec newgrp docker
-  fi
-fi
-
 
 # Kiro CLI post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
