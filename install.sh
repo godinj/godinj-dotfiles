@@ -132,8 +132,6 @@ create_link "$DOTFILES_DIR/tmux/.tmux.conf"    "$HOME/.tmux.conf"
 create_link "$DOTFILES_DIR/.env.template"      "$HOME/.env.template"
 create_link "$DOTFILES_DIR/claude/commands"    "$HOME/.claude/commands"
 
-render_template "$DOTFILES_DIR/opencode/opencode.json.tpl" "$HOME/.config/opencode/opencode.json"
-
 # Machine-specific git email
 if [ -n "${MACHINE_GIT_EMAIL:-}" ]; then
   git config --global user.email "$MACHINE_GIT_EMAIL"

@@ -29,10 +29,25 @@ The bootstrap script and installer are both idempotent — safe to re-run at any
 
 Main entry point. Backs up existing configs, prompts for a machine profile, creates symlinks, deploys machine-specific overrides (tmux, nvim theme, sesh configs, LaunchAgents on macOS), and installs all dependencies. Detects OS and package manager automatically. Supports template rendering via `envsubst` for machine-specific plist files.
 
-OpenCode is configured from `opencode/opencode.json.tpl`, rendered to `~/.config/opencode/opencode.json` with `${HOME}` expanded. The config uses the pinned `@guard22/opencode-multi-auth-codex@1.4.3` plugin so OpenCode can use the operator's Codex subscription OAuth state. Run `codex login` on each machine; the auth file stays local at `~/.codex/auth.json` and is not stored in dotfiles.
-
 ```bash
 bash install.sh
+```
+
+OpenCode is configured separately by `opencode/setup-codex-subscription.sh` so
+Codex subscription auth can be refreshed without running the full dotfiles
+installer.
+
+### opencode/setup-codex-subscription.sh
+
+Renders `opencode/opencode.json.tpl` to `~/.config/opencode/opencode.json`,
+installs the pinned `@guard22/opencode-multi-auth-codex@1.4.3` plugin when the
+`opencode` CLI is available, and syncs the local Codex OAuth state into
+OpenCode's multi-auth store. Run `codex login` first if `~/.codex/auth.json` is
+missing or expired; that auth file stays local and is not stored in dotfiles.
+
+```bash
+codex login
+bash opencode/setup-codex-subscription.sh
 ```
 
 ### switch-machine.sh

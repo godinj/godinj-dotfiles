@@ -26,3 +26,8 @@ tool = vimdiff
 editor = nvim
 excludesfile = ~/.gitignore_global
 pager = less -FMRiX
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f

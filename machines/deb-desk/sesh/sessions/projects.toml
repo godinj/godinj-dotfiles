@@ -146,3 +146,18 @@ startup_command = "opencode"
 name = "health-opt"
 path = "~/git/health-opt/"
 startup_command = "opencode"
+
+[[session]]
+name = "life-opt"
+path = "~/git/life-opt/"
+startup_command = "opencode"
+
+[[session]]
+name = "website-opt"
+path = "~/git/website-opt/"
+startup_command = "opencode"
+
+[[session]]
+name = "ue5-debian"
+path = "~/git/ue5-debian/"
+startup_command = "opencode"
