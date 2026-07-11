@@ -360,6 +360,26 @@
       }
     }
   },
+  "agent": {
+    "relay-sol": {
+      "model": "openai/gpt-5.6-sol",
+      "variant": "xhigh",
+      "mode": "subagent",
+      "description": "Use for GPT-5.6 relay coordination, architecture, ambiguity, hard diagnosis, and high-risk review."
+    },
+    "relay-terra": {
+      "model": "openai/gpt-5.6-terra",
+      "variant": "high",
+      "mode": "subagent",
+      "description": "Use for GPT-5.6 relay implementation, tests, refactors, bounded debugging, and code review."
+    },
+    "relay-luna": {
+      "model": "openai/gpt-5.6-luna",
+      "variant": "medium",
+      "mode": "subagent",
+      "description": "Use for GPT-5.6 relay reconnaissance, deterministic edits, formatting, focused checks, release mechanics, and monitoring."
+    }
+  },
   "permission": {
     "bash": "allow",
     "edit": "allow",

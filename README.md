@@ -41,7 +41,8 @@ installer.
 
 Renders `opencode/opencode.json.tpl` to `~/.config/opencode/opencode.json`,
 installs the pinned `@guard22/opencode-multi-auth-codex@1.4.3` plugin when the
-`opencode` CLI is available, and syncs the local Codex OAuth state into
+`opencode` CLI is available, installs the GPT-5.6 relay skill into
+`~/.codex/skills/gpt-5-6-relay`, and syncs the local Codex OAuth state into
 OpenCode's multi-auth store. Run `codex login` first if `~/.codex/auth.json` is
 missing or expired; that auth file stays local and is not stored in dotfiles.
 

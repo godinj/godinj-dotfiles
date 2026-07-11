@@ -6,6 +6,8 @@ TEMPLATE="$DOTFILES_DIR/opencode/opencode.json.tpl"
 DEST="$HOME/.config/opencode/opencode.json"
 PLUGIN="@guard22/opencode-multi-auth-codex@1.4.3"
 AUTH_FILE="$HOME/.codex/auth.json"
+RELAY_SRC="$DOTFILES_DIR/opencode/skills/gpt-5-6-relay"
+RELAY_DEST="$HOME/.codex/skills/gpt-5-6-relay"
 MULTI_AUTH_STORE="$HOME/.config/opencode-multi-auth/accounts.json"
 OPENCODE_AUTH="$HOME/.local/share/opencode/auth.json"
 
@@ -46,6 +48,20 @@ install_plugin() {
 
   opencode plugin "$PLUGIN" --global --force
   ok "Installed OpenCode plugin $PLUGIN"
+}
+
+install_relay_skill() {
+  if [ ! -f "$RELAY_SRC/SKILL.md" ]; then
+    warn "GPT-5.6 relay skill not found at $RELAY_SRC"
+    return
+  fi
+
+  mkdir -p "$RELAY_DEST"
+  cp "$RELAY_SRC/SKILL.md" "$RELAY_DEST/SKILL.md"
+  if [ -f "$RELAY_SRC/DEPLOYMENT.md" ]; then
+    cp "$RELAY_SRC/DEPLOYMENT.md" "$RELAY_DEST/DEPLOYMENT.md"
+  fi
+  ok "Installed GPT-5.6 relay skill to $RELAY_DEST"
 }
 
 check_codex_auth() {
@@ -200,6 +216,7 @@ main() {
   info "Configuring OpenCode to use Codex subscription auth"
   backup_existing_config
   render_config
+  install_relay_skill
   install_plugin
   if check_codex_auth; then
     sync_codex_auth
