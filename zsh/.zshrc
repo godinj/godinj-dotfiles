@@ -127,8 +127,51 @@ source $ZSH/oh-my-zsh.sh
 
 # alias v="nvim"
 # alias vim="nvim"
-alias dd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} ${MACHINE_DD_USER:-godinj}@${MACHINE_DD_HOST:-script.dremhome.org} ${MACHINE_DD_PORT:+-p $MACHINE_DD_PORT}"
-alias bd="ssh ${MACHINE_SSH_KEY:+-i $MACHINE_SSH_KEY} ${MACHINE_DD_OPTS:-} ${MACHINE_DD_USER:-godinj}@${MACHINE_BD_HOST:-script.dremhome.org} ${MACHINE_DD_PORT:+-p $MACHINE_DD_PORT}"
+_machine_ssh() {
+  local host="$1"
+  shift
+
+  local -a base_opts call_opts remote_cmd
+  [[ -n "${MACHINE_SSH_KEY:-}" ]] && base_opts+=(-i "$MACHINE_SSH_KEY")
+  [[ -n "${MACHINE_DD_PORT:-}" ]] && base_opts+=(-p "$MACHINE_DD_PORT")
+  [[ -n "${MACHINE_DD_OPTS:-}" ]] && base_opts+=(${(z)MACHINE_DD_OPTS})
+
+  while (( $# )); do
+    case "$1" in
+      --)
+        shift
+        break
+        ;;
+      -[46AaCfGgKkMNnqsTtVvXxYy])
+        call_opts+=("$1")
+        shift
+        ;;
+      -[bcDEeFIiJLlmOopQRSWw])
+        call_opts+=("$1")
+        shift
+        if (( $# == 0 )); then
+          print -u2 "ssh option requires an argument: ${call_opts[-1]}"
+          return 2
+        fi
+        call_opts+=("$1")
+        shift
+        ;;
+      -[bcDEeFIiJLlmOopQRSWw]*|-*)
+        call_opts+=("$1")
+        shift
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  remote_cmd=("$@")
+  ssh "${base_opts[@]}" "${call_opts[@]}" "${MACHINE_DD_USER:-godinj}@$host" "${remote_cmd[@]}"
+}
+
+dd() { _machine_ssh "${MACHINE_DD_HOST:-script.dremhome.org}" "$@"; }
+bd() { _machine_ssh "${MACHINE_BD_HOST:-script.dremhome.org}" "$@"; }
 
 # scp the most recent screenshot to a host (screenshot dir defaults to ~/Documents/screenshots)
 _shot_scp() {
