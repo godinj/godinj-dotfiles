@@ -44,3 +44,23 @@ startup_command = "cld"
 name = "drem-canvas"
 path = "~/git/drem-canvas.git/main/"
 startup_command = "cld"
+
+[[session]]
+name = "tab-bro"
+path = "~/git/tab-bro/"
+startup_command = "cld"
+
+[[session]]
+name = "drem-browser"
+path = "~/git/drem-browser/"
+startup_command = "cld"
+
+[[session]]
+name = "browser-opt"
+path = "~/git/browser-opt/"
+startup_command = "opencode"
+
+[[session]]
+name = "storage-opt"
+path = "~/git/storage-opt/"
+startup_command = "opencode"

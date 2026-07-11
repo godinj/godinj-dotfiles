@@ -156,6 +156,18 @@ alias vrc="nvim ~/.zshrc"
 alias cns="$DOTFILES_DIR/sesh/new_session.sh"
 alias wt="wt.sh"
 
+ddshot() {
+  local -a screenshots
+  screenshots=(~/Documents/screenshots/*(om[1]N))
+
+  if (( ${#screenshots} == 0 )); then
+    print -u2 "No screenshots found in ~/Documents/screenshots"
+    return 1
+  fi
+
+  scp -P 21337 ${MACHINE_SSH_KEY:+-i "$MACHINE_SSH_KEY"} -- "${screenshots[1]}" godinj@script.dremhome.org:~/
+}
+
 # Copy stdin or file contents to the clipboard.
 # Mac: pbcopy, local Linux: wl-copy, remote/SSH: OSC 52 escape sequence.
 # Usage: echo "text" | clip   or   clip file.txt

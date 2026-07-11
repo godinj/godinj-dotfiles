@@ -582,7 +582,7 @@ if [ "$PKG" != "termux" ] && ! grep -qi microsoft /proc/version 2>/dev/null; the
   else
     info "Installing alacritty..."
     case "$PKG" in
-      brew) brew install --cask alacritty ;;
+      brew) brew install --cask alacritty && [ -d /Applications/Alacritty.app ] && mdimport /Applications/Alacritty.app ;;
       apt)  sudo apt-get install -y alacritty ;;
       dnf)  sudo dnf install -y alacritty ;;
       yum)  warn "alacritty not in yum repos — skipping" ;;
