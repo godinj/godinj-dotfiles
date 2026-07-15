@@ -187,6 +187,7 @@ _shot_scp() {
 ddshot() { _shot_scp "${MACHINE_DD_HOST:-script.dremhome.org}"; }
 bdshot() { _shot_scp "${MACHINE_BD_HOST:-script.dremhome.org}"; }
 alias cl="claude"
+alias oc="opencode"
 alias kl="kiro-cli chat"
 alias cld1='CLAUDE_CONFIG_DIR=~/.claude-1 claude --dangerously-skip-permissions'
 alias cld2='CLAUDE_CONFIG_DIR=~/.claude-2 claude --dangerously-skip-permissions'
